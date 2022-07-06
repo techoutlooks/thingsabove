@@ -54,7 +54,7 @@ const Recorder = () => {
     return recadd({...rec_item, title})
   }, [recording, title])
 
-  const del = useCallback(() => recdel(recording), [recording])
+  const del = useCallback(recdel, [recording])
   const stop = useCallback(async () =>  Promise.resolve(recording)
     .then(r => r?.stop()).then(() => emit({ready: false})), [recording])
     

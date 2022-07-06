@@ -56,9 +56,7 @@ const RecProvider = ({children}) => {
   useEffect(() => { 
     setListeningTo(lastRecording)}, [recordings])  
 
-  const play = useCallback((r: RecordedItem) => {
-    setListeningTo(r) 
-  }, [recordings])
+  const play = useCallback(setListeningTo , [recordings])
   
   const value = useMemo(() => ({
     recordings, get, add, del, fromrecording,
@@ -82,12 +80,6 @@ const useRecordings = () => {
   if (context === undefined) {
     throw new Error('useRecordings must be used within `<RecordingsProvider/>`')
   }
-
-  // console.log(`>>> useRecordings`, 
-  //   `recordings (${context.recordings?.length}) =`, context.recordings.map(r => `${r.id} (${r.duration}s) - ${r.title}`),
-  //   `listeningTo:${context.listeningTo}`
-  // )
-
   return context
 }
 
