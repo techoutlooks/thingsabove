@@ -139,6 +139,7 @@ export const getInitials = name => {
 }
 
 export const getRoomLatestMessage = roomId => state => {
+
   const latestMessage = getRoomById(roomId)(state)?.latestMessage
   if (latestMessage != null) {
     const room = getRoomById(roomId)(state)

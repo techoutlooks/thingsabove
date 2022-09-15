@@ -1,6 +1,7 @@
 import React from 'react'
 // import { registerRootComponent } from 'expo';
 // import { activateKeepAwake } from 'expo-keep-awake'
+import 'react-native-url-polyfill/auto';
 import registerRootComponent from 'expo/build/launch/registerRootComponent';
 import App from './src/App';
 

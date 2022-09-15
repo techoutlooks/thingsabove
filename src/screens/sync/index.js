@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 
 import { getSyncProgress } from '../../state/auth'
 
-import { ScreenCard } from '@/components/atoms'
+import { ScreenCard } from '@/components/uiStyle/atoms'
 
 const SyncScreen = () => {
   const syncProgress = useSelector(getSyncProgress)

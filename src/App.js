@@ -5,52 +5,53 @@ import { PersistGate } from "redux-persist/integration/react";
 import styled, { ThemeProvider } from "styled-components/native";
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
+import {LoadAssets} from "@/components";
+
 // import './lib/poly'
 
-import Navigator from "./Navigator";
+import DrawerNavigator from "@/navigation/DrawerNavigator";
 import NotificationHandler from "./NotificationHandler";
-import { migrateToLatest } from "./lib/storage";
-import { getAuthState, connectToServer } from "./state/auth";
+import { getAuthState } from "./state/auth";
 import { store, persistor } from "./state/configureStore";
 import { selectTheme } from "./state/settings";
 
+
+const assets = []
+
+const fonts = {
+  "SFProDisplay-Bold": require("../assets/fonts/SF-Pro-Display-Bold.otf"),
+  "SFProDisplay-Semibold": require("../assets/fonts/SF-Pro-Display-Semibold.otf"),
+  "SFProDisplay-Medium": require("../assets/fonts/SF-Pro-Display-Medium.otf"),
+  "SFProDisplay-Regular": require("../assets/fonts/SF-Pro-Display-Regular.otf"),
+};
+
+
 const themeMap = {
-  light: require(`./components/styles/light`).theme,
-  dark: require(`./components/styles/dark`).theme,
+  light: require(`./components/uiStyle/styles/light`).theme,
+  dark: require(`./components/uiStyle/styles/dark`).theme,
 };
 
 const Main = () => {
-  const [storageMigrated, setStorageMigrated] = useState(false);
   const auth = useSelector(getAuthState);
   const dispatch = useDispatch();
 
   const themeKey = useSelector(selectTheme);
   const theme = themeMap[themeKey];
 
-  useEffect(() => {
-    if (auth.accessToken != null && !auth.isConnecting) {
-      dispatch(connectToServer());
-    }
-  }, [auth.accessToken]);
-
-  useEffect(() => {
-    migrateToLatest()
-      .then(() => setStorageMigrated(true))
-      .catch(() => console.log("failed to migrate!"));
-  }, []);
-
   return (
     <ThemeProvider theme={theme}>
-      <AppFrame>
+      <LoadAssets {...{fonts, assets}}>
         <NotificationHandler />
         {Platform.OS === "android" && <AndroidStatusBarHeight />}
         <SafeArea behavior="padding" enabled>
-          <AppBackground>{storageMigrated && <Navigator />}</AppBackground>
+          <AppBackground>
+            <DrawerNavigator />
+          </AppBackground>
         </SafeArea>
-      </AppFrame>
+      </LoadAssets>
     </ThemeProvider>
   );
-};
+}
 
 const App = () => {
   return (
@@ -77,7 +78,8 @@ const AppBackground = styled(GestureHandlerRootView)`
   overflow: hidden;
 `;
 
-const SafeArea = styled.KeyboardAvoidingView`
+// const SafeArea = styled.KeyboardAvoidingView`
+const SafeArea = styled.View`
   flex: 1;
 `;
 

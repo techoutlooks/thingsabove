@@ -9,8 +9,8 @@ import {
   selectIsReadByAuth,
 } from '../../state/room'
 
-import {Avatar} from '@/components/atoms'
-import { useLatestMessage } from '../../hooks/useLatestMessage'
+import {Avatar} from '@/components/uiStyle/atoms'
+import { useLatestMessage } from '@/hooks'
 
 import LatestMessage from './LatestMessage'
 

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "92129346327",
+    "project_id": "thingsabove-ec844",
+    "storage_bucket": "thingsabove-ec844.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92129346327:android:2fbdb59798eba831c46d52",
+        "android_client_info": {
+          "package_name": "com.thingsabove.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "92129346327-jtagi3miaaefle2g3lofs85pctfc39mo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwoD1vdrQEIR7qjsKogoASO6XisObkwH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "92129346327-jtagi3miaaefle2g3lofs85pctfc39mo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,7 +4,7 @@ const TOGGLE_THEME = 'settings/TOGGLE_THEME'
 
 // Reducer
 const initialState = {
-  theme: 'dark',
+  theme: 'light',
 }
 
 const reducer = (state = initialState, action) => {
@@ -32,7 +32,7 @@ export const getSettingsState = state => {
 }
 
 export const selectTheme = state => {
-  return getSettingsState(state).theme ?? 'dark'
+  return getSettingsState(state).theme ?? 'light'
 }
 
 // Actions
