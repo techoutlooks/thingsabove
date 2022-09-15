@@ -7,7 +7,7 @@ import Prayer, {Team} from "@/types/Prayer";
 import { selectContactAvatar } from "@/state/contacts"
 
 import { AudioPlayer, FlipCard, RotateAxis, Avatar } from "@/components";
-import { Row, Spacer, Text, WIDTH, RADIUS, useLayout } from "@/components/uiStyle/atoms";
+import { Row, Col, Spacer, Text, WIDTH, RADIUS, useLayout } from "@/components/uiStyle/atoms";
 
 
 const LIST_ITEM_HEIGHT = 72
@@ -45,13 +45,18 @@ const PrayerListItem = styled(({prayer, style}: Props) => {
    
     const front = (
       <TouchableOpacity {...{onPress: changeSide}} style={{ 
-        borderWidth: 1, borderColor: theme.colors.mutedFg,
+        // borderWidth: 1, borderColor: theme.colors.mutedFg,
         borderRadius: RADIUS
       }}>
         <Row style={{justifyContent: 'flex-start', marginLeft:24 }}>
           <Avatar path={authorAvatar} size={55} />
-          <Spacer width={8} />
-          <Text>{prayer.title}</Text>
+          {/* <Spacer width={8} /> */}
+          <View style={{flexDirection: 'column', marginLeft: 12, }}>
+          <Text style={{fontWeight: 'bold'}}>{prayer.title}</Text>
+          <Text>audios ({prayer.audio_urls?.length})</Text>
+
+          </View>
+
         </Row>
       </TouchableOpacity>
     )

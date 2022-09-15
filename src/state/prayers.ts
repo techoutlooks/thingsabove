@@ -148,7 +148,6 @@ export const selectTeams = (state: R) =>
   getPrayersState(state).teams
 
 export const getPrayersByCategory = (state: R) => {
-
   const categoriesExt =  selectCategories(state)
     .map(({title, prayer_ids}) => ({            // expand prayers from resp. ids in each category
       [title]: selectPrayers(state)?.filter(    // one dict per category
@@ -179,8 +178,15 @@ export const selectPrayerById = (state: R, prayerId: string) =>
  * @returns Prayer
  */
  export const selectPrayersByTeamId = (state: R, teamId: string) =>
-    selectPrayers(state)
-      .filter(({team_ids}) => team_ids?.includes(teamId));
+    selectPrayers(state).filter(({team_ids}) => team_ids?.includes(teamId));
+
+/***
+ * **selectPrayersByUserId()**
+ * Get all prayers by user (userId)
+ * @returns Prayer
+ */
+ export const selectPrayersByUserId = (userId: string) => (state: R) =>
+    selectPrayers(state).filter(({user_id}) => user_id == userId);
 
 /***
  * **selectUsersByPrayerIds()**

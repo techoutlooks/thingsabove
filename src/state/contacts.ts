@@ -5,7 +5,7 @@ import { fetchUserProfile } from "@/lib/supabase"
 
 
 export type Contact = {
-  id: string,
+  id: string, // id == `user.id` == `profile.id`
   displayName: string,
   avatar: string|string[]|null,
 }
@@ -149,7 +149,7 @@ export const fetchContacts = (userIds: string[]) =>
  */
  export const getContact = (profile: UserProfile): Contact => {
   return !!profile && {
-    id: profile.id,
+    id: profile.id, // is also the `user.id`
     displayName: getContactDisplayName(profile),
     avatar: getContactAvatar(profile), 
   } 

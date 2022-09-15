@@ -46,9 +46,7 @@ export default ({navigation, route}) => {
 
   const onNavigateBack = useCallback(() => {
     const hasUnfinishedPrayer = 
-      prayerInput?.recordings.length > 0 || 
-      Object.hasOwn(prayerInput, 'title') || 
-      Object.hasOwn(prayerInput, 'description')
+      prayerInput?.recordings.length > 0 || 'title' in  prayerInput 
 
     if(hasUnfinishedPrayer) { 
       Alert.alert("Unfinished prayer", "Quit praying now?", [

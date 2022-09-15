@@ -7,7 +7,7 @@ import {useAuthSessionListener} from '@/hooks'
 import {default as WelcomeStack} from '@/screens/Welcome';
 import {AuthScreen, AuthProfileScreen} from '@/screens/Auth'
 
-import {default as TeamsStack} from '@/screens/Teams';
+import {default as TeamsStack} from '@/screens/Team';
 import {default as PrayNowStack} from '@/screens/EditPrayer';
 
 
