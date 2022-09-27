@@ -25,14 +25,15 @@ export const Col = styled.View`
   height:${HEIGHT}px;
 `
 
-type ButtonProps = {
+export type ButtonProps = {
     size?: keyof typeof Sizes,
     name: string } & ComponentPropsWithoutRef<typeof Btn>
 
 export const Button = styled(({size, name, ...p}: ButtonProps) => (
-    <Btn
-        icon={p => <MaterialIcons {...{name, ...p}} />}
-        {...{name, size: Sizes[size], ...p}}
-    />
+  <Btn {...{
+    name, size: Sizes[size], 
+    icon: p => <MaterialIcons {...{name, ...p}} />,
+    ...p
+  }} />
 ))``
 

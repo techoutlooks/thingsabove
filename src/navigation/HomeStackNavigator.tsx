@@ -7,8 +7,8 @@ import {useAuthSessionListener} from '@/hooks'
 import {default as WelcomeStack} from '@/screens/Welcome';
 import {AuthScreen, AuthProfileScreen} from '@/screens/Auth'
 
-import {default as TeamsStack} from '@/screens/Team';
-import {default as PrayNowStack} from '@/screens/EditPrayer';
+import {default as TeamStack} from '@/screens/Team';
+import {default as PrayerStack} from '@/screens/Prayer';
 
 
 // import SyncScreen from '@/screens/sync'
@@ -28,8 +28,8 @@ const getScreens = () => {
   return !!session?.user ? (
     <>
       <Stack.Screen name="Welcome" component={WelcomeStack} />
-      <Stack.Screen name="Teams" component={TeamsStack} />
-      <Stack.Screen name="PrayNow" component={PrayNowStack} />
+      <Stack.Screen name="Team" component={TeamStack} />
+      <Stack.Screen name="Prayer" component={PrayerStack} />
     </>
   ) : (
     <Stack.Screen name="Auth" component={AuthScreen}/>

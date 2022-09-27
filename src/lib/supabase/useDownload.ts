@@ -3,11 +3,16 @@ import { download } from "../storage";
 
 /***
  * Download a file from Supabase's public bucket to the local filesystem
- * Hold download iff `pause` is true, otherwise re-download as `path` changes.
-
+ * Hold download iff `pause` is true.
+ *
  * Implement a workaround to cache base64 images from Supabase public buckets,
  * since Supabase publicURLs can't be displayed by regular RN's Image
  * Output: the public url and blob of stored file as an array.
+ * 
+ * @return
+ * isState: file was downloaded/overwritten, so UI should trigger a refresh
+ * publicUrl: public url of file on Supabase server
+ * fileUri: local uri of file after download from Supabase
  */
 const useDownload = (path: string, cacheDir: string, paused=false) => {
 

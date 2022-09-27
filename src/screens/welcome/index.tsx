@@ -1,7 +1,7 @@
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
 import DiscoverScreen from "./DiscoverScreen"
-import LatestPrayersScreen from "./LatestPrayersScreen"
+import PrayersByTopicScreen from "./PrayersByTopicScreen"
 import TeamsMapScreen from "./TeamsMapScreen";
 
 
@@ -16,7 +16,7 @@ export default () => {
       headerShown: false
     }}>
       <Stack.Screen name="Discover" component={DiscoverScreen} />
-      <Stack.Screen name="LatestPrayers" component={LatestPrayersScreen} />
+      <Stack.Screen name="PrayersByTopic" component={PrayersByTopicScreen} />
       <Stack.Screen name="TeamsMap" component={TeamsMapScreen} />
     </Stack.Navigator>
   )

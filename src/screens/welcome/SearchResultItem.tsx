@@ -20,11 +20,9 @@ export default React.memo(({team, prayerIds}: Props) => {
     const theme = useTheme()
     const navigation = useNavigation()
     const navigateToPrayer = () => {
-      navigation.navigate("Teams", {
+      navigation.navigate("Team", {
         screen: "TeamPrayers", params: {teamId: team.id, prayerIds}} )
     }
-
-    console.log("--------------------------------", team, prayerIds)
 
     return (
       <TouchableOpacity onPress={navigateToPrayer}>

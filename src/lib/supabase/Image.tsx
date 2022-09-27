@@ -5,15 +5,15 @@ import useMedia from "./useMedia"
 import { AVATARS_CACHE } from "./constants"
 
 /***
- * @param path : full `bucket/image.ext` path
+ * @param {string} path : full `bucket/image.ext` path
  * @param render: factory that renders a custom Image component
- * @param isStale: ha file changed on server and should be re-read?
- * @param noCache: disable RN's <Image/> cache?
+ * @param {boolean} isStale: force re-download, since server vs. local files are not synced.
+ * @param {boolean} noCache: disable RN's <Image/> cache. Forces download.
  */
 type Props = {
   path: string,
   render?: any
-  isStale?: boolean
+  isStale?: boolean 
   noCache?: boolean
 } & Omit<ImageProps, 'source'>
 
@@ -27,15 +27,14 @@ type Props = {
 export default ({ path, render, isStale: shouldDownload, noCache, 
   ...props }: Props) => {
   
-  // isStale==true iff download actually was performed, ie., didn't use cache!
-  // add `?v=xxx` to the image uri to force <Image/> to refresh
+  // isStale==true iff download actually was performed (useMedia -> useDownload), 
+  // ie., iff didn't use cache, add `?v=xxx` to the image uri to force <Image/> to refresh
   // https://github.com/facebook/react-native/issues/12606
   const [{uri, isStale}] = useMedia(path, AVATARS_CACHE, shouldDownload)
-  const source = useMemo(() => ({ uri: uri + 
+  const source = useMemo(() => uri && ({ uri: uri + 
     ((noCache || isStale) ? `?v=${new Date().toISOString()}` : '')
   }), [uri, isStale, noCache])
 
-  // console.log(`___________________________________/${source?.uri}/_____________________________`, noCache)
   return !render ? (
     source ? <Image {...{source, ...props}} /> : <></>
   ) : (render({source, ...props}))

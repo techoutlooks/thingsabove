@@ -36,7 +36,7 @@ const LeftIconWrapper = styled.View`
 
 export const ScreenHeaderCopy = styled.Text`
   font-weight: bold;
-  font-size: 22px;
+  font-size: 16px;
   color: ${p => p.theme.colors.titleFg};
 `
 

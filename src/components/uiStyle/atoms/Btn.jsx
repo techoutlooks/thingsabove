@@ -58,32 +58,24 @@ const Container = styled(
   ${(p) => p.icon && `
   padding: 0;
   width: ${p.size * CONTAINER_RATIO}px;
-  height: ${p.size * CONTAINER_RATIO}px;
-  `}
+  height: ${p.size * CONTAINER_RATIO}px; `}
 
-  ${(p) =>
-    p.primary &&
-    `
+  ${(p) => p.primary && `
   background-color: ${
     p.isDown
       ? p.theme.colors.primaryButtonBgDown
-      : p.theme.colors.primaryButtonBg
-  };
+      : p.theme.colors.primaryButtonBg };
   `}
 
-  ${(p) =>
-    !p.primary &&
-    `
+  ${(p) => !p.primary && `
   background-color: ${
-    p.isDown ? p.theme.colors.inputBgDown : p.theme.colors.inputBg
-  };
+    p.isDown 
+      ? p.theme.colors.inputBgDown 
+      : p.theme.colors.inputBg };
   `}
 
-  ${(p) =>
-    p.disabled &&
-    `
-    background-color: ${p.theme.colors.inputDisabledBg};
-  `}
+  ${(p) => p.disabled && `
+  background-color: ${p.theme.colors.inputDisabledBg}; `}
 `;
 
 const TextLabel = styled(({ primary, disabled, ...props }) => (
@@ -93,14 +85,11 @@ const TextLabel = styled(({ primary, disabled, ...props }) => (
     <Text {...props} />
   </View>
 ))`
-
   font-weight: bold;
-  ${(p) =>
-    p.primary &&
-    `
+
+  ${(p) => p.primary && `
   color: ${p.theme.colors.primaryButtonFg};`}
-  ${(p) =>
-    p.disabled &&
-    `
+
+  ${(p) => p.disabled && `
   color: ${p.theme.colors.inputDisabledFg};`}
 `;

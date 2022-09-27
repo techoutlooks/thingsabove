@@ -41,9 +41,9 @@ const RecordedItemView = styled((props: Props) => {
 
 
 const MemoizedRecordedItemView = React.memo<Props>(
-  RecordedItemView,
-  (p1, p2) =>  (p1.recording.id === p2.recording.id)
-            && (p1.highlighted === p2.highlighted)
+  RecordedItemView, (p1, p2) =>  (
+    p1.recording.id === p2.recording.id) && 
+    (p1.highlighted === p2.highlighted)
 )
 
   const Title = styled.Text`

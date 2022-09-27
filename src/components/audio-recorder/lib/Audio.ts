@@ -33,7 +33,8 @@ type Sound = av.Audio
 
 /***
  * **Audio()**
- *
+ * Automatically unloads audio once it has finished playing.
+ * 
  * Helper class around expo-av SDK trying to mimic to HTMLMediaElement
  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
  * https://docs.expo.dev/versions/latest/sdk/audio/#audiosound
@@ -41,6 +42,7 @@ type Sound = av.Audio
  */
 export default class Audio {
 
+  uri: string = '';
   sound: Sound = null
 
   currentTime: number = 0
@@ -60,11 +62,17 @@ export default class Audio {
   play = async () => await this.sound?.playAsync()
   pause = async () => await this.sound?.pauseAsync()
   stop = async () => await this.sound?.stopAsync()
-  unload = async () => await this.sound?.unloadAsync()
+  unload = async () => { 
+    try { 
+      this.sound?.unloadAsync() ; 
+      // console.debug('unloaded ...', this.uri) 
+    } catch(e) { handleError(e) }
+  }
+
 
   // events
   addEventListener = (event: PlaybackEvent, callback: Callback) =>
-      this.subscriptions.push(this.emitter.addListener(event, callback))
+    this.subscriptions.push(this.emitter.addListener(event, callback))
   removeEventListeners = () => this.subscriptions.forEach(s => s.remove())
 
 
@@ -76,21 +84,17 @@ export default class Audio {
       // ensure register caller-supplied event listeners, if any
       // before expo calls `onPlaybackStatusUpdate()` asynchronously
       Object.entries(playback).forEach(([ev, fn]) =>
-          self.addEventListener(ev, fn)) 
+        self.addEventListener(ev, fn)) 
 
       // load sound
       // console.debug('loading ...', source);
-      const {sound, status} = await av.Audio.Sound
+      const { sound, status } = await av.Audio.Sound
         .createAsync(source, {shouldPlay}, self.onPlaybackStatusUpdate)
-        .catch(handleError)
-      // console.debug('loaded ...', status);
+      sound && Object.assign(self, { sound, uri: status?.uri })
+      // console.debug('loaded ...', status)
 
-      sound && Object.assign(self, {
-        sound,
-      })
-
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      handleError(e)
     }
 
     // TODO: reject(null) if no sound
@@ -102,10 +106,9 @@ export default class Audio {
    * **onPlaybackStatusUpdate()**
    *
    * Set playback props similar to HTMLMediaElement
-   * called back every 500ms
+   * called back every 500ms. unloads audio once playback endeds.
    */
   onPlaybackStatusUpdate = (status: av.AVPlaybackStatus) => {
-
 
     // fire events iff media loaded
     if(status.isLoaded) {
@@ -125,12 +128,14 @@ export default class Audio {
       }
 
       // fire play/pause signals conditionally
+      // automatically unload audio if playback had ended.
       this.emitter.emit(status.isPlaying? PlaybackEvents.play: PlaybackEvents.pause, this)
-      status.didJustFinish && this.emitter.emit(PlaybackEvents.ended, this)
+      if (status.didJustFinish) {
+        this.emitter.emit(PlaybackEvents.ended, this)
+        this.unload().then(() => {})
+      }
     }
   }
-
-
 
 }
 

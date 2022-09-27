@@ -28,13 +28,28 @@ export async function signIn(credentials: UserCredentials) {
  * UPDATE row matching `id` iff primary key `id` is present and defined
  * on the `updates` payload; INSERT otherwise.
  */
-export async function upsert<T extends {id: string}>(table: string, updates: Partial<T>) {
-  let {id, ..._updates} = updates   // supabase id field is non-nullable
-  _updates = { ...(!!id? updates : _updates), updated_at: new Date() }
-  const { error } = await client.from(table).upsert(_updates, {
-    returning: 'minimal',           // Don't return the value after inserting
-  })
-  return { error }
+// export async function upsert<T extends {id: string}>(table: string, updates: Partial<T>) {
+//   let {id, ..._updates} = updates   // supabase id field is non-nullable
+//   _updates = { ...(!!id? updates : _updates), updated_at: new Date() }
+//   const { error } = await client.from(table).upsert(_updates, {
+//     returning: 'minimal',           // Don't return the value after inserting
+//   })
+//   return { error }
+// }
+export async function upsert<T extends {id: string}>
+(table: string, updates: Partial<T>) {
+
+  let {id, ..._updates} = updates               
+  _updates = {  
+    ...(!!id ? updates : _updates),   // drop `id` of undefined or null (triggers an INSERT) 
+    ...(!!id ? {} : ('created_at'     // iff INSERT, also set `created_at` if not supplied
+      in _updates ? {} : {created_at: new Date().toISOString()} ))
+  }
+  const { data, error } = await client.from(table).upsert(_updates)
+  console.log('*******************, [upsert] *******************', data)
+
+  if(error) { throw Error(error.message) }
+  return (data && data[0] as T)
 }
 
 /***
@@ -71,7 +86,7 @@ type OnCallback<T> = (data: T) => void
  * @param query: if present, return data from custom SELECT query 
  *    instead of the tables changes payloads
  */
-type OnTablesChanges<T> = {
+type OnTablesChanges = {
   event?: SupabaseEventTypes, 
   table: string, 
   query?: string
@@ -85,39 +100,40 @@ type OnTablesChanges<T> = {
 
  * FIXME: pagination, cursors, ... !
  */
-export function on<T extends  Record<string, any>>(
-  { event="*", table, query }: OnTablesChanges<T>) {
+export function on<T>(
+  { event="*", table, query }: OnTablesChanges) {
 
-    return new Observable<T>(observer => {
-      
+    return new Observable<{[table: string]: T[]}>(observer => {
+
       const sub = client.from(table)
         .on(event, async (payload) => {
           const {data, error} = query ? 
-            await client.from(table).select(query) : 
-            { data: payload['new'] , error: null }
-          if(error) observer.error(error)
-          observer.next({[table]: data})
-        }).subscribe()
-
+            await client.from<T>(table).select(query) : 
+            { data: [(payload['new'] as T)] , error: null }
+          if(error) observer.error(error) 
+            observer.next({[table]: data ?? []})
+        })
+        .subscribe()
       return () => client.removeSubscription(sub)
+
     })
-  }
+}
 
 /***
  * Get public url of file on bucket
- * eg. "avatars/me.jpg" 
- * -> https://xxxx.supabase.co/storage/v1/object/public/avatars/me.jpg
+ * @param {string} path: full path to file on bucket; eg. "avatars/me.jpg" 
+ * @returns {Promise<string|null>}: eg. https://xxxx.supabase.co/storage/v1/object/public/avatars/me.jpg
  */
  export const getPublicUrl = (path: string) => {
 
   const bucket = path.slice(0, path.lastIndexOf('/')) 
   const fileName = path.slice(path.lastIndexOf('/') + 1)
 
-  return new Promise<{publicURL: string|null}>((resolve, reject) => {
+  return new Promise<string|null>((resolve, reject) => {
     const {error, publicURL} = client.storage.from(bucket)
       .getPublicUrl(fileName) // orignal api is synchronous!
       if(!!error) { reject(error)}
-    resolve({publicURL})
+    resolve(publicURL)
   })
 }
 

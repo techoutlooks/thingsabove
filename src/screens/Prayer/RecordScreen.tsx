@@ -12,15 +12,14 @@ import Prayer, { PrayerInput } from '@/types/Prayer';
 import {useAuthId} from "@/hooks";
 
 import { useScreensContext } from "./PrayerContext"
-import { getNativeSourceAndFullInitialStatusForLoadAsync } from 'expo-av/build/AV';
 
 
 type S = PrayerInput<RecordedItem>
 type R = Reducer<S, Partial<S>>
 
 export default ({navigation, route}) => {
-  const store = useStore()
 
+  const store = useStore()
   const { params: {teamId, prayerId=null} } = route
   
   // Data & Context
@@ -28,11 +27,10 @@ export default ({navigation, route}) => {
 
   const userId = useAuthId()
   const team = useSelector(selectTeamById(teamId))
-  const {prayerInput, sync} = useScreensContext()
+  const {prayerInput, sync, status} = useScreensContext()
 
-  useEffect(() => { 
-    // sync existing prayer to context
-    const prayer = prayerId && selectPrayerById(store.getState(), prayerId)
+  useEffect(() => { // sync existing prayer to context
+    const prayer = prayerId && selectPrayerById(prayerId)(store.getState())
     prayer && sync(prayer) 
   }, [prayerId])
 
@@ -41,32 +39,33 @@ export default ({navigation, route}) => {
   // ==========================
 
   const onSave = () => {
-    navigation.navigate("PrayNow", {screen: "PrayNowTwo"})
+    navigation.navigate("Prayer", {screen: "EditInfo"})
   }
 
-  const onNavigateBack = useCallback(() => {
-    const hasUnfinishedPrayer = 
-      prayerInput?.recordings.length > 0 || 'title' in  prayerInput 
+  const navigateBack = useCallback(() => {
 
-    if(hasUnfinishedPrayer) { 
+    // notify unfinished prayer iff 
+    // unsaved prayer having at least one recording and a title
+    const hasUnfinishedPrayer = !status.saved &&
+      !!prayerInput && (!!prayerInput.recordings?.length || 'title' in  prayerInput)
+
+    if (hasUnfinishedPrayer) { 
       Alert.alert("Unfinished prayer", "Quit praying now?", [
         { text: "Quit", onPress: () => navigation.goBack() },
-        { text: "Stay", onPress: null, style: "cancel"}
-      ])
+        { text: "Stay", style: "cancel"} ])
     } else {
-      navigation.goBack()
-    }
-  }, [prayerInput])
+      navigation.goBack() }
+
+  }, [prayerInput, status.saved])
 
 
-  // console.debug('<PrayNowOneScreen/>', prayerInput, ) 
   return (
     <Container>
 
-      <AppHeader 
-        title="Pray Now" 
-        leftIcon={<BackIcon onPress={onNavigateBack} />}
-      />
+      <AppHeader {...{
+        title: prayerInput?.prayerId ? "Edit Prayer" : "Pray Now",
+        navigateBack
+      }} />
 
       <Section>
         <Text>Praying with {' '}
@@ -91,35 +90,37 @@ export default ({navigation, route}) => {
           sync({recordings, prayerId, userId, teamId}) 
       }} />
 
+      <Text>Click to pray</Text>
+
     </Container>
   )
 }
 
 const NewPrayerActions = styled.View
 `
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 `
 
 
 const Action = styled(Btn)`
-    background-color: transparent;
-    border: ${p => p.theme.colors.fg} 2px;
-    //margin-top: 16px;
+  background-color: transparent;
+  border: ${p => p.theme.colors.fg} 2px;
+  //margin-top: 16px;
 `
 const Section = styled(({children, ...p}) => (
-    <>
-        <View {...p}>{children}</View>
-        <Spacer height={16} />
-    </>
+  <>
+    <View {...p}>{children}</View>
+    <Spacer height={16} />
+  </>
 ))`
-    margin-left: 22px;
-    margin-right: 22px;
+  margin-left: 22px;
+  margin-right: 22px;
 `
 const Container = styled(ScreenCard)`
-    align-items: flex-start;
+  align-items: flex-start;
 `
 

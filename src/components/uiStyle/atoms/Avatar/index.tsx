@@ -25,19 +25,20 @@ type  Props = {
  */
 const Avatar = ({ avatar, size, style, onPress }: Props) => {
 
-  console.log('<Avatar /> avatar=', avatar)
   const borderRadius = Math.round(size * 0.33)
 
   const containerStyles = {
     width: size, height: size, ...style }
 
-  if (!!!avatar) {
+  if (!!!(avatar?? avatar?.length)) {
     return (
     <Container {...{onPress}} style={containerStyles}>
       <Picture source={require("./default.png")} />
     </Container>)
   }
 
+  // display initials instead of image,
+  // iff avatar is a string.
   if (typeof avatar === 'string' && avatar.length > 0)  {
     const { backgroundLight, backgroundDark, foreground } = 
       getAvatarColor(avatar, )

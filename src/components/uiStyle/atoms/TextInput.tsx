@@ -46,44 +46,40 @@ export default ({ preIcon, postIcon, style, ...props }: Props) => {
 
 
   const preIconElement =
-      typeof preIcon === 'string' ? (
-          <MaterialCommunityIcons
-              name={preIcon}
-              size={18}
-              color={theme.colors.mutedFg}
-              style={{ marginRight: 8 }}
-          />
-      ) : (
-          preIcon
-      )
+    typeof preIcon === 'string' ? (
+      <MaterialCommunityIcons
+        name={preIcon}
+        size={18}
+        color={theme.colors.mutedFg}
+        style={{ marginRight: 8 }}
+      />
+    ) : (preIcon)
 
   const postIconElement =
-      typeof postIcon === 'string' ? (
-          <MaterialCommunityIcons
-              name={postIcon}
-              size={24}
-              color={theme.colors.mutedFg}
-              style={{ marginLeft: 8, marginRight: 12 }}
-          />
-      ) : (
-          postIcon
-      )
+    typeof postIcon === 'string' ? (
+      <MaterialCommunityIcons
+        name={postIcon}
+        size={24}
+        color={theme.colors.mutedFg}
+        style={{ marginLeft: 8, marginRight: 12 }}
+      />
+    ) : ( postIcon )
 
   return (
-      <Container
-          style={style}
-          hasPost={!!postIconElement}
-          disabled={props.disabled}
-      >
-        {preIcon && preIconElement}
-        <Input
-            {...props}
-            style={[{ height: inputHeight }]}
-            ref={inputRef}
-            onContentSizeChange={onContentSizeChange}
-        />
-        {postIcon && postIconElement}
-      </Container>
+    <Container
+      style={style}
+      hasPost={!!postIconElement}
+      disabled={props.disabled}
+    >
+      {preIcon && preIconElement}
+      <Input
+        {...props}
+        style={[{ height: inputHeight }]}
+        ref={inputRef}
+        onContentSizeChange={onContentSizeChange}
+      />
+      {postIcon && postIconElement}
+    </Container>
   )
 }
 
@@ -91,7 +87,7 @@ export default ({ preIcon, postIcon, style, ...props }: Props) => {
 const Container = styled.View`
   background-color: ${p => p.theme.colors.inputBg};
   border-radius: 10px;
-  padding: 0 ${p => (p.hasPost ? 0 : 12)}px 0 12px;
+  padding: 0 ${p => (p.hasPost ? 0 : 12)}px 0 8px;
   min-height: 40px;
   justify-content: space-between;
   align-items: center;

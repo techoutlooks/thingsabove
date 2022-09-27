@@ -8,10 +8,10 @@ export { default as FlatList } from "./FlatList";
 export { default as TextInput } from "./TextInput";
 export { default as TextField } from "./TextField";
 export { default as MultiSelectField } from "./MultiSelectField";
-
 export { default as ProgressBar } from "./ProgressBar";
 export { default as Spacer } from "./Spacer";
 export { default as SearchInput } from "./SearchInput";
+export {default as ShareButton} from "./ShareButton";
 
 
 // FIXME: error prone, rather list exhaustively

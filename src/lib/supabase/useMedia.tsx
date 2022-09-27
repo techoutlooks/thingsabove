@@ -20,44 +20,46 @@ const useMedia = (path: string, cacheDir: string, shouldDownload = false) => {
   // hold downloading till advised by `willDownload`
   const [{isStale, fileUri: downloadedFile, publicUrl, error: downloadError}] = 
     useDownload(path, cacheDir, !willDownload)
-  useEffect(() => { downloadedFile && setCachedFile(downloadedFile) 
-    setWillDownload(false) }, [isStale, downloadedFile])
 
-  console.debug(`useMedia(${path}) -> `,
-    `[willDownload?=${willDownload}, isStale=${isStale}]`, 
-    `cachedFile=${cachedFile}`, `publicUrl=${publicUrl}`)
+  // if useDownload() reported that it just performed a download,
+  // set that uri to be returned. set flags accordingly.
+  useEffect(() => { 
+    (isStale && downloadedFile) && setCachedFile(downloadedFile) 
+    setWillDownload(!downloadedFile) }, [isStale, downloadedFile])
 
-  // whether to download?
+  // console.debug(`useMedia(${path}) -> `,
+  //   `[willDownload?=${willDownload}, isStale=${isStale}]`, 
+  //   `cachedFile(uri)=${cachedFile}`, `publicUrl=${publicUrl}`)
+
+  // instruct download (by useDownload() when setWillDownload truthy) 
+  // happens iff local file doesn't exist, AND shouldDownload truthy.
   useEffect(() => {
 
     if(downloadError) { setError(downloadError); return  }
     if(!!path) {
-
       (async () => {
-
-          try {
-            const fileName = path.slice(path.lastIndexOf("/")+1)
-            const localFile = await getOrCreateDir(cacheDir)
-              .then(cacheDir => `${cacheDir}/${fileName}`)
-            await FileSystem.getInfoAsync(localFile)
-              .then(info => {
-                if (!info.exists || shouldDownload) { 
-                  !willUnmount && setWillDownload(true)
-                } else { 
-                  !willUnmount && setWillDownload(false)
-                  !willUnmount && setCachedFile(info.uri) }
-              })
-          } catch(e) {
-            setError(e.message)
-            console.error(e)
-          } finally {
-            !willUnmount && setWillDownload(false)
-          }
-  
+        try {
+          const fileName = path.slice(path.lastIndexOf("/")+1)
+          const localFile = await getOrCreateDir(cacheDir)
+            .then(cacheDir => `${cacheDir}/${fileName}`)
+          await FileSystem.getInfoAsync(localFile)
+            .then(info => {
+              if (!info.exists || shouldDownload) { 
+                !willUnmount && setWillDownload(true)
+              } else { 
+                !willUnmount && setWillDownload(false)
+                !willUnmount && setCachedFile(info.uri) }
+            })
+        } catch(e) {
+          setError(e.message)
+          console.error(e)
+        } finally {
+          !willUnmount && setWillDownload(false)
+        }
       })()
     }
 
-  }, [path, cacheDir, shouldDownload, downloadedFile, downloadError])
+  }, [path, cacheDir, shouldDownload, downloadError])
 
     
 return [{ isStale, uri: cachedFile, publicUrl, error }]

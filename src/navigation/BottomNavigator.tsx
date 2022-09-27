@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity } from "react-native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 as Icon} from '@expo/vector-icons';
-
+import { useTheme } from "styled-components/native";
 import HomeStackNavigator  from "./HomeStackNavigator";
 import ChatsStack  from "@/screens/Chats";
 
@@ -12,11 +12,13 @@ const Tab = createBottomTabNavigator();
 const ButtonScreen = () => null;
 
 export default () => {
+  const theme = useTheme()
   
   return (
     <Tab.Navigator 
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: theme.colors.primaryButtonBg
       }}
     >
       <Tab.Screen name="Discover" 

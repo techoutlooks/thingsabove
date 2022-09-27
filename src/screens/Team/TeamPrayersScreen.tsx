@@ -1,16 +1,17 @@
 import React, {useMemo, useState, useRef, useCallback, useReducer, Reducer} from "react";
-import {View, Text, Pressable, TouchableOpacity} from "react-native";
+import {View, Text, ViewStyle, TouchableOpacity} from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native'
 import {useSelector, useStore} from "react-redux";
 import styled, {useTheme} from "styled-components/native";
-import { SimpleLineIcons, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView, BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView, BottomSheetFlatList 
+} from "@gorhom/bottom-sheet";
 
 import Prayer, {Team} from "@/types/Prayer";
-import {selectPrayerById, selectTeamById, selectUsersByPrayerIds} from "@/state/prayers";
+import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
-import { VideoPlayer, Avatar } from "@/components";
+import { VideoPlayer, Avatar, PrayNowButton, PrayActionGroup } from "@/components";
 import {Spacer, WIDTH, RADIUS,
     BackIcon, Btn, Button, Row, ScreenCard, ScreenHeader, ScreenHeaderCopy, 
 } from "@/components/uiStyle/atoms";
@@ -35,16 +36,16 @@ export default ({navigation}) => {
   const snapPoints = useMemo(() => ["10%", "40%"], [])
   const [locked, setLocked] = useState(true)
 
-  const state = useStore().getState();
+  const store = useStore();
   const [{prayers, by}, setPrayers] = useReducer<R, string[]>((s, a) => a, 
     prayerIds, prayerIds => ({ by: team?.title ?? 'Unkown', prayers: prayerIds.map(
-      prayerId => selectPrayerById(state, prayerId)) })
+      prayerId => selectPrayerById(prayerId)(store.getState())) })
   )
 
   const memberSelected = useCallback(({prayers, contact}) => { 
-      setPrayers({prayers, by: contact.displayName})
-      sheetRef.current?.snapToIndex(1) 
-    }, [])
+    setPrayers({prayers, by: contact.displayName})
+    sheetRef.current?.snapToIndex(1) 
+  }, [])
 
   console.log('<PrayerScreen />', `prayerIds=${prayerIds}`, `team=`,team)
 
@@ -67,7 +68,7 @@ export default ({navigation}) => {
           {team && (<TeamSummary {...{team}} />) }
         </Section>
         <Section>
-          <Pray {...{team}} />
+          <PrayActionGroup {...{team}} />
         </Section>
         <Section>
           {team && (<TeamMemberList {...{team, onSelect: memberSelected }} />) }
@@ -89,9 +90,9 @@ export default ({navigation}) => {
       >
         <BottomSheetView >
           <Row style={{justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <BottomSheetTitle> Prayers { by == team?.title ? 
-                "matching your query" : 
-                (<Text>by <Text style={{fontWeight: 'bold'}}>{by}</Text></Text>) }
+            <BottomSheetTitle> { by == team?.title ? 
+                "Listen related prayers" : 
+                (<Text>Prayers by <Text style={{fontWeight: 'bold'}}>{by}</Text></Text>) }
             </BottomSheetTitle>
             <CloseSheet  {...{ locked, onPress: () => setLocked(locked => !locked)  }} />
           </Row>
@@ -136,11 +137,13 @@ const TeamSummary = styled(({team}: {team: Team}) => (
 ))``
 
 
-const PrayerList = styled(({prayers, style}: {prayers: Prayer[]}) => {
+
+const PrayerList = styled(({prayers, style}: 
+  {prayers: Prayer[], style?: ViewStyle}) => {
     
     const keyExtractor = useCallback((item, i) => item+i, [])
     const renderItem = useCallback(
-        ({item: prayer}) => (<PrayerListItem {...{prayer}} />), [])
+      ({item: prayer}) => (<PrayerListItem {...{prayer}} />), [])
 
     return (
       <Row {...{style}}>
@@ -150,53 +153,16 @@ const PrayerList = styled(({prayers, style}: {prayers: Prayer[]}) => {
         }} />
       </Row>
     )
-
 })`
     padding: 0 16px;
-
-`
-
-
-
-const Pray = styled(({team, style}) => {
-    const navigation = useNavigation()
-    return (
-        <View {...{style}}>
-            <PostPrayer label="Post Prayer" />
-            <Spacer width={8} />
-            <PrayNow onPress={() => navigation.navigate("PrayNow", {
-                screen: "PrayNowOne", params: {teamId: team.id} }) }/>
-        </View>
-    )
-})`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-  
-`
-
-
-const PostPrayer = styled(Btn)`
-    background-color: transparent;
-    border: ${p => p.theme.colors.fg} 2px;
-    //margin-top: 16px;
-`
-
-
-const PrayNow = styled(Button).attrs(p => ({
-    icon: () => <SimpleLineIcons name="microphone" size={36} color={p.theme.colors.fg} />
-}))`
-    background-color: transparent;
 `
 
 const Section = styled(({children, ...p}) => (
-    <>
-        <View {...p}>{children}</View>
-        <Spacer height={16} />
-    </>
+  <>
+    <View {...p}>{children}</View>
+    <Spacer height={16} />
+  </>
 ))`
-    margin-left: 22px;
-    margin-right: 22px;
+  margin-left: 22px;
+  margin-right: 22px;
 `

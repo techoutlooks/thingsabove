@@ -52,9 +52,8 @@ const getTeamPrayersByCategory = (state) => (prayersByCategory: P) => {
 
       const data = Object.entries(prayerIdsByTeamId)
         .map(([teamId, prayerIds]) => ({
-          team: teamsById[teamId], prayerIds }))
+          team: teamsById[teamId], prayerIds: [...new Set(prayerIds)] }))
 
-      // console.log("--------------------------------", { data, title: category })
       return { data, title: category }
     })
 }
@@ -96,6 +95,9 @@ export default () => {
     setResultPrayers(Object.fromEntries(matches))
   }, [query])
 
+  const keyExtractor = useCallback((item, i) => item+i, []) 
+  const renderSearchResult = useCallback(({item: {team, prayerIds}}) =>
+    <SearchResultItem {...{team, prayerIds}} /> , [])
 
   // console.log('<HomeScreen />', `resultPrayers=`, store.getState())
 
@@ -109,15 +111,16 @@ export default () => {
       </AppHeader>
       
       <ContentNav items={[
-        { name: "Teams", screen: "TeamsMap", active: true },
-        { name: "Prayers", screen: "LatestPrayers" }
+        { name: "Teams", screen: "Welcome/TeamsMap", active: true },
+        { name: "Prayers", screen: "Welcome/PrayersByTopic" },
+        { name: "My Prayers", screen: "MyPrayers" }
       ]} />
 
       <SectionList
         style={{padding: 16}}
         stickySectionHeadersEnabled={false}
         sections={resultPrayers}
-        keyExtractor={(item, i) => item+i}
+        keyExtractor={keyExtractor}
         renderItem={() => null}
         renderSectionHeader={({section: {title, data}}) => (
           <>
@@ -125,13 +128,10 @@ export default () => {
             <FlatList
               horizontal
               data={data}
-              keyExtractor={(item, i) => item+i}
-              renderItem={({item: {team, prayerIds}}) =>
-                <SearchResultItem {...{team, prayerIds}} /> }
+              keyExtractor={keyExtractor}
+              renderItem={renderSearchResult}
               showsHorizontalScrollIndicator={false}
-              ItemSeparatorComponent={() => (
-                <Spacer width={10} />
-              )}
+              ItemSeparatorComponent={() => (<Spacer width={10} />)}
             />
           </>
         )}
@@ -152,11 +152,8 @@ export default () => {
 
 
 const ContentNav = styled(({items, style}) => {
-    
 	const keyExtractor = useCallback((item, i) => item+i, [])
-	const renderItem = useCallback(
-    ({item}) => (<Chip {...item} />), [])
-
+	const renderItem = useCallback(({item}) => (<Chip {...item} />), [])
 	return (
 		<Row {...{style}}>
 			<FlatList {...{
@@ -165,17 +162,16 @@ const ContentNav = styled(({items, style}) => {
 			}} />
 		</Row>
 	)
-
 })`
 	padding: 12px 16px;
 `
 
-const Chip = styled(({name, screen, active, style}) => {
+const Chip = styled(({name, screen: path, active, style}) => {
 	const navigation = useNavigation()
-
+  const [stack, screen] = path.split("/")
 	return (
 		<TouchableOpacity style={style}
-			onPress={() => navigation.navigate("Welcome", {screen}) } 
+			onPress={() => navigation.navigate(stack, {screen}) } 
 		>
 			<Text>{name}</Text>
 		</TouchableOpacity>

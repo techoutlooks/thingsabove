@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {Text, View, Alert} from "react-native"
 import styled from 'styled-components/native'
 import { useForm, FormProvider, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { UserCredentials } from '@supabase/supabase-js'
 
 import { useAuthProfile, useAuthUser } from "@/hooks"
 import {AvatarUpload, AppHeader} from "@/components"
-import {ScreenCard, ScreenHeaderCopy, Btn, TextField
+import {ScreenCard, Spacer, Btn, TextField
 } from "@/components/uiStyle/atoms";
 
 
@@ -34,7 +34,6 @@ export default ({navigation}) => {
     setIsAvatarDirty(false)
   }
   
-
   const [isAvatarDirty, setIsAvatarDirty]  = useState<boolean>(false)
 
 
@@ -53,12 +52,10 @@ export default ({navigation}) => {
 
   const uploadError = (error: Error) => setError(error.message)
 
-  const onUploaded = (avatar_url: string) => {
+  const onUpload = useCallback((avatar_url: string, uploadComplete: boolean) => {
     set({avatar_url})
-    setIsAvatarDirty(true)
-  }
-
-  // console.log('<AuthProfileScreen />', isAvatarDirty, isDirty)
+    uploadComplete && setIsAvatarDirty(true)
+  }, [])
 
   return (
     <Container>
@@ -68,7 +65,7 @@ export default ({navigation}) => {
         <>
           <AvatarUpload 
             path={profile?.avatar_url || null} 
-            onUploaded={onUploaded}
+            onChange={onUpload}
             onError={uploadError}
           />
           <AuthProfileForm {...methods}>
@@ -80,6 +77,7 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="email-outline"
             />
+            <Spacer height={8} />
             <TextField
               name="username"
               placeholder="Username"
@@ -88,6 +86,7 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="email-outline"
             />
+            <Spacer height={8} />
             <TextField
               name="web_url"
               placeholder="Website"
@@ -101,6 +100,14 @@ export default ({navigation}) => {
               />
             </View>
 
+
+
+
+          </AuthProfileForm>
+        </>
+      )}
+      <View>
+      <Spacer height={48} />
             {( isDirty || isAvatarDirty) ? (
               <SaveButton 
                 onPress={methods.handleSubmit(onSave, onError)}
@@ -115,11 +122,6 @@ export default ({navigation}) => {
 
             <ResetButton
               onPress={reset} disabled={fetching} />
-
-          </AuthProfileForm>
-        </>
-      )}
-      <View>
         <SignOutButton label="Sign Out" 
           // onPress={() => supabase.auth.signOut()} 
         />

@@ -31,5 +31,8 @@ export const theme: DefaultTheme = {
     messageFg: '#e4e0e5',
     sentMessageBg: '#786ab1',
     sentMessageFg: '#eeecf8',
+
+    error: 'orangered'
+
   },
 }

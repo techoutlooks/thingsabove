@@ -165,15 +165,17 @@ type RecordingsListProps = {
   play: (r: RecordedItem) => void,
   del: (r: RecordedItem) => void,
 }
+
+
 const RecordingsList = styled((props: RecordingsListProps) => {
   const {recordings, listeningTo, play, del, ...p} = props
 
   const keyExtractor = useCallback(item => `${item.id}`, [])
   const renderRecordedItem = useCallback(({item: recording}) => (
-    <RecordedItemView
-      highlighted={recording?.id===listeningTo?.id}
-      {...{recording, del, play}}
-    />
+    <RecordedItemView {...{
+      recording, del, play,
+      highlighted: recording?.id===listeningTo?.id
+    }} />
   ), [listeningTo])
 
 

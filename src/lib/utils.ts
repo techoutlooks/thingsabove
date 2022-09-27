@@ -82,3 +82,45 @@ export function blobToBase64(blob: Blob): Promise<string> {
     }
   });
 };
+
+/***
+ * Bolderize text
+ * https://stackoverflow.com/a/70390814
+ * https://gist.github.com/typekcz/746d737aa4fccbd7455c8d833677def5
+ */
+// const upperDiff = "𝗔".codePointAt(0) - "A".codePointAt(0)
+// const lowerDiff = "𝗮".codePointAt(0) - "a".codePointAt(0)
+// const digitDiff = "𝟭".codePointAt(0) - "1".codePointAt(0)
+
+// const isUpper = (n) => n >= 65 && n < 91;
+// const isLower = (n) => n >= 97 && n < 123;
+
+// const bolderizeChar = (char: string) => {
+//   const n = char.charCodeAt(0);
+//   if (isUpper(n)) return String.fromCodePoint(n + upperDiff);
+//   if (isLower(n)) return String.fromCodePoint(n + lowerDiff);
+//   return char;
+// };
+
+// export const bolderize = (word: string) => [...word].map(bolderizeChar).join("");
+
+const boldStyle = {
+	upperDiff: ("𝗔".codePointAt(0) - "A".codePointAt(0)), 
+	lowerDiff: ("𝗮".codePointAt(0) - "a".codePointAt(0)), 
+	digitDiff: ("𝟭".codePointAt(0) - "1".codePointAt(0))
+}
+export function bolderize(text: string, style=boldStyle) {
+  let out = "";
+  for(let i = 0; i < text.length; i++){
+    if(/[a-z]/.test(text[i])){
+      out += String.fromCodePoint(text.codePointAt(i) + style.lowerDiff);
+    } else if(/[A-Z]/.test(text[i])){
+      out += String.fromCodePoint(text.codePointAt(i) + style.upperDiff);
+    } else if(/[0-9]/.test(text[i])){
+      out += String.fromCodePoint(text.codePointAt(i) + style.digitDiff);
+    } else {
+      out += text[i];
+    }
+  }
+  return out;
+}

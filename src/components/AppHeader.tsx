@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, ComponentProps, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import styled from "styled-components/native";
 
@@ -10,11 +10,12 @@ import Avatar from "./Avatar"
 /***
  * @param leftIcon: custom left icon.
  * @param hideGoBack: only if no leftIcon is specified
+ * @param navigateBack: custom `navigateBack` callback
  */
 type Props = {
-    hideGoBack: boolean
-    leftIcon?: any
-} 
+  hideGoBack: boolean
+  navigateBack?: () => void
+}  & ComponentProps<typeof ScreenHeader>
 
 /***
  * Displays a screen header with back icon by default.
@@ -22,25 +23,24 @@ type Props = {
  */
 export default styled(({children, hideGoBack=false, leftIcon,  ...p}: Props) => {
     
-    const {profile} = useAuthProfile()
-    const navigation = useNavigation()
-    const navigateBack = useCallback(() => navigation.goBack(), [])
+  const {profile} = useAuthProfile()
+  const navigation = useNavigation()
+  const navigateBack = useCallback(() => navigation.goBack(), [])
 
-    // console.log("<AppHeader/>", profile)
-    return (
-        <ScreenHeader {...{ ...p, 
-            leftIcon: leftIcon?? (!hideGoBack && 
-                <BackIcon onPress={navigateBack} />)
-            }}
-        >
-            {<Avatar noCache
-                path={profile?.avatar_url} size={60} style={{marginRight: 12}}
-                onPress={() => navigation.navigate("AuthProfile")}
-            />}
-            <Spacer width={12} />
-            {children}
-        </ScreenHeader>
-    )
+  return (
+    <ScreenHeader {...{ ...p, 
+      leftIcon: leftIcon?? (!hideGoBack && 
+        <BackIcon onPress={p.navigateBack ?? navigateBack} />)
+      }}
+    >
+      {<Avatar noCache
+        path={profile?.avatar_url} size={60} style={{marginRight: 12}}
+        onPress={() => navigation.navigate("AuthProfile")}
+      />}
+      <Spacer width={12} />
+      {children}
+    </ScreenHeader>
+  )
 })`
     width: 100%;
 `

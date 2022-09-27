@@ -30,8 +30,8 @@ type R = R1|R2
   
     const getProfile = useCallback((userId: string) => {
       if (userId != null) {
-        const profile = selectContact(store.getState(), userId)
-        console.log("**** useContacts()/profile", profile)
+        const profile = selectContact(userId)(store.getState())
+        // console.log("**** useContacts()/profile", profile)
 
         if (profile != null) {
           push({ [userId]: profile })

@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import PrayNowOne from './PrayNowOneScreen';
-import PrayNowTwo from './PrayNowTwoScreen';
+import RecordScreen from './RecordScreen';
+import EditInfoScreen from './EditInfoScreen';
+import PreviewScreen from './PreviewScreen';
 import { ScreensContextProvider } from './PrayerContext';
 
 const Stack = createNativeStackNavigator();
@@ -10,6 +11,7 @@ const Stack = createNativeStackNavigator();
 
 /***
  * Create or Edit a prayer i successive screens
+ * // options={{ presentation: 'modal' }} />
  */
 export default () => {
 
@@ -18,9 +20,9 @@ export default () => {
       <Stack.Navigator screenOptions={{
         headerShown: false
       }}>
-        <Stack.Screen name="PrayNowOne" component={PrayNowOne} />
-        <Stack.Screen name="PrayNowTwo" component={PrayNowTwo} 
-            options={{ presentation: 'modal' }} />
+        <Stack.Screen name="Record" component={RecordScreen} />
+        <Stack.Screen name="EditInfo" component={EditInfoScreen} /> 
+        <Stack.Screen name="Preview" component={PreviewScreen} />
       </Stack.Navigator>
     </ScreensContextProvider>
   )

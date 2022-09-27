@@ -27,13 +27,13 @@ export const useAuthProfile = () => {
   const store = useStore()
   const dispatch = useDispatch()
 
+  // get refreshed state variables
   const {fetching, error} = useSelector(getAuthStatus)
   const session = useSelector(selectAuthSession)
+  const p = useSelector(selectAuthProfile)
   
   useEffect(() => {
-    const p = selectAuthProfile(store.getState())
-    if(!!p) { set(p) } else { fetch() }
-  }, [session,]) // so this hook refreshes on new auth,
+    !!p ? set(p) :  fetch() }, [session, p]) // so this hook refreshes on new auth,
 
   const fetch = useCallback(() => {
     dispatch(fetchProfile) }, [])  
@@ -41,7 +41,7 @@ export const useAuthProfile = () => {
   const update = useCallback((updates: Partial<UserProfile>) => 
     dispatch(updateProfile(updates)), [])
   
-  return {profile, fetching, error, set, fetch, update}
+    return {profile, fetching, error, set, fetch, update}
 }
 
 // Supabase Sync
@@ -56,9 +56,13 @@ export const useAuthSessionListener = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    setSession(client.auth.session())
+    let mounted = true
+    mounted && setSession(client.auth.session())
     client.auth.onAuthStateChange((_event, session) => {
-      setSession(session) })
+      // FIXME: mounted inside callback may remain true, since captured from closure
+      mounted && setSession(session) 
+    })
+    return () => { mounted = false }
   }, [])
 
   useEffect(() => { dispatch(syncSession(session))}, [session])

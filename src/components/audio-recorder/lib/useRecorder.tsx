@@ -35,7 +35,7 @@ type RecDo = {
 // recDisabled: default decision (reset state): recReady: ready to start  
 const recDisabled: RecDo = {
   do: Rec.RESET, pushed: false, doBefore: [], doAfter: [], hintText: "" }
-const recReady: RecDo = { ...recDisabled, do: Rec.START }
+const recReady: RecDo = { ...recDisabled, do: Rec.START , hintText: "Click to pray"}
 const recReset: RecDo = { ...recDisabled, do: Rec.RESET, pushed: true }
 
 
@@ -83,13 +83,13 @@ const useRecorder = (ev: Events, playback: Playback): [RecDo, Dispatch<Commit>, 
     const decision: RecDo = {...recDisabled, ...(
       reset ? recReset :
       (disabled && ev.ready) || _is(Rec.RESET) ? recReady : 
-      shouldStart ? {do: Rec.START, pushed} :
+      shouldStart ? {do: Rec.START, pushed, hintText: "Click to Pause, Slide to Delete"} :
       shouldPause ? {do: Rec.PAUSE, pushed, hintText: "Slide to end"} : 
       deleteIfSwippedOnWhileStarted ? {do: Rec.DELETE, pushed,
         doBefore: [Rec.PAUSE], hintText: "Delete?"} :
       resumeAfterDeleteAttempt ? { do: Rec.START, pushed: true } :
       addIfSwipedOnAfterPaused ? {do: Rec.ADD, pushed,
-        doBefore: [Rec.STOP] } :
+        doBefore: [Rec.STOP], hintText: "Add recording ..." } :
       addIfEndedNotSwippedOn ? {do: Rec.ADD, pushed,
         doBefore: [Rec.STOP], hintText: "Slide to delete" } :
       deleteIfSwippedOnAfterEnded ? {do: Rec.DELETE, pushed} : recDisabled

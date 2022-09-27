@@ -4,6 +4,7 @@ import { Provider, useSelector, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import styled, { ThemeProvider } from "styled-components/native";
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import FlashMessage from "react-native-flash-message";
 
 import {LoadAssets} from "@/components";
 
@@ -59,6 +60,7 @@ const App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <Main />
       </PersistGate>
+      <FlashMessage position="top" />
     </Provider>
   );
 };

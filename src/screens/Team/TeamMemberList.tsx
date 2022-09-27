@@ -27,7 +27,7 @@ type Props = {
  * <TeamPrayers/>
  * Prayers by team, filterd by `prayerIds` if supplied.
  */
-const TeamMemberList = styled(({team, onSelect }: Props) => {
+const TeamMemberList = React.memo(styled(({team, onSelect }: Props) => {
 
   const state = useStore().getState();
   
@@ -52,7 +52,7 @@ const TeamMemberList = styled(({team, onSelect }: Props) => {
   )
 
 })``
-
+)
 
 const MemberList = styled((props: 
   {members: Contact[]} & Pick<Props, 'onSelect'>) => {

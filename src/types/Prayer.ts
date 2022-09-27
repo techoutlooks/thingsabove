@@ -6,7 +6,7 @@
 type PrayerInput<T> = {
   prayerId: string, title: string, description: string, recordings: T[], 
   userId: string, teamId: string, roomId: string, topics: string[],
-  picture_urls?: string[]
+  picture_urls?: string[], published: boolean,
 }
 
 type Prayer = {
@@ -25,6 +25,7 @@ type Prayer = {
 
   created_at: string,
   updated_at: string,
+  published: boolean
 }
 /*
 "team": Object {

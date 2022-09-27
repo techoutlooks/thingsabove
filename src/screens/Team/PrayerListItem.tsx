@@ -50,13 +50,10 @@ const PrayerListItem = styled(({prayer, style}: Props) => {
       }}>
         <Row style={{justifyContent: 'flex-start', marginLeft:24 }}>
           <Avatar path={authorAvatar} size={55} />
-          {/* <Spacer width={8} /> */}
           <View style={{flexDirection: 'column', marginLeft: 12, }}>
-          <Text style={{fontWeight: 'bold'}}>{prayer.title}</Text>
-          <Text>audios ({prayer.audio_urls?.length})</Text>
-
+            <Text style={{fontWeight: 'bold'}}>{prayer.title}</Text>
+            <Text>audios ({prayer.audio_urls?.length})</Text>
           </View>
-
         </Row>
       </TouchableOpacity>
     )
@@ -64,14 +61,13 @@ const PrayerListItem = styled(({prayer, style}: Props) => {
     const back = (
       <TouchableOpacity {...{onPress: changeSide}}>
         { prayer.audio_urls?.map((path, key) => (
-            <AudioPlayer {...{key, path}} />
+          <AudioPlayer {...{key, path}} />
         ))}
       </TouchableOpacity>
     )
 
-
-    const memoStyle = useMemo(() => ({ ...style, height}), [style, height])
-    console.log("<PrayerListItem />", `memoStyle=${memoStyle.height}. prayer=`, prayer)
+    const memoStyle =
+     useMemo(() => ({ ...style, height}), [style, height])
 
     return (
       <FlipCard {...{ 

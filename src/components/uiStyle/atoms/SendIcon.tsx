@@ -45,7 +45,8 @@ const SendIcon = React.memo(styled(({ onPress, style, show }) => {
     justify-content: center;
     padding-right: 12px;
     padding-left: 12px;
-  `)
+  `
+)
   
   const MaterialSendIcon = props => (
     <MaterialCommunityIcons name="send" size={24} color="#554691" {...props} />

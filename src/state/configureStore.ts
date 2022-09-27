@@ -29,8 +29,15 @@ let persistor = persistStore(store)
 // Feed/Sync store <-> server
 // ==========================
 store.dispatch(fetchAll)
-store.dispatch(syncPrayers)
+// store.dispatch(syncPrayers)
 
 
 
 export { store, persistor }
+
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  AnyAction
+>

@@ -33,6 +33,9 @@ declare module 'styled-components' {
       messageFg: string;
       sentMessageBg: string;
       sentMessageFg: string;
+
+      error: string;
+
     };
   }
 }

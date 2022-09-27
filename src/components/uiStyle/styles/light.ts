@@ -29,6 +29,8 @@ export const theme: DefaultTheme = {
     messageFg: '#55496b',
     sentMessageBg: '#d6d2e6',
     sentMessageFg: '#554691',
+
+    error: 'orangered'
   },
 }
 

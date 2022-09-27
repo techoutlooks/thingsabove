@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { memo, useState, useEffect, useCallback } from "react";
 import { ViewStyle } from "react-native";
 import styled, { css } from "styled-components/native";
 
 import {AVPlaybackSource} from "expo-av/src/AV.types";
+import {SkeletonCard as Loader} from "@/components"
 import { Row, Button, useFmtTime } from "@/components/uiStyle/atoms";
 
 import {Audio, PlaybackEvent } from "./lib";
 import LineControl from "./LineControl";
 import Duration from "./Duration";
-import ThreeDots from "./ThreeDots"
 import { isempty } from "@/lib/utils";
 
 
@@ -31,7 +31,6 @@ const useAudio = (src:AVPlaybackSource, shouldPlay=false) => {
   const [duration, setDuration] = useState<number>(0);
 
   const load = useCallback(
-
     async (src:AVPlaybackSource) => await Audio.load(src, {
       loadeddata: ({ duration }) => { if(!willUnmount) { 
         setDuration(duration); setIsReady(true) }},
@@ -39,19 +38,20 @@ const useAudio = (src:AVPlaybackSource, shouldPlay=false) => {
       pause: () => !willUnmount && setIsPlaying(false),
       ended: () => { if(!willUnmount) { 
         setIsPlaying(false); setIsReady(false); setSeek(0) }},
-      timeupdate: ({ currentTime }) => !willUnmount && setSeek(currentTime) ,
+      timeupdate: ({ currentTime }) => 
+        !willUnmount && setSeek(currentTime) 
+    }, shouldPlay),
+  [shouldPlay]);
 
-    }, shouldPlay),[src, shouldPlay]);
-
-  const unload = useCallback(() => {
-    audio?.unload();
+  const unload = useCallback(async () => {
+    await audio?.unload();
     audio?.removeEventListeners();
   }, [audio]);
 
   useEffect(() => {
-    if(src ) {
+    if(src) {
       load(src).then(audio => !willUnmount && setAudio(audio))
-      return () => { setWillUnmount(true) }; return unload() };
+      return () => { unload(); setWillUnmount(true) } }   
   }, [load])
 
   // alter playback on ui events
@@ -82,13 +82,13 @@ type Props = {
 /***
  * <PLayer/>
  */
-const Player = ({src, shouldPlay = false, key, style}: Props) => {
+const Player = memo(({src, shouldPlay = false, key, style}: Props) => {
   
   const uri = (!src.hasOwnProperty('uri') && src) || src.uri
   const hasSrc = !isempty(src) && !!uri
     
   if(!hasSrc) {
-    return (<ThreeDots />)
+    return (<Loader />)
   }
 
   // load audio
@@ -132,7 +132,7 @@ const Player = ({src, shouldPlay = false, key, style}: Props) => {
       </Bar>
     </Container>
   );
-};
+})
 
 const PlayBack = styled.View`
   flex: 0.15;
@@ -154,7 +154,6 @@ const Bar = styled.View`
 `;
 
 const Container = styled(Row)`
-  // background-color: red;
   width: 100%;
 `;
 

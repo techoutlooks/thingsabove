@@ -41,15 +41,16 @@
     <View>
       {label && (<Label {...{children: label}} />)}
       <MultiSelect {...{ ref, ...props, name, onSelectedItemsChange, selectedItems }} />
-      <Errors {...{ name, errors, as: Text }} />
+      <ErrorMessage {...{ name, errors, as: ErrorText }}  />
     </View>
   )
      
  })
  
- const Label = styled.Text`
-     background-color: red;
- `
+const Label = styled.Text`
+  background-color: red;
+`
  
- const Errors = styled(ErrorMessage)`
- `
+const ErrorText = styled.Text`
+  color: ${p => p.theme.colors.error};
+`

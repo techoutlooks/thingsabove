@@ -22,35 +22,37 @@ import TextInput, {TextInputProps} from "./TextInput"
 
 
 type Props = {
-    label?: string,
-    onInvalid?: (errors: any) => void
+  label?: string,
+  onInvalid?: (errors: any) => void
 } & TextInputProps & UseControllerProps
 
 
 
 export default forwardRef(
-    ({name, label, rules, defaultValue, onInvalid, ...props}:Props, ref) => {
-    
-    // infer params that will control our text input
-    // `controp` prop is optional when using FormProvider.
-    const {field, formState: {errors} } = useController( 
-        {name, rules, defaultValue});                    
-    const {onChange: onChangeText, onBlur, value} = field
-    useEffect(() => { onInvalid?.(errors)}, [errors])
+  ({name, label, rules, defaultValue, onInvalid, ...props}:Props, ref) => {
+  
+  // infer params that will control our text input
+  // `controp` prop is optional when using FormProvider.
+  const {field, formState: {errors} } = useController( {name, rules, defaultValue});                    
+  const {onChange: onChangeText, onBlur, value} = field
+  useEffect(() => { onInvalid?.(errors)}, [errors])
 
-    return (
-        <View>
-            {label && (<Label {...{children: label}} />)}
-            <TextInput {...{ ref, ...props, onChangeText, name, value }} />
-            <Errors {...{ name, errors, as: Text }} />
-        </View>
-    )
+  // console.log("TextField", name, errors)
+
+  return (
+    <View>
+        {label && (<Label {...{children: label}} />)}
+        <TextInput {...{ ref, ...props, onChangeText, name, value }} />
+        <ErrorMessage {...{ name, errors, as: ErrorText }}  />
+    </View>
+  )
     
 })
 
 const Label = styled.Text`
-    background-color: red;
+  background-color: red;
 `
 
-const Errors = styled(ErrorMessage)`
+const ErrorText = styled.Text`
+  color: ${p => p.theme.colors.error};
 `

@@ -12,9 +12,10 @@ import * as supabase from "@/lib/supabase"
   
   return new Promise<[string, string]>((resolve, reject) => {
     const fileName = path.slice(path.lastIndexOf("/")+1)
-    supabase.getPublicUrl(path).then(({publicURL}) => {
+    supabase.getPublicUrl(path).then(publicURL => {
       if( publicURL == null) {
-        reject(new Error(`No publicURL found for ${path}`)) } else {
+        reject(new Error(`No publicURL found for ${path}`)) 
+      } else {
           getOrCreateDir(cacheDir).then(dir => {
             FileSystem.downloadAsync(publicURL, `${dir}/${fileName}`)
               .then(({uri}) => { 

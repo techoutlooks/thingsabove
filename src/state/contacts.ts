@@ -73,7 +73,8 @@ export const getContactsById = (state: R) => {
   return getContactsState(state).contactsById
 }
 
-export const selectContact = (state: R, userId: string) => {
+export const selectContact = (userId: string) => (state: R) => {
+  console.log('contacts state/contactsById', getContactsById(state))
   return getContactsById(state)[userId]
 }
 

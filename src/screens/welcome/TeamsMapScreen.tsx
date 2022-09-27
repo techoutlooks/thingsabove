@@ -110,7 +110,7 @@ export default () => {
           horizontal
           showsHorizontalScrollIndicator={false}
           snapToInterval={windowDimensions.width - 60}
-          snapToAlignment={'center'}
+          snapToAlignment={'start'}
           decelerationRate={'fast'}
           viewabilityConfig={viewabilityConfig.current}
           onViewableItemsChanged={onViewableItemsChanged.current}
@@ -160,7 +160,7 @@ const TeamCard = ({team}: {team: Team}) => {
   return (
     <TeamCardContainer>
       <Pressable 
-        onPress={ () => navigation.navigate("Teams", {
+        onPress={ () => navigation.navigate("Team", {
           screen: "TeamPrayers", params: {teamId: team.id }} )
       }
         style={{

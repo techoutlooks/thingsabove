@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react'
+import { ComponentProps, ComponentType } from 'react'
 import {ImageProps} from "react-native"
 import styled from "styled-components/native"
 
@@ -10,25 +10,23 @@ import {Image, AVATARS_BUCKET} from "@/lib/supabase/"
  * @parm path: image path relative to bucket eg. `image.ext`
  * @param noCache: from `supabase.Image`: disable RN's Image cache
  */
-type Props = {
-    path: string|null } 
+type Props = { path: string|null } 
 & Pick<ComponentProps<typeof Image>, 'isStale'|'noCache'> 
 & ComponentProps<typeof Avatar>;
 
 /***
- * Bucket-aware avartar image component. Only provide `path` relative to bcuket.
- * Renders `atoms.Avatar` that builds support for supabase
+ * Supabase bucket-aware avartar image component. 
  * Wrapper around <supabase.Image/> that actually implements the Supabase integration.
+ * Renders an `supabase.Image` that renders in turn an `atoms.Avatar`.
  */
-
-export default styled(Image)<Props>
-  .attrs(({path, ...props}) => ({
+export default styled(Image)
+  .attrs(({path, ...props}: Props) => ({
+    isStale: !!!path,
     path: !!path && `${AVATARS_BUCKET}/${path}`,
-    render: ({source, ...p}: ImageProps) => (
-      // <Avatar {...{...p, avatar: source && [source.uri]}} />
-      <Avatar {...{...p, avatar:  [source.uri]}} />
-
-    ),
+    render: ({source, ...p}: ImageProps) => {
+      return (
+      <Avatar {...{...p, avatar: !!source && [source.uri]}} />
+    )},
     ...props
 }))``
 

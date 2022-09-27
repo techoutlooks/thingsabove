@@ -4,13 +4,13 @@ import TextInput from './TextInput'
 type Props = { postIcon: any } & typeof TextInput
 
 const SearchInput = ({postIcon, ...props}: Props) => (
-    <TextInput
-        placeholder="Search..."
-        multiline={false}
-        style={textInputStyle}
-        // postIcon={postIcon ?? "account-search-outline"}
-        {...props}
-    />
+  <TextInput
+    placeholder="Search..."
+    multiline={false}
+    style={textInputStyle}
+    // postIcon={postIcon ?? "account-search-outline"}
+    {...props}
+  />
 )
 
 

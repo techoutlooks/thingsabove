@@ -1,11 +1,13 @@
+import { showMessage, hideMessage } from "react-native-flash-message";
+
 import { RecordedItem } from "@/components/audio-recorder/lib";
 import Prayer, {PrayerInput, Team, Room, Category, Topic} from "@/types/Prayer";
-import { selectContact } from "@/state/contacts";
 
 import {mergeDeep} from "@/lib/mergeDeep";
 import * as _ from "lodash"
 import * as supabase from "@/lib/supabase";
 import * as storage from "@/lib/storage"
+import { AppThunk } from './configureStore';
 
 enum SyncTablesTypes { 'categories', 'topics', 'teams', 'prayers', 'rooms' }
 const syncTables = Object.keys(SyncTablesTypes).filter(x => !(parseInt(x) >= 0))
@@ -43,7 +45,7 @@ const reducer = (state = initialState, action: A) => {
         // return mergeDeep(state, payload) 
         return _.merge({}, state, payload)
       case Actions.SYNC_FAILED:
-        return { ...state, ...payload, fetching: false }
+        return { ...state, ...payload, }
       case Actions.SYNC_START: 
         return {...state, fetching: true}
       case Actions.SYNC_COMPLETE: 
@@ -62,12 +64,17 @@ export const syncStart = () => ({ type: Actions.SYNC_START })
 
 export const syncFailed = (error: Error) => {
   console.error('prayers/syncFailed > ', error)
+  showMessage({ message: "Sync failed", type: "danger",
+    statusBarHeight: 30, description: "Prayer not synced due to an error!" })
   return { type: Actions.SYNC_FAILED, error: error.message} }
 
 export const syncComplete = () => {
+  showMessage({ message: "Sync success", type: "success", 
+    statusBarHeight: 30, description: "Prayer(s) sync complete." })
   return { type: Actions.SYNC_COMPLETE } }
 
 export const sync = (data: Partial<S>) => {
+  // console.debug('--> prayers/sync', data)
   return { type: Actions.SYNC, ...data } }
 
 
@@ -75,21 +82,21 @@ export const sync = (data: Partial<S>) => {
  * Fetch/listen RT data from server
  */
 export const fetchAll = async (dispatch, getState) => {
-    dispatch(syncStart)
-    supabase.fetchAll(syncTables.map(t => [t, "*"]))
-      .then(data => dispatch(sync(data)))
-      .catch(error => { dispatch(syncFailed(error)) })
-      .finally(() => dispatch(syncComplete)) 
+  dispatch(syncStart)
+  supabase.fetchAll(syncTables.map(t => [t, "*"]))
+    .then(data => dispatch(sync(data)))
+    .catch(error => { dispatch(syncFailed(error)) })
+    .finally(() => dispatch(syncComplete)) 
 }
 
 /***
  * syncChanges
- * Merge RT row changes from the database.
+ * Merge RT row changes from the database into the store
  */
 export const syncChanges = (dispatch, getState) => {
   dispatch(syncStart)
   syncTables.forEach(table => {
-    supabase.on<S>({ table }).subscribe({
+    supabase.on<Prayer>({ table }).subscribe({
       next: data => dispatch(sync(data)) ,
       error: error => dispatch(syncFailed(error)),
       complete: () => dispatch(syncComplete)
@@ -98,30 +105,38 @@ export const syncChanges = (dispatch, getState) => {
 }
 
 /***
- * **savePrayer()**
- * Save prayer to backend. new prayer iff prayer.id==null|undefined
+ * **savePrayers()**
+ * Save a prayer instance from `PrayerInput` data to the backend. 
+ * A new prayer is INSERTed iff prayer.id==null|undefined
  */
-export const savePrayers = (data:PrayerInput<RecordedItem>[]) => 
+export const savePrayers = 
+(data: PrayerInput<RecordedItem>[]):  AppThunk<Promise<Prayer[]>> => 
   async (dispatch, getState) => {
+    const prayers = await Promise.all(data.map(toPrayer))
+    return await dispatch(upsertPrayers(prayers))
+}
 
+/***
+ * **upsertPrayers()**
+ * Save prayer instance to the backend. 
+ */
+export const upsertPrayers = 
+(prayers: Prayer[]): AppThunk<Promise<Prayer[]>> => 
+  async (dispatch, getState) => {
     dispatch(syncStart)
     try {
-      const errors = ([] as string[])
-      const prayers = await Promise.all(data.map(p => toPrayer(getState(), p)))
-      await Promise.all(prayers.map(prayer => 
+      return await Promise.all(prayers.map(prayer => 
         supabase.upsert(supabase.PRAYERS_TABLE, prayer)
-          .then(({error}) => { error && errors.push(error.message) })
+          .then(prayer => {
+            dispatch(sync({prayers: [prayer]}))
+            return prayer
+          })
       ))
-
-      if(!!errors.length) { 
-        const msgs = errors.join('\n')
-        dispatch(syncFailed(new Error(msgs))) 
-      } else {
-        dispatch(sync({prayers}))
-      }
     } catch(e) {
-      console.error('--> prayers/savePrayers', e.message)
-      dispatch(syncFailed(e))
+      dispatch(syncFailed(e as Error))
+      return []
+    } finally {
+      dispatch(syncComplete)
     }
 }
 
@@ -131,6 +146,11 @@ export const savePrayers = (data:PrayerInput<RecordedItem>[]) =>
 
 export const getPrayersState = (state: R) =>
   state.prayers
+
+export const getStatus = (state: R) => {
+  const {fetching, error} = getPrayersState(state)
+  return {fetching, error} 
+}
 
 export const selectCategories = (state: R) =>
   getPrayersState(state).categories
@@ -147,30 +167,13 @@ export const selectPrayers = (state: R) =>
 export const selectTeams = (state: R) =>
   getPrayersState(state).teams
 
-export const getPrayersByCategory = (state: R) => {
-  const categoriesExt =  selectCategories(state)
-    .map(({title, prayer_ids}) => ({            // expand prayers from resp. ids in each category
-      [title]: selectPrayers(state)?.filter(    // one dict per category
-                prayer => prayer_ids?.includes(prayer.id))
-    }))
-  return categoriesExt.reduce(                  // merge dicts
-    (s, v) => ({...s, ...v}), {})
-}
-
-export const getPrayersByTopic = (state: R) => {
-  return getTopics(state).map(topic => ({
-    [topic]: selectPrayers(state)?.filter(p => p.topics.includes(topic))
-  })).reduce((s,v) => ({...s, ...v}), {})
-
-}
-
 /***
  * **selectPrayerById()**
  * Expand Prayer by its id
  * @returns Prayer
  */
-export const selectPrayerById = (state: R, prayerId: string) =>
-    selectPrayers(state).find(({id}) => prayerId == id)
+export const selectPrayerById = (prayerId: string) => 
+  (state: R) => selectPrayers(state).find(({id}) => prayerId == id)
 
 /***
  * **selectPrayersByTeamId()**
@@ -195,7 +198,7 @@ export const selectPrayerById = (state: R, prayerId: string) =>
  */
  export const selectUsersByPrayerIds = (prayerIds: string[]) => (state: R) =>
     (prayerIds ?? []).map(prayerId => 
-      ({[prayerId]: selectPrayerById(state, prayerId)?.user_id})) 
+      ({[prayerId]: selectPrayerById(prayerId)(state)?.user_id})) 
 
  /***
  * **selectTeamById()**
@@ -213,39 +216,52 @@ export const selectPrayerById = (state: R, prayerId: string) =>
  */
  export const selectTeamsByPrayerId = (state: R, prayerId: string) =>
   selectTeams(state).filter(({id}) => 
-    selectPrayerById(state, prayerId)?.team_ids?.includes(id))
+    selectPrayerById(prayerId)(state)?.team_ids?.includes(id))
 
+export const getPrayersByCategory = (state: R) => 
+  selectCategories(state)?.map(({title, prayer_ids}) => ({        // expand prayers from resp. ids in each category
+    [title]: selectPrayers(state)?.filter(                        // one dict per category
+      prayer => prayer_ids?.includes(prayer.id))
+  })).reduce((s, v) => ({...s, ...v}), {})                        // merge dicts 
 
+  
+export const getPrayersByTopic = ({published}: {published: boolean}) => 
+  (state: R) => getTopics(state).map(topic => ({
+    [topic]: selectPrayers(state)?.filter(
+      p => !!p.published && p.topics?.includes(topic))
+  })).reduce((s,v) => ({...s, ...v}), {})
+
+    
 
 // Funcs
 // ==========================
 
 
 /***
- * Get Prayer from input data.
- * Many recordings possible per prayer. 
+ * toPrayer()
+ * Get Prayer from PrayerInput, after all recordings uploaded.
+ * Returns prayer object ready for upsertion to supabase.
+ * Was necessary to upload prayers first, that the paths of recordings inside
+ * of supabase's bucket may be set as the `audio_urls` in the Prayer object.
  */
-export const toPrayer = (state: R, data:PrayerInput<RecordedItem>) => {
+ export const toPrayer = (data:PrayerInput<RecordedItem>) => {
     
-  let {prayerId, title, description, picture_urls,
-    recordings, userId, teamId, roomId, topics } = data
+  let { prayerId, title, description, picture_urls,
+    recordings, userId, teamId, roomId, topics, published } = data
 
   return new Promise<Prayer>((resolve, reject) => {
 
     // computed fields
-    const created_at = new Date().toLocaleString()
+    const now = new Date().toISOString()
     const duration = recordings.reduce((d, r) => d + r.duration, 0)
-    const profile = selectContact(state, userId)
     let audios = recordings.reduce((u, r) => [...u, r.uri], ([] as string[]))
-
-    // following fields obviously require further input 
-    // from user or ML pipeline. setting defaults for now
-    // topics as labels to drive the ML classifier (backend job)
+    
+    // set some defaults 
     description = description || 
-      `(${audios.length}) prayers (${duration})s 
-      by ${profile?.displayName} prayed on ${created_at}.`
+    `(${audios.length}) prayers (${duration})s  prayed on ${now}.`
 
     // resolve prayer after all audios were uploaded
+    // resolved prayer's `.audio_urls` to contain paths of uploaded audios
     Promise.all(audios.map(uri => 
       storage.upload({uri, contentType: 'audio/m4a'}, supabase.AUDIOS_BUCKET))
     )
@@ -253,12 +269,17 @@ export const toPrayer = (state: R, data:PrayerInput<RecordedItem>) => {
         resolve ({
           id: prayerId,
           user_id: userId,
-          title, audio_urls, duration, created_at, is_recording: false,
+          title, audio_urls, duration, is_recording: false,
           team_ids: teamId ? [teamId]: [], room_id: roomId,
-          description, topics, picture_urls
-        })
+          description, topics, picture_urls,
+          published,
+          updated_at: now,
+          ...(prayerId ? {} : {created_at: now} ),
+        } as Prayer)
       })
 
   })
 }
+
+
         
