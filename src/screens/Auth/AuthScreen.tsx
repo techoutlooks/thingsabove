@@ -5,77 +5,99 @@ import { useForm, FormProvider, SubmitHandler, SubmitErrorHandler } from 'react-
 import { useDispatch, useSelector } from 'react-redux'
 
 import { DEFAULT_USER_ID, DEFAULT_PASSWORD } from '@env'
-import { getAuthState, doAuth } from '../../state/auth'
+import { useIsAuthed } from "@/hooks"
+import { getAuthState, doAuth } from '@/state/auth'
 import {signInWithEmail, signUpWithEmail, signInWithProvider} from "@/lib/supabase"
 import {ScreenCard, ScreenHeaderCopy, Btn, TextField} from "@/components/uiStyle/atoms";
 
 
 type AuthData = { email: string, password: string}
 
-const AuthScreen = () => {
 
-    const dispatch = useDispatch()
-    const { fetching, error } = useSelector(getAuthState)
+/**
+ * <AuthScreen />
+ * 
+ * Hybrid SignIn/SignUp Screen
+ * Defaults to SignIn except param `action: signUp` is received on the route
+ */
+const AuthScreen = ({ navigation, route }) => {
 
-    const defaultValues = { email: DEFAULT_USER_ID, password: DEFAULT_PASSWORD }
-    const {formState: {isValid, isDirty, errors}, ...methods} = useForm({
-        mode: 'onChange', defaultValues
-    }) 
+  // `signIn` (default), or `signUp`
+  const params = route.params ?? {}
+  const { action, credentials } = params
 
-    const login = (data: AuthData) => dispatch(doAuth(signInWithEmail, data))
-    const register = (data: AuthData) => dispatch(doAuth(signUpWithEmail, data))
+  const isAuthed = useIsAuthed()
+  const dispatch = useDispatch()
+  const { fetching, error } = useSelector(getAuthState)
 
-    useEffect(() => {
-        if (!!error) Alert.alert(error.message) }, [error])
+  const defaultValues = credentials // { email: DEFAULT_USER_ID, password: DEFAULT_PASSWORD }
+  const {formState: {isValid, isDirty, errors}, ...methods} = useForm({
+      mode: 'onChange', defaultValues
+  }) 
 
-    const onError: SubmitErrorHandler<AuthData> = (errors, e) => {
-        return console.log({errors})  }
+  const login = (data: AuthData) => dispatch(doAuth(signInWithEmail, data))
+  const register = async (data: AuthData) => {
+    await dispatch(doAuth(signUpWithEmail, data))
+    Alert.alert(`${action} sucessful`, `Verification email sent to: ${data?.email}`)
+    navigation.navigate('DoAuth', {action: 'signIn', credentials: data})
+  }
 
-    // console.log('<AuthScreen />', useSelector(getAuthState))
+  // using flash message instead
+  // useEffect(() => {if (error) 
+  //   Alert.alert("Authentication", error.message?? error) }, [error])
 
-    return (
-        <Container>
-            <HeaderContainer>
-                <Header>Welcome!</Header>
-            </HeaderContainer>
+  const onError: SubmitErrorHandler<AuthData> = (errors, e) => {
+    return console.log({errors})  }
 
-            <AuthForm {...methods}>
-                <TextField
-                    name="email"
-                    placeholder="email"
-                    textContentType="username"
-                    rules={{ required: 'Email is required!' }}
-                    // onInvalid={setError}
-                    preIcon="email-outline"
-                />
-                <TextField
-                    name="password"
-                    placeholder="password"
-                    textContentType="password"
-                    secureTextEntry
-                    // rules={{ required: 'Password is required!' }}
-                    // onInvalid={setError}
-                    preIcon="key"
-                />
-                <InputSpacer />
-                <SignInButton
-                    label="Sign In"
-                    // onPress={connect}
-                    onPress={methods.handleSubmit(login, onError)}
+  // console.log('<AuthScreen />', route.params, route.params?.action)
 
-                    disabled={!isValid || fetching}
-                    primary
-                />
-                <SignUpButton
-                    label="Sign Up"
-                    // onPress={connect}
-                    onPress={methods.handleSubmit(register, onError)}
-                    disabled={!isValid || fetching}
-                    primary
-                />
-            </AuthForm>
-        
-        </Container>
+  return (
+    <Container>
+      <HeaderContainer>
+        <Header>Welcome!</Header>
+      </HeaderContainer>
+
+      <AuthForm {...methods}>
+        <TextField
+          name="email"
+          placeholder="email"
+          textContentType="username"
+          rules={{ required: 'Email is required!' }}
+          // onInvalid={setError}
+          preIcon="email-outline"
+        />
+        <InputSpacer />
+        <TextField
+          name="password"
+          placeholder="password"
+          textContentType="password"
+          secureTextEntry
+          // rules={{ required: 'Password is required!' }}
+          // onInvalid={setError}
+          preIcon="key"
+        />
+        <InputSpacer />
+        { action==="signUp" ? (
+          <SignUpButton
+            label="Sign Up"
+            // onPress={connect}
+            onPress={methods.handleSubmit(register, onError)}
+            disabled={!isValid || fetching}
+            primary
+          />
+        ):(
+          <SignInButton
+            label="Sign In"
+            // onPress={connect}
+            onPress={methods.handleSubmit(login, onError)}
+            disabled={!isValid || fetching}
+            primary
+          />
+        )}
+
+
+      </AuthForm>
+    </Container>
   )
 }
 
@@ -95,7 +117,7 @@ const Header = styled(ScreenHeaderCopy)`
 
 const AuthForm = styled(({style, ...p}) => (
   <View {...{style}}>
-      <FormProvider {...p} />
+    <FormProvider {...p} />
   </View>
 ))`
   flex: 1;

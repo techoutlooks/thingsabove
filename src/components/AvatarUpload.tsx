@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import styled from "styled-components/native";
 
 import { AVATARS_BUCKET } from '@/lib/supabase';
-import { upload } from '@/lib/storage'
+import { upload } from '@/lib/supabase/storage'
 import { Btn } from "@/components/uiStyle/atoms";
 
 import Avatar from "./Avatar"

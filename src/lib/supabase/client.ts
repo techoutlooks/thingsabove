@@ -18,9 +18,24 @@ export const client = createClient(supabaseUrl, supabaseAnonKey, {
   detectSessionInUrl: false,
 })
 
+/**
+ * SignUp & createProfile
+ * @param credentials 
+ * @returns 
+ */
+export async function signUp(credentials: Pick<UserCredentials, 'email'|'password'>) {
+  const { user, error } = await client.auth.signUp(credentials)
+  return {user, error}
+}
+
 export async function signIn(credentials: UserCredentials) {
   const { user, error } = await client.auth.signIn(credentials)
   return {user, error}
+}
+
+export async function signOut() {
+  const { error } = await client.auth.signOut()
+  return { error}
 }
 
 /***
@@ -46,8 +61,6 @@ export async function upsert<T extends {id: string}>
       in _updates ? {} : {created_at: new Date().toISOString()} ))
   }
   const { data, error } = await client.from(table).upsert(_updates)
-  console.log('*******************, [upsert] *******************', data)
-
   if(error) { throw Error(error.message) }
   return (data && data[0] as T)
 }

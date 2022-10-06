@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import * as FileSystem from 'expo-file-system';
 import useDownload from "./useDownload"
-import { getOrCreateDir } from '../storage';
+import { getOrCreateDir } from './storage';
 
 /*** 
  * Cache-aware file retriever, from Supabase public bucket.

@@ -10,7 +10,7 @@ import useInterval from "./useInterval"
  * status. Progress smoothness parameterable via the `resolution` prop.
  */
 type ValueOf<T> = T[keyof T] 
-const CLOCK_RESOLUTION = 1/1000
+const CLOCK_RESOLUTION = 10/1000
 enum ClockDo { TICK, TOGGLE, RESET, STOP }
   
 type S = {ended: boolean, paused: boolean, secs: number}

@@ -89,7 +89,7 @@ const useRecorder = (ev: Events, playback: Playback): [RecDo, Dispatch<Commit>, 
         doBefore: [Rec.PAUSE], hintText: "Delete?"} :
       resumeAfterDeleteAttempt ? { do: Rec.START, pushed: true } :
       addIfSwipedOnAfterPaused ? {do: Rec.ADD, pushed,
-        doBefore: [Rec.STOP], hintText: "Add recording ..." } :
+        doBefore: [Rec.STOP], hintText: "Click to add recording" } :
       addIfEndedNotSwippedOn ? {do: Rec.ADD, pushed,
         doBefore: [Rec.STOP], hintText: "Slide to delete" } :
       deleteIfSwippedOnAfterEnded ? {do: Rec.DELETE, pushed} : recDisabled

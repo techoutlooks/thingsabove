@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux'
 
 import { guid } from '../../../lib/guid'
 
-import { useQuery } from '../../../lib/storage'
+import { useQuery } from '../../../lib/supabase/storage'
 import { useAuthId } from '@/hooks'
 
-import { createTransaction } from '../../../lib/storage'
+import { createTransaction } from '../../../lib/supabase/storage'
 import Client from '../../../lib/client'
 
 import { fetchNextTransactionId } from '../../../state/auth'

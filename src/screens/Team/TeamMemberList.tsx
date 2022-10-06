@@ -34,13 +34,13 @@ const TeamMemberList = React.memo(styled(({team, onSelect }: Props) => {
   // prayers -> team warriors 
   // FIXME: eg. useProfileReducer(teamPrayers, pp => pp.map(p => p.userId))
   const teamPrayers = selectPrayersByTeamId(state, team.id)
-  const memberIds = teamPrayers.map(p => p.user_id)
+  const memberIds = [...new Set(teamPrayers.map(p => p.user_id))]
 
   let members = useContacts(memberIds, true)
-  members = [...new Map(members.map(m => [m[m.id], m])).values()]
 
 
-  console.log('**** <TeamMemberList />', members)
+  // console.log('<TeamPrayers />', `teamPrayers=${teamPrayers.length}`, `team=${team.title}`, 
+  // `members=${members.length}`)
 
   return (
     <View>
@@ -54,31 +54,38 @@ const TeamMemberList = React.memo(styled(({team, onSelect }: Props) => {
 })``
 )
 
-const MemberList = styled((props: 
+const MemberList = styled(({members, onSelect, style}: 
   {members: Contact[]} & Pick<Props, 'onSelect'>) => {
 
   const keyExtractor = useCallback((item, i) => item+i, [])
-  const renderItem = useCallback(({item: contact}) => (
-    <MemberListItem {...{ contact, onPress: props.onSelect }} />
+  const renderItem = useCallback(({item: contact, index}) => (
+    <MemberListItem {...{ index, contact, onPress: onSelect }} />
   ), [])
 
   return (
-    <Row>
+    <Row {...{style}}>
       <FlatList horizontal {...{
-        data: props.members, keyExtractor, renderItem,
+        data: members, keyExtractor, renderItem,
         ItemSeparatorComponent: () => (<Spacer width={10} />)
       }} />
     </Row>
   )
-})``
+})`
+  padding: 18px 0
+`
 
 
-const MemberListItem = ({contact, onPress}) => {
+const MemberListItem = styled(({ index, contact, onPress, style }) => {
   const prayers = useSelector(selectPrayersByUserId(contact.id))
+  console.log('<MemberListItem />', `prayers=`, prayers.map(p =>p.id))
+
   return (
-    <Avatar path={contact?.avatar[0]} size={60} 
+    <Avatar path={contact?.avatar[0]} size={70} style={style}
             onPress={() => onPress({contact, prayers})} 
     />)
-}
+})`
+  ${p => p.index>0 && `margin-left: -25px`}
+
+`
 
 export default TeamMemberList;

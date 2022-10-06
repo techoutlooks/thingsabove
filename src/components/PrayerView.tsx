@@ -3,14 +3,17 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import styled, {useTheme} from "styled-components/native"
 import { Animated, FlatList, View, Text, Alert, TouchableOpacity,
-  Dimensions, ViewProps, TextProps, LayoutChangeEvent, StyleSheet } from "react-native"
+  Dimensions, ViewProps, TextProps, StyleSheet } from "react-native"
 import { Feather } from '@expo/vector-icons'
+import  { format, formatDistance } from 'date-fns'
 
 import Prayer from "@/types/prayer"
 import { upsertPrayers, selectPrayerById } from '@/state/prayers';
-import { AudioPlayer, PrayActionGroup as PrayActions, SharePrayer } from "@/components";
 import { Spacer, RADIUS} from "@/components/uiStyle/atoms"
-import  { format, formatDistance } from 'date-fns'
+
+import AudioPlayer from "./AudioPlayer"
+import SharePrayer from "./SharePrayer"
+import {PrayActionGroup as PrayActions} from "./Pray"
 
 
 /***
@@ -22,15 +25,29 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
   const dispatch = useDispatch()
   const prayer = useSelector(selectPrayerById(prayerId))
 
-  const unPublish = () => { 
-    Alert.alert("Unpublish prayer ?", 
-    "Your prayer partners won't be able to see this prayer anymore!", [
-      { text: "Unpublish", 
+  const updatePublished = ({published}: {published: boolean}) => { 
+
+    const msgs = {
+      publish: { 
+        texts: ["Publish prayer ?", "Your prayer will be visible by others"],
+        button: "Publish"
+      },
+      unpublish: {
+        texts: ["Unpublish prayer ?", "People you pray with won't be able to see this prayer anymore!"],
+        button: "Unpublish"
+      }
+    }
+    msgs[published ? 'publish' : 'unpublish'].texts
+
+    Alert.alert(
+      ...(msgs[published ? 'publish' : 'unpublish'].texts as [string, string]), [
+      { text: msgs[published ? 'publish' : 'unpublish'].button, 
         onPress: async () => {
-          prayer && await dispatch(upsertPrayers([{...prayer, published: false}]))
+          prayer && await dispatch(upsertPrayers([{...prayer, published}]))
         } 
       },
-      { text: "Cancel", style: "cancel"} ])
+      { text: "Cancel", style: "cancel"} ]
+    )
   }
 
   if(!prayer) return (
@@ -45,9 +62,11 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
       <Time {...{created_at: prayer.created_at, updated_at: prayer.updated_at }} />
 
       <Spacer height={12}/>
-      <Row>{ 
-        prayer?.published && (
-          <Tag {...{ name: "Published", onPress: unPublish }} /> )}
+      <Row>
+        <Tag {...{ 
+          name: `${prayer?.published ? 'Published' : 'Unpublished'}`,
+          onPress: () => updatePublished({published: !prayer?.published}) 
+        }}/> 
       </Row>
       <Spacer height={48}/>
 
@@ -64,7 +83,6 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
   )
 }
 
-const PrayerView = memo(UnmemoizedPrayerView)
 
 const PrayerPlaylist = 
   styled(({prayer, style}: {prayer: Prayer} & ViewProps) => {
@@ -166,7 +184,7 @@ const INIT_HEIGHT = 400 + 2*Y_MARGIN
   const isTop = 0;
   const isBottom = Y_HEIGHT - height
 
-  console.log(`????? prayer.id=${prayer?.id} index=${index} height=${height} -> `, .00001 + index * height)
+  // console.log(`????? prayer.id=${prayer?.id} index=${index} height=${height} -> `, .00001 + index * height)
   const translateY = Animated.add(
     Animated.add(
       y,
@@ -198,8 +216,6 @@ const INIT_HEIGHT = 400 + 2*Y_MARGIN
       {opacity, transform: [{ translateY }, { scale }]} 
     ]} >
       <UnmemoizedPrayerView {...{ prayerId: prayer.id,  }} /> 
-      {/* <PrayerView {...{ prayerId: prayer.id, onLayout }} />  */}
-
     </Animated.View>
   )
 }
@@ -211,9 +227,9 @@ const styles = StyleSheet.create({
   },
 })
 
+
+const PrayerView = memo(UnmemoizedPrayerView)
 const AnimatedPrayerView = memo(UnmemoizedAnimatedPrayerView)
-
-
 
 export { 
   UnmemoizedPrayerView, UnmemoizedAnimatedPrayerView, 

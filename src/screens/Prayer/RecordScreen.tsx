@@ -1,11 +1,11 @@
 import React, {Reducer, useEffect, useCallback} from 'react'
 import { View, Text, Alert } from 'react-native';
-import styled from 'styled-components/native'
 import { useStore, useSelector } from 'react-redux'
+import styled from 'styled-components/native'
 
-import {ScreenCard, Btn, Button, Spacer, BackIcon} from '@/components/uiStyle/atoms'
+import {ScreenCard, Btn, Spacer} from '@/components/uiStyle/atoms'
 import { RecordedItem } from "@/components/audio-recorder/lib";
-import {RecorderPlayer, AppHeader} from '@/components'
+import {AR, AppHeader} from '@/components'
 import { selectPrayerById, selectTeamById } from '@/state/prayers';
 
 import Prayer, { PrayerInput } from '@/types/Prayer';
@@ -85,13 +85,10 @@ export default ({navigation, route}) => {
         </NewPrayerActions>
       </Section>
 
-      <RecorderPlayer {...{
+      <AR.Recorder {...{
         onChange: recordings => 
           sync({recordings, prayerId, userId, teamId}) 
       }} />
-
-      <Text>Click to pray</Text>
-
     </Container>
   )
 }

@@ -144,8 +144,8 @@ class Recording {
     }
 }
 
-namespace Recording {
 
+namespace Recording {
   export enum Status { // CAUTION: order matters !
     EMPTY, FAILED, PREPARING, READY, STARTED, PAUSED, STOPPED }
 }

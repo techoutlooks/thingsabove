@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import {Text, View, Alert} from "react-native"
 import styled from 'styled-components/native'
+import { useDispatch } from "react-redux"
 import { useForm, FormProvider, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
 
 import { UserCredentials } from '@supabase/supabase-js'
 
+import { signOut } from "@/state/auth"
 import { useAuthProfile, useAuthUser } from "@/hooks"
 import {AvatarUpload, AppHeader} from "@/components"
 import {ScreenCard, Spacer, Btn, TextField
@@ -14,6 +16,12 @@ import {ScreenCard, Spacer, Btn, TextField
 export default ({navigation}) => {
 
   const user = useAuthUser()
+  const dispatch = useDispatch()
+
+  const logOut = () => {
+    dispatch(signOut)
+    navigation.navigate('Auth')
+  }
 
   // Form
   // ==========================
@@ -21,7 +29,7 @@ export default ({navigation}) => {
   // RHF's form definition & state
   const {profile, fetching, error: authError, 
     set, fetch: reset, update } = useAuthProfile()
-  const defaultValues = { ...profile, email: user.email}
+  const defaultValues = { ...profile, email: user?.email}
   const {formState: {isValid, isDirty, errors}, ...methods} = useForm({
     mode: 'onChange', defaultValues })
   
@@ -60,14 +68,16 @@ export default ({navigation}) => {
   return (
     <Container>
 
-      {fetching ? ( <Loading />
-      ) : (
-        <>
+      {fetching ? ( <Loading /> ) : (
+        <Body>
           <AvatarUpload 
             path={profile?.avatar_url || null} 
             onChange={onUpload}
             onError={uploadError}
           />
+          <DisplayName>        
+            {`Hi, ${profile?.first_name ?? profile?.username ?? 'warrior !'}`}
+          </DisplayName>
           <AuthProfileForm {...methods}>
             <TextField
               name="email"
@@ -84,15 +94,34 @@ export default ({navigation}) => {
               textContentType="username"
               rules={{ required: 'username is required!' }}
               // onInvalid={setError}
-              preIcon="email-outline"
+              preIcon="identifier"
             />
             <Spacer height={8} />
+            <TextField
+              name="first_name"
+              placeholder="First Name"
+              textContentType="givenName"
+              rules={{ required: 'First name is required!' }}
+              // onInvalid={setError}
+              preIcon="rename-box"
+            />
+            <Spacer height={8} />
+            <TextField
+              name="last_name"
+              placeholder="Last Name"
+              textContentType="familyName"
+              rules={{ required: 'Last name is required!' }}
+              // onInvalid={setError}
+              preIcon="rename-box"
+            />
+            <Spacer height={8} />
+
             <TextField
               name="web_url"
               placeholder="Website"
               textContentType="URL"
               // onInvalid={setError}
-              preIcon="email-outline"
+              preIcon="web"
             />
             <View style={{display: 'none'}}>
               <TextField 
@@ -104,28 +133,27 @@ export default ({navigation}) => {
 
 
           </AuthProfileForm>
-        </>
+        </Body>
       )}
-      <View>
-      <Spacer height={48} />
-            {( isDirty || isAvatarDirty) ? (
-              <SaveButton 
-                onPress={methods.handleSubmit(onSave, onError)}
-                disabled={!isValid || fetching } 
-              />
-            ):(
-              <GoBackButton 
-                onPress={methods.handleSubmit(() => navigation.goBack(), onError)}
-                disabled={!isValid || fetching } 
-              />
-            )}
 
-            <ResetButton
-              onPress={reset} disabled={fetching} />
-        <SignOutButton label="Sign Out" 
-          // onPress={() => supabase.auth.signOut()} 
-        />
-      </View>
+      <Buttons>
+        <Spacer height={48} />
+        {( isDirty || isAvatarDirty) ? (
+          <SaveButton 
+            onPress={methods.handleSubmit(onSave, onError)}
+            disabled={!isValid || fetching } 
+          />
+        ):(
+          <GoBackButton 
+            onPress={methods.handleSubmit(() => navigation.goBack(), onError)}
+            disabled={!isValid || fetching } 
+          />
+        )}
+        <ResetButton
+          onPress={reset} disabled={fetching} />
+        <SignOutButton label="Sign Out" onPress={logOut} />
+      </Buttons>
+
     </Container>
   )
 }
@@ -137,11 +165,16 @@ const AuthProfileForm = styled(({style, ...p}) => (
     </View>
   ))
 `
-    flex: 1;
-    justify-content: flex-end;
-    padding: 16px;
+  flex: 1;
+  justify-content: flex-end;
 `
 
+const DisplayName = styled.Text`
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 5px;
+  align-self: center;
+`
 const ResetButton = styled(Btn).attrs(({
     label: "Reset"
 }))`
@@ -161,9 +194,15 @@ const SignOutButton = styled(Btn)`
   margin-top: 16px;
 `
 const Loading = styled.Text
-    .attrs({children: 'Saving ...'})
+  .attrs({children: 'Saving ...'})
 ``
- 
+const Buttons = styled.View``
+
+const Body = styled.View`
+  flex: 1;
+  justify-content: flex-start;
+  padding: 16px;
+`
 const Container = styled(ScreenCard)`
   padding: 20px;
 `

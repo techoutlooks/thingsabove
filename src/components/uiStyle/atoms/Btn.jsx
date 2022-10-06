@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TouchableWithoutFeedback } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import {BUTTON_HEIGHT, CONTAINER_RATIO, RADIUS} from "./constants";
@@ -6,19 +6,20 @@ import {BUTTON_HEIGHT, CONTAINER_RATIO, RADIUS} from "./constants";
 
 const Btn = ({
   label,
-  onPress,
+  onPress, onPressIn, onPressOut,
   disabled,
   icon,
   primary,
   size = 24,
   ...props
 }) => {
+
   const [isDown, setIsDown] = useState(false);
   const theme = useContext(ThemeContext);
 
-  const pressIn = () => setIsDown(true);
-  const pressOut = () => setIsDown(false);
-
+  const pressIn = () => { setIsDown(true); onPressIn?.() }
+  const pressOut = () => {setIsDown(false); onPressOut?.()}
+  
   return (
 
     <TouchableWithoutFeedback

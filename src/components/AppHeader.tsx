@@ -35,7 +35,7 @@ export default styled(({children, hideGoBack=false, leftIcon,  ...p}: Props) => 
     >
       {<Avatar noCache
         path={profile?.avatar_url} size={60} style={{marginRight: 12}}
-        onPress={() => navigation.navigate("AuthProfile")}
+        onPress={() => navigation.navigate('Auth', {screen: 'AuthProfile'})}
       />}
       <Spacer width={12} />
       {children}

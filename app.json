@@ -4,10 +4,10 @@
     "slug": "ta-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/thingsabove.png",
+    "icon": "./assets/images/thingsabove.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/thingsabove.png",
+      "image": "./assets/images/thingsabove.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,18 +18,42 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.thingsabove.app",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBluZ4FDbvR4uPVXdCO-J6UwjYGC0AZBfg"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/thingsabove.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.thingsabove.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB3iPHMy_4rJZO5vz43D_MaiycuXlyc93c"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "sentry-expo"
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "techoutlooks-sarl",
+            "project": "thingsabove",
+            "authToken": "7e14219557f441bc8ff92f643c35134be89bb72e140540b4b32a806dce9a1013"
+          }
+        }
+      ]
     }
   }
 }

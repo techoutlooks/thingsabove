@@ -3,10 +3,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Easing} from 'react-native'
 
 import {useAuthSessionListener} from '@/hooks'
-
-import {default as WelcomeStack} from '@/screens/Welcome';
-import {AuthScreen, AuthProfileScreen} from '@/screens/Auth'
-
+import {default as HomeStack} from '@/screens/Home';
+import AuthStack from '@/screens/Auth'
 import {default as TeamStack} from '@/screens/Team';
 import {default as PrayerStack} from '@/screens/Prayer';
 
@@ -25,14 +23,14 @@ const getScreens = () => {
   //     return <Stack.Screen name="SyncProgress" component={SyncScreen}/>
   // }
 
-  return !!session?.user ? (
+  return !!!session?.user ? (
+      <Stack.Screen name="Auth" component={AuthStack}  />) : 
+  (
     <>
-      <Stack.Screen name="Welcome" component={WelcomeStack} />
+      <Stack.Screen name="Home" component={HomeStack} />
       <Stack.Screen name="Team" component={TeamStack} />
       <Stack.Screen name="Prayer" component={PrayerStack} />
     </>
-  ) : (
-    <Stack.Screen name="Auth" component={AuthScreen}/>
   ) 
 }
 

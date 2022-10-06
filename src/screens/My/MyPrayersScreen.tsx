@@ -46,8 +46,6 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 const PrayerList = styled(({prayers: data}) => {
 
-  // console.log('???????? PrayerList.data=', data?.map(t => t.id))
-
   // items animation drive
   const y = new Animated.Value(0)
   const onScroll = Animated.event(
@@ -59,15 +57,10 @@ const PrayerList = styled(({prayers: data}) => {
     <AnimatedPrayerView {...{ y, index, prayer }} /> ), [y])
 
   return (
-    // <AnimatedFlatList {...{ 
-    //   data, renderItem, keyExtractor, onScroll,
-    //   scrollEventThrottle: 16, bounces: false,
-    //   initialNumToRender: 200
-    // }} />
-    <AnimatedFlatList 
-      data={data} renderItem={renderItem} keyExtractor={keyExtractor} onScroll={onScroll}
-      scrollEventThrottle={16} bounces={false}
-    />
+    <AnimatedFlatList {...{ 
+      data, renderItem, keyExtractor, onScroll,
+      scrollEventThrottle: 16, bounces: false,
+    }} />
   )
 
 })``

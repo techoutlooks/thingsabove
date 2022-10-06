@@ -45,7 +45,7 @@ export default ({navigation}) => {
     mode: 'onChange', defaultValues: prayerInput})
 
   useEffect(() => { // navigate away if done publishing
-    status.published && !fetching && navigation.navigate("Welcome", {
+    status.published && !fetching && navigation.navigate("Home", {
       screen: "PrayersByTopic" }) 
   }, [fetching, status.published])
 

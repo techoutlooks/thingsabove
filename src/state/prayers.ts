@@ -6,8 +6,10 @@ import Prayer, {PrayerInput, Team, Room, Category, Topic} from "@/types/Prayer";
 import {mergeDeep} from "@/lib/mergeDeep";
 import * as _ from "lodash"
 import * as supabase from "@/lib/supabase";
-import * as storage from "@/lib/storage"
+import * as storage from "@/lib/supabase/storage"
 import { AppThunk } from './configureStore';
+
+
 
 enum SyncTablesTypes { 'categories', 'topics', 'teams', 'prayers', 'rooms' }
 const syncTables = Object.keys(SyncTablesTypes).filter(x => !(parseInt(x) >= 0))
@@ -180,17 +182,30 @@ export const selectPrayerById = (prayerId: string) =>
  * Get all prayers by team (teamId)
  * @returns Prayer
  */
- export const selectPrayersByTeamId = (state: R, teamId: string) =>
-    selectPrayers(state).filter(({team_ids}) => team_ids?.includes(teamId));
+ export const selectPrayersByTeamId = (state: R, teamId: string) => {
+  const prayers = selectPrayers(state).filter(({team_ids}) => team_ids?.includes(teamId))
+  return _.uniqBy(prayers, 'id')
+ }
+
 
 /***
  * **selectPrayersByUserId()**
  * Get all prayers by user (userId)
  * @returns Prayer
  */
- export const selectPrayersByUserId = (userId: string) => (state: R) =>
-    selectPrayers(state).filter(({user_id}) => user_id == userId);
+ export const selectPrayersByUserId = (userId: string) => (state: R) => {
+  const prayers = selectPrayers(state).filter(({user_id}) => user_id == userId)
+  return _.uniqBy(prayers, 'id')
+ }
 
+ /***
+ * **countPrayersByUserId()**
+ * Get all prayers by user (userId)
+ * @returns Prayer
+ */
+export const countPrayersByUserId = (userId: string) => (state: R) =>
+  selectPrayersByUserId(userId)(state).length;
+ 
 /***
  * **selectUsersByPrayerIds()**
  * Get ids of respective users associated (1-to-1) with prayers

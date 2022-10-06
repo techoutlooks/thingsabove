@@ -1,5 +1,10 @@
 import React from "react";
-import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
+
+export const isAndroid = () => Platform.OS === 'android'
+
+
 
 export type ValueOf<T> = T[keyof T]
 

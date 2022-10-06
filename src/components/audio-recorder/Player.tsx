@@ -1,7 +1,6 @@
 import React from "react";
-import styled, { css } from "styled-components/native";
 import {useRecordings} from "./lib";
-import AudioPlayer from "./AudioPlayer"
+import PlayerWidget from "./PlayerWidget"
 
 
 
@@ -12,7 +11,7 @@ const Player = () => {
 
   return (
     !uri ? null : (
-    <AudioPlayer {...{src: {uri}, shouldPlay: true}} />)
+    <PlayerWidget {...{src: {uri}, shouldPlay: true}} />)
   )
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { download } from "../storage";
+import { download } from "./storage";
 
 /***
  * Download a file from Supabase's public bucket to the local filesystem

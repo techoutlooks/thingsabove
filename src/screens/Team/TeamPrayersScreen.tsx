@@ -1,9 +1,11 @@
-import React, {useMemo, useState, useRef, useCallback, useReducer, Reducer} from "react";
-import {View, Text, ViewStyle, TouchableOpacity} from "react-native";
-import { useNavigation, useRoute } from '@react-navigation/native'
+import React, {useMemo, useState, useRef, useCallback, 
+  useReducer, Reducer, useEffect, ComponentProps} from "react";
+import {View, Text, ViewStyle } from "react-native";
+import { useRoute } from '@react-navigation/native'
 import {useSelector, useStore} from "react-redux";
 import styled, {useTheme} from "styled-components/native";
 import { Feather } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
 
 import BottomSheet, { BottomSheetView, BottomSheetFlatList 
 } from "@gorhom/bottom-sheet";
@@ -11,13 +13,13 @@ import BottomSheet, { BottomSheetView, BottomSheetFlatList
 import Prayer, {Team} from "@/types/Prayer";
 import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
-import { VideoPlayer, Avatar, PrayNowButton, PrayActionGroup } from "@/components";
-import {Spacer, WIDTH, RADIUS,
-    BackIcon, Btn, Button, Row, ScreenCard, ScreenHeader, ScreenHeaderCopy, 
-} from "@/components/uiStyle/atoms";
+import { VideoPlayer, Avatar, PrayActionGroup, PrayerList } from "@/components";
+import { Spacer, RADIUS, BackIcon, Btn, Switch, Row, 
+  ScreenCard, ScreenHeader, ScreenHeaderCopy } from "@/components/uiStyle/atoms";
 
 import TeamMemberList from "./TeamMemberList";
-import PrayerListItem from "./PrayerListItem"
+
+
 
 type T = {prayers: Prayer[], by: string}
 type R = Reducer<T, T>
@@ -25,18 +27,26 @@ type R = Reducer<T, T>
 
 export default ({navigation}) => {
 
+  // pick prayerIds routed from the Home/DiscoverScreen
   const { params: {teamId, prayerIds= []} } = useRoute()
   const navigateBack = useMemo(() => () => navigation.goBack(), [])
   const team = useSelector(selectTeamById(teamId))
 
-  // BottomSheet
-  // ==========================
+  /* BottomSheet
+  sheetLocked: allow bottom sheet to disappear when slided down?
+  ========================== */
   const sheetRef = useRef<BottomSheet>(null);
   const [isOpen, setIsOpen] = useState(true)
   const snapPoints = useMemo(() => ["10%", "40%"], [])
-  const [locked, setLocked] = useState(true)
+  const [sheetLocked, setSheetLocked] = useState(true)  
 
-  const store = useStore();
+  // playback
+  const [shouldPlay, setShouldPlay] = useState(false)   
+  const [shouldReset, setShouldReset] = useState(false)    
+  const [showPlayback, setShowPlayback] = useState(false)  
+   
+
+  const store = useStore()
   const [{prayers, by}, setPrayers] = useReducer<R, string[]>((s, a) => a, 
     prayerIds, prayerIds => ({ by: team?.title ?? 'Unkown', prayers: prayerIds.map(
       prayerId => selectPrayerById(prayerId)(store.getState())) })
@@ -47,7 +57,10 @@ export default ({navigation}) => {
     sheetRef.current?.snapToIndex(1) 
   }, [])
 
-  console.log('<PrayerScreen />', `prayerIds=${prayerIds}`, `team=`,team)
+  const onPrayerListChange = useCallback(({flipped}) => setShowPlayback(flipped), [])
+
+  // console.log('<PrayerScreen />', `team=${team?.title}`,
+  //   `prayerIds=${prayerIds} prayers=${prayers.map(p =>p.id).length}`)
 
 
   return (
@@ -60,7 +73,7 @@ export default ({navigation}) => {
           <Avatar path={team?.avatar_urls[0]} size={75} />
           <Spacer width={12} />
           <Text >
-            Pray with <Text style={{fontWeight: 'bold'}}>{team?.title}</Text>
+            Pray with <Text style={{ fontWeight: 'bold' }}>{team?.title}</Text>
           </Text>
         </ScreenHeader>
 
@@ -79,7 +92,7 @@ export default ({navigation}) => {
         ref={sheetRef}
         index={1}
         snapPoints={snapPoints}
-        enablePanDownToClose={!locked}  
+        enablePanDownToClose={!sheetLocked}  
         enableOverDrag={false}
         onClose={() => setIsOpen(false)}
         style={{
@@ -89,14 +102,38 @@ export default ({navigation}) => {
         }}
       >
         <BottomSheetView >
+
           <Row style={{justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <BottomSheetTitle> { by == team?.title ? 
                 "Listen related prayers" : 
                 (<Text>Prayers by <Text style={{fontWeight: 'bold'}}>{by}</Text></Text>) }
             </BottomSheetTitle>
-            <CloseSheet  {...{ locked, onPress: () => setLocked(locked => !locked)  }} />
+
+            {/* playback for all Prayers */}
+            {/* <Playback hidden={showPlayback}>
+              <Playall {...{intiallyOn: shouldPlay, onChange: setShouldPlay }} />
+            </Playback> */}
+
+            {/* per-prayer's playback */}
+            <Playback>
+              <Playall {...{intiallyOn: shouldPlay, onChange: setShouldPlay }} />
+              <Spacer width={5} />
+              <Reset onReset={setShouldReset} />
+            </Playback >
+            
+            {/* BottomSheet dimmed or definitively closed when slided down? */}
+            <CloseSheet  {...{ locked: sheetLocked, onPress: 
+              () => setSheetLocked(locked => !locked)  }} />
           </Row>
-          <PrayerList {...{prayers}} />
+
+          {/* BottomSheetFlatList. aware of user interactions with prayers */}
+          <PrayerList
+            {...{ 
+              prayers, shouldPlay, shouldReset, 
+              onChange: onPrayerListChange,
+              customFlatList: () => BottomSheetFlatList
+          }} />
+
         </BottomSheetView>
       </BottomSheet>
 
@@ -104,11 +141,27 @@ export default ({navigation}) => {
   )
 }
 
+
+const Playback = styled.View`
+  flex-direction: row;
+  align-items: center;
+  ${p => p.hidden && `display: none;`}
+`
+const Playall = styled(Switch).attrs({
+  size: 18, primary: true,
+  icon: p => <SimpleLineIcons name='playlist' {...p} />
+})``
+const Reset = styled(Btn).attrs(props => ({
+  size: 18, 
+  icon: p => <SimpleLineIcons name='reload'  {...p} />, 
+  onPressIn: () => props.onReset(true), 
+  onPressOut: () => props.onReset(false)
+}))``
 const CloseSheet = styled(Btn).attrs(props => ({
   icon: p => <Feather name={props.locked ? 'lock' : 'unlock'} {...p} />,
   size: 18,
-}))
-` 
+}))`
+  margin-left: 18px;
 `
 
 const BottomSheetTitle = styled(ScreenHeaderCopy)`
@@ -117,7 +170,6 @@ const BottomSheetTitle = styled(ScreenHeaderCopy)`
   padding: 0 16px;
   margin: 0;
 `
-
 const TeamSummary = styled(({team}: {team: Team}) => (
   <>
     <Text style={{lineHeight: 36}}>Description</Text>
@@ -130,32 +182,11 @@ const TeamSummary = styled(({team}: {team: Team}) => (
         // ref={playerRef}
         height={200}
         uri={team.video_url}
-        playing={true}
+        playing={false}
       />
     </View>
   </>
 ))``
-
-
-
-const PrayerList = styled(({prayers, style}: 
-  {prayers: Prayer[], style?: ViewStyle}) => {
-    
-    const keyExtractor = useCallback((item, i) => item+i, [])
-    const renderItem = useCallback(
-      ({item: prayer}) => (<PrayerListItem {...{prayer}} />), [])
-
-    return (
-      <Row {...{style}}>
-        <BottomSheetFlatList {...{
-          data: prayers, keyExtractor, renderItem,
-          ItemSeparatorComponent: () => (<Spacer height={8} />)
-        }} />
-      </Row>
-    )
-})`
-    padding: 0 16px;
-`
 
 const Section = styled(({children, ...p}) => (
   <>

@@ -42,7 +42,7 @@ export default forwardRef(
   return (
     <View>
         {label && (<Label {...{children: label}} />)}
-        <TextInput {...{ ref, ...props, onChangeText, name, value }} />
+        <TextInput {...{ ref, ...props, onChangeText, name, value: value?.trim() }} />
         <ErrorMessage {...{ name, errors, as: ErrorText }}  />
     </View>
   )

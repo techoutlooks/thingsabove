@@ -28,7 +28,7 @@ const ShareButton = styled(({content, options, style}: Props) => {
         // dismissed
       }
     } catch (error) {
-      alert(error.message);
+      alert(error?.message);
     }
   }, [content, options])
 

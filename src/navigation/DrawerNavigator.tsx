@@ -1,28 +1,31 @@
 import React from 'react'
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer'
+import { createDrawerNavigator } from '@react-navigation/drawer'
 import { useTheme } from "styled-components/native";
+import {CustomDrawer2, CustomDrawer} from "@/components"
 
-import {CustomSidebarMenu} from "@/components"
-
-import {AuthScreen, AuthProfileScreen} from '@/screens/Auth'
+import AuthStack, { AuthScreen } from '@/screens/Auth'
 import {MyPrayersScreen} from '@/screens/My'
 
 import BottomNavigator from "./BottomNavigator"
+import { useIsAuthed } from '@/hooks';
 
 const Drawer = createDrawerNavigator()
 
+
 export default () => {
   const theme = useTheme()
+  const isAuthed = useIsAuthed() 
+
+  console.log(`\n ???????? Drawer isAuthed=`, isAuthed)
 
   return (
     <Drawer.Navigator
       // defaultStatus="open"
       initialRouteName="Home"
-      // drawerContent={ props => <CustomSidebarMenu {...props} />}
+      drawerContent={ props => <CustomDrawer {...props} />}
       screenOptions={{
         headerShown: false,
         drawerActiveTintColor: theme.colors.primaryButtonBg
-
       }}
     >
       <Drawer.Screen
@@ -34,33 +37,38 @@ export default () => {
         }}
         component={BottomNavigator}
       />
-      <Drawer.Screen
-        name="MyPrayers"
-        options={{
-          drawerLabel: 'My Prayers',
-          groupName: 'My',
-          activeTintColor: '#e91e63',
-        }}
-        component={MyPrayersScreen}
-      />
+      { isAuthed && (
+        <Drawer.Screen
+          name="MyPrayers"
+          component={MyPrayersScreen}
+          options={{
+            drawerLabel: 'My Prayers',
+            groupName: 'My',
+            activeTintColor: '#e91e63',
+          }}
+        />
+      )}
+      { !isAuthed && (
+        <Drawer.Screen
+          name="DoAuth"
+          component={AuthScreen}
+          options={{
+            drawerLabel: 'Sign In',
+            groupName: 'My',
+            activeTintColor: '#e91e63',
+          }}
+        />
+      )}
       <Drawer.Screen
         name="Auth"
+        component={AuthStack}
         options={{
-          drawerLabel: 'Sign In',
+          drawerLabel: isAuthed ? "My Profile" : "Begin",
           groupName: 'Auth',
           activeTintColor: '#e91e63',
         }}
-        component={AuthScreen}
       />
-      <Drawer.Screen
-        name="AuthProfile"
-        options={{
-          drawerLabel: 'Profile',
-          groupName: 'Auth',
-          activeTintColor: '#e91e63',
-        }}
-        component={AuthProfileScreen}
-      />
+
     </Drawer.Navigator>
   )
 }

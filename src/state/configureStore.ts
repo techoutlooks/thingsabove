@@ -35,9 +35,6 @@ store.dispatch(fetchAll)
 
 export { store, persistor }
 
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  AnyAction
->
+// https://redux.js.org/usage/usage-with-typescript
+export type AppThunk<ReturnType = void> = 
+  ThunkAction<ReturnType, RootState, unknown, AnyAction >

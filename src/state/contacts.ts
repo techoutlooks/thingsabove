@@ -54,7 +54,7 @@ export default (state: S = initialState, action: A) => {
         action.error : action.error.message
       return { ...state, error }
 
-    case Auth.RESET:
+    case Auth.SYNC_RESET:
       return initialState
     default:
       return state
@@ -74,7 +74,6 @@ export const getContactsById = (state: R) => {
 }
 
 export const selectContact = (userId: string) => (state: R) => {
-  console.log('contacts state/contactsById', getContactsById(state))
   return getContactsById(state)[userId]
 }
 
@@ -100,7 +99,7 @@ export const getContactAvatar = (profile: UserProfile) => {
 }
 
 export const selectContactAvatar = (userId: string) => (state: R) => {
-  const contact = selectContact(state, userId)
+  const contact = selectContact(userId)(state)
   return contact?.avatar?.[0]
 }
 

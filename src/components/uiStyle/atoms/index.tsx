@@ -1,6 +1,8 @@
-export { default as Btn } from "./Btn";
-export { default as Text } from "./Text";
 export { Row, Col, Button } from "./elements";
+
+export { default as Btn } from "./Btn";
+export { default as Switch } from "./Switch";
+export { default as Text } from "./Text";
 export { default as SendIcon} from "./SendIcon";
 export { Swiper, Swipeable, Underlay } from "./Swiper";
 export { default as Avatar } from "./Avatar";
@@ -12,6 +14,7 @@ export { default as ProgressBar } from "./ProgressBar";
 export { default as Spacer } from "./Spacer";
 export { default as SearchInput } from "./SearchInput";
 export {default as ShareButton} from "./ShareButton";
+export {default as NextButtonArrow} from "./NextButtonArrow";
 
 
 // FIXME: error prone, rather list exhaustively

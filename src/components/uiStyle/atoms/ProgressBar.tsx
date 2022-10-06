@@ -9,7 +9,7 @@ type Props = {
   duration?: number,                      // duration (ms)
   paused?: boolean,                       // whether to pause the timer
   reset?: boolean,                        // whether to reset the timer
-  onEnded?: (ended: boolean) => void,   // called on end, or user stopping   
+  onEnded?: (ended: boolean) => void,     // called on end, or user stopping   
 } & ViewProps
 
 /***
@@ -35,7 +35,7 @@ const ProgressBar = styled((props: Props) => {
   `
     background-color: ${p => p.theme.colors.mutedFg};
     border-radius: ${RADIUS}px;
-    padding: ${PADDING}px;
+    // padding: ${PADDING}px; // <- this affect recording duration
   `;
 
 export default ProgressBar;

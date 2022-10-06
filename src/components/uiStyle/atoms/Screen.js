@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components/native'
 import { TouchableWithoutFeedback } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { WIDTH } from './constants'
+
 
 export const ScreenCard = styled.SafeAreaView`
   flex: 1;

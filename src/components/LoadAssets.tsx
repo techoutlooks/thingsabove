@@ -6,9 +6,12 @@ import * as Font from "expo-font";
 import { InitialState, NavigationContainer } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as SplashScreen from 'expo-splash-screen';
+import { checkForUpdates } from "@/lib/expo";
+
 
 
 const NAVIGATION_STATE_KEY = `NAVIGATION_STATE_KEY-${Constants.manifest.sdkVersion}`;
+
 
 
 export type FontSource = Parameters<typeof Font.loadAsync>[0];
@@ -20,13 +23,20 @@ const usePromiseAll = (promises: Promise<void | void[]>[], cb: () => void) =>
     })();
   });
 
-
+/**
+ * useLoadAssets()
+ * Checks for app OTA updates, loads assets 
+ * @param assets 
+ * @param fonts 
+ * @returns 
+ */
 const useLoadAssets = (assets: number[], fonts: FontSource): boolean => {
-    const [ready, setReady] = useState(false);
-    usePromiseAll([
-        Font.loadAsync(fonts), ...assets.map((asset) => Asset.loadAsync(asset))
-    ], () => setReady(true))
-    return ready;
+  const [ready, setReady] = useState(false);
+  usePromiseAll([
+      checkForUpdates(),  
+      Font.loadAsync(fonts), ...assets.map((asset) => Asset.loadAsync(asset))
+  ], () => setReady(true))
+  return ready;
 }
 
 type LoadAssetsProps = {
@@ -52,23 +62,23 @@ const LoadAssets = ({ assets, fonts, children }: LoadAssetsProps) => {
     const [navReady, setNavReady] = useState(true) //useState(!__DEV__);
     const [initialState, setInitialState] = useState<InitialState | undefined>();
     useEffect(() => {
-        const restoreState = async () => {
-            try {
-                const savedStateString = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
-                const state = savedStateString ? JSON.parse(savedStateString) : undefined;
-                setInitialState(state)
-            } finally {
-                setNavReady(true)
-            }
+      const restoreState = async () => {
+        try {
+          const savedStateString = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
+          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
+          setInitialState(state)
+        } finally {
+            setNavReady(true)
         }
-        if (!navReady) {
-            restoreState();
-        }
+      }
+      if (!navReady) {
+        restoreState();
+      }
     }, [navReady])
 
-    const onStateChange = useCallback((state) =>
-        AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state)),
-    [])
+  const onStateChange = useCallback((state) =>
+    AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state)),
+  [])
     
     // Splash 
     // ==========================
@@ -84,9 +94,9 @@ const LoadAssets = ({ assets, fonts, children }: LoadAssetsProps) => {
     if (!ready || !navReady) {
         return null }
     return (
-        <NavigationContainer {...{ onStateChange, initialState, onReady }}>
-            {children}
-        </NavigationContainer>
+      <NavigationContainer {...{ onStateChange, initialState, onReady }}>
+        {children}
+      </NavigationContainer>
     )
 };
 

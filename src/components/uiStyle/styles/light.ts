@@ -25,6 +25,7 @@ export const theme: DefaultTheme = {
     primaryButtonBgDown: '#574893',
     primaryButtonFg: '#eeecf8',
 
+    // chat
     messageBg: '#e5e4e7',
     messageFg: '#55496b',
     sentMessageBg: '#d6d2e6',

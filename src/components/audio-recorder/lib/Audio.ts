@@ -65,7 +65,7 @@ export default class Audio {
   unload = async () => { 
     try { 
       this.sound?.unloadAsync() ; 
-      // console.debug('unloaded ...', this.uri) 
+      console.debug('unloaded ...', this.uri) 
     } catch(e) { handleError(e) }
   }
 
@@ -91,7 +91,7 @@ export default class Audio {
       const { sound, status } = await av.Audio.Sound
         .createAsync(source, {shouldPlay}, self.onPlaybackStatusUpdate)
       sound && Object.assign(self, { sound, uri: status?.uri })
-      // console.debug('loaded ...', status)
+      console.debug('loaded ...', status?.uri)
 
     } catch (e) {
       handleError(e)

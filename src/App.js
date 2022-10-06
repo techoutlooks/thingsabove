@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Platform, StatusBar } from "react-native";
-import { Provider, useSelector, useDispatch } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import styled, { ThemeProvider } from "styled-components/native";
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FlashMessage from "react-native-flash-message";
 
-import {LoadAssets} from "@/components";
 
 // import './lib/poly'
+import './lib/sentry'
 
+import {LoadAssets} from "@/components";
 import DrawerNavigator from "@/navigation/DrawerNavigator";
 import NotificationHandler from "./NotificationHandler";
 import { getAuthState } from "./state/auth";
@@ -33,8 +34,6 @@ const themeMap = {
 };
 
 const Main = () => {
-  const auth = useSelector(getAuthState);
-  const dispatch = useDispatch();
 
   const themeKey = useSelector(selectTheme);
   const theme = themeMap[themeKey];
@@ -67,6 +66,7 @@ const App = () => {
 
 export default App;
 
+
 const AppFrame = styled.View`
   background-color: #000;
   flex: 1;
@@ -78,6 +78,8 @@ const AppBackground = styled(GestureHandlerRootView)`
   justify-content: center;
   border-radius: 15px;
   overflow: hidden;
+
+  fontFamily: SFProDisplay-Regular;
 `;
 
 // const SafeArea = styled.KeyboardAvoidingView`

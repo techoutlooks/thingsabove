@@ -1,21 +1,31 @@
 import { User, UserCredentials, Session } from "@supabase/supabase-js"
-import { AuthTypes, UserProfile, fetchUserProfile, upsertUserProfile } from "@/lib/supabase"
+import { showMessage, hideMessage } from "react-native-flash-message";
 
+import * as supabase from "@/lib/supabase"
+import * as lightTheme from "@/components/uiStyle/styles/light"
+import { AppThunk } from "./configureStore";
 
 export enum Auth {
-  RESET = 'auth/RESET',
-  START = 'auth/START',
-  COMPLETE = 'auth/COMPLETE',
-  FAILED = 'auth/FAILED',
-  LOGIN = 'auth/LOGIN',
-  SYNC_SESSION = 'auth/SYNC_SESSION',
-  SYNC_PROFILE = 'auth/SYNC_PROFILE',
+
+  // Syncs: Supabase -> store
+  SYNC_RESET = 'auth/SYNC_RESET',           // reset store
+  SYNC_START = 'auth/SYNC_START',           // sync started
+  SYNC_COMPLETE = 'auth/COMPLETE',          // sync ended
+  SYNC_SESSION = 'auth/SYNC_SESSION',       // sync session object 
+  SYNC_PROFILE = 'auth/SYNC_PROFILE',       // sync profile object
+  SYNC_FAILED = 'auth/SYNC_FAILED',         // failed and toggle off fetching
+
+  // Syncs Auth result
+  AUTH_START = 'auth/AUTH_START',            // reset & start
+  AUTH_LOGIN = 'auth/AUTH_LOGIN',            // login result from auth
+  AUTH_LOGOUT = 'auth/AUTH_LOGOUT',          // reset store after logout
+
 }
 
 type S = { 
-  profile: UserProfile,           // auth profile
-  user: User, session: Session,   // auth core
-  fetching: boolean, error: any   // request status
+  profile: supabase.UserProfile,            // auth profile
+  user: User, session: Session,             // auth core
+  fetching: boolean, error: any             // request status
 }
 type A = { type: Auth } & Partial<S>
 type R = { auth: S }
@@ -31,18 +41,22 @@ export default (state = initialState, action: A) => {
   const {type, ...payload} = action
   switch (type) {
 
-    case Auth.LOGIN: case Auth.FAILED: 
+    // expected ops: leave clear errors cleared
+    case Auth.AUTH_LOGIN:  
     case Auth.SYNC_SESSION: case Auth.SYNC_PROFILE:
-      return { ...state, ...payload }
+      return { ...state, error: null, ...payload }
 
-    case Auth.START:
+    case Auth.SYNC_START:
       return { ...state, fetching: true }
-    case Auth.COMPLETE: 
+    case Auth.AUTH_START:
+      return { ...initialState, fetching: true }
+             
+    case Auth.SYNC_COMPLETE: 
       return {...state, fetching: false}
-    case Auth.FAILED:
+    case Auth.SYNC_FAILED:
       return { ...state, ...payload, fetching: false }
 
-    case Auth.RESET:
+    case Auth.SYNC_RESET: case Auth.AUTH_LOGOUT:
       return initialState
     default:
       return state
@@ -70,7 +84,7 @@ export const selectAuthUser =
   (state: R) => getAuthState(state).user
 
 export const selectAuthId = 
-  (state: R) => getAuthState(state).user.id
+  (state: R) => getAuthState(state)?.user?.id
 
 export const selectAuthProfile =
   (state: R) => getAuthState(state).profile
@@ -79,64 +93,107 @@ export const selectAuthProfile =
 // Actions
 // ==========================
 
-// -- Auth/Core
 
-const authStart = () => ({ type: Auth.START })
-const authComplete = () => ({ type: Auth.COMPLETE, fetching: false })
-export const resetAuth = () => ({ type: Auth.RESET })
-export const syncSession = (session: Session|null) => ({ type: Auth.SYNC_SESSION, session })
-export const authLogin = (user: User) => ({ type: Auth.LOGIN, user })
-export const authFailed = (error: Error) => ({ type: Auth.FAILED, error: error.message })
+// -- Copy data to store
 
-export const doAuth = (method: AuthTypes, data: UserCredentials) => 
-  (dispatch, getState) => {
+const syncStart = () => ({ type: Auth.SYNC_START })
+
+const syncComplete = () => ({ type: Auth.SYNC_COMPLETE, fetching: false })
+
+export const syncReset = () => {
+  showMessage({ message: "Authentication", type: "success", 
+    backgroundColor: lightTheme.theme.colors.primaryButtonBgDown,
+    statusBarHeight: 30, description: "Successfully signed out" })
+  return { type: Auth.SYNC_RESET } 
+}
+
+export const syncSession = (session: Session|null) => ({
+   type: Auth.SYNC_SESSION, session })
+
+export const syncFailed = (error: Error) => {
+  showMessage({ message: "Authentication", type: "danger", duration: 4000,
+    statusBarHeight: 50, description: error?.message })
+  return { type: Auth.SYNC_FAILED, error: error.message?? error }
+}
+
+
+// -- Auth/Core: run auth functions
+
+const authStart = () => ({ type: Auth.AUTH_START })
+
+export const authLogin = (user: User) => {
+  showMessage({ message: "Authentication", type: "success", 
+    statusBarHeight: 50, description: "Successfully signed in" })
+  return { type: Auth.AUTH_LOGIN, user }
+}
+
+export const doAuth = (method: supabase.AuthTypes, data: UserCredentials): 
+  AppThunk<Promise<void>> => (dispatch, getState) => {
 
     dispatch(authStart)
-    method(data)
+    return method(data)
       .then(({error, user}) => {
         if (user)  { 
           dispatch(authLogin(user))
           dispatch(fetchProfile)
         } else { throw(error)  }
       })
-      .catch((error: any) => {
-        console.error(error)
-        dispatch(authFailed(error)) 
+      .catch((e: any) => { dispatch(syncFailed(e)) })
+      .finally(() => dispatch(syncComplete))
+}
+
+export const signOut: AppThunk<Promise<void>> = 
+  (dispatch, getState) => {
+    supabase.signOut().then(({error}) => {
+      if(error) { throw Error(error) }
+      dispatch(syncReset)
+    }).catch((e: any) => {
+      dispatch(syncFailed(e)) 
+    })
+}
+
+
+
+// -- Auth/Profile: run CRUD profile operations
+// profiles availabe iff created trigger func to creates profile on user signup
+// https://www.youtube.com/watch?v=0N6M5BBe9AE
+// https://supabase.com/docs/guides/auth/managing-user-data#advanced-techniques
+
+export const syncProfile = (profile: Partial<supabase.UserProfile>) => ({ 
+  type: Auth.SYNC_PROFILE, profile})
+
+
+export const fetchProfile: AppThunk<Promise<void>> = 
+  (dispatch, getState) => {
+
+    const authId = selectAuthId(getState())
+    if(!authId) {
+      // console.error(`\n--> Auth/fetchProfile(authId=${authId}): 'authId' not defined.`, 
+      // `state.auth=`, getState().auth)
+      return }
+
+    dispatch(syncStart)
+    supabase.fetchUserProfile(authId)
+      .then(({ data, error, status }) => { 
+        if (error && status !== 406) { throw error }
+        if(!error) { dispatch(syncProfile(data)) } else { throw(error) } 
+      }).catch(e => {
+        dispatch(syncFailed(e))
       })
 }
 
-// -- Auth/Profile
+export const updateProfile = (updates: Partial<supabase.UserProfile>)
+  : AppThunk<Promise<void>> => (dispatch, getState) => {
 
-export const syncProfile = (profile: Partial<UserProfile>) => ({ 
-  type: Auth.SYNC_PROFILE, profile})
-
-export const fetchProfile = (dispatch, getState) => {
-
-    dispatch(authStart)
-    const authId = selectAuthId(getState())
-    fetchUserProfile(authId).then(({ data, error, status }) => { 
-      if (error && status !== 406) { throw error }
-      if(!error) { dispatch(syncProfile(data)) } else { throw(error) } 
-      // console.log('--> Auth/fetchProfile(data)', data)
-    }).catch(err => {
-      console.error(err)
-      dispatch(authFailed(err))
-    })
-
-}
-
-export const updateProfile = (updates: Partial<UserProfile>) => 
-  (dispatch, getState) => {
-
-      dispatch(authStart)
-      upsertUserProfile(selectAuthId(getState()), updates)
-        .then(({ error }) => { 
-          if (error) { throw error } else { 
-            dispatch(syncProfile(updates));
-            dispatch(authComplete)
-          }
-        }).catch(err => {
-          console.error(err)
-          dispatch(authFailed(err))
-        })
+    dispatch(syncStart)
+    supabase.upsertUserProfile(selectAuthId(getState()), updates)
+      .then(({ error }) => { 
+        if (error) { throw error } else { 
+          dispatch(syncProfile(updates));
+          dispatch(syncComplete)
+        }
+      }).catch(e => {
+        console.error(e)
+        dispatch(syncFailed(e))
+      })
   }

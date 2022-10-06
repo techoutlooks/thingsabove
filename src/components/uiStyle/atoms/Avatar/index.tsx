@@ -25,14 +25,13 @@ type  Props = {
  */
 const Avatar = ({ avatar, size, style, onPress }: Props) => {
 
-  const borderRadius = Math.round(size * 0.33)
 
-  const containerStyles = {
-    width: size, height: size, ...style }
+  const borderRadius = Math.round(size * 0.33)
+  const containerStyles = [{width: size, height: size}, style]
 
   if (!!!(avatar?? avatar?.length)) {
     return (
-    <Container {...{onPress}} style={containerStyles}>
+    <Container {...{onPress, containerStyles}}>
       <Picture source={require("./default.png")} />
     </Container>)
   }
@@ -44,7 +43,7 @@ const Avatar = ({ avatar, size, style, onPress }: Props) => {
       getAvatarColor(avatar, )
 
     return (
-      <InitialsContainer {...{onPress}}
+      <InitialsContainer {...{onPress, style}}
         style={{ ...containerStyles, borderRadius }}
         colors={[backgroundLight, backgroundDark]}
       >
