@@ -39,8 +39,8 @@ const TeamMemberList = React.memo(styled(({team, onSelect }: Props) => {
   let members = useContacts(memberIds, true)
 
 
-  // console.log('<TeamPrayers />', `teamPrayers=${teamPrayers.length}`, `team=${team.title}`, 
-  // `members=${members.length}`)
+  console.log('<TeamPrayers />', `teamPrayers=${teamPrayers.length}`, `team=${team.title}`, 
+  `members=${members.length}`)
 
   return (
     <View>
@@ -59,7 +59,7 @@ const MemberList = styled(({members, onSelect, style}:
 
   const keyExtractor = useCallback((item, i) => item+i, [])
   const renderItem = useCallback(({item: contact, index}) => (
-    <MemberListItem {...{ index, contact, onPress: onSelect }} />
+    <MemberAvatar {...{ index, contact, onPress: onSelect }} />
   ), [])
 
   return (
@@ -75,17 +75,17 @@ const MemberList = styled(({members, onSelect, style}:
 `
 
 
-const MemberListItem = styled(({ index, contact, onPress, style }) => {
+const MemberAvatar = styled(({ index, contact, onPress, size, style }) => {
   const prayers = useSelector(selectPrayersByUserId(contact.id))
-  console.log('<MemberListItem />', `prayers=`, prayers.map(p =>p.id))
-
   return (
-    <Avatar path={contact?.avatar[0]} size={70} style={style}
+    <Avatar path={contact?.avatar[0]} size={size} style={style}
             onPress={() => onPress({contact, prayers})} 
     />)
-})`
+}).attrs(p => ({ size: 70 }))`
   ${p => p.index>0 && `margin-left: -25px`}
-
+  border: 2px solid ${p => p.theme.colors.cardBg};
+  border-radius: ${p => p.size * .33}px; // same radius as inner img!
+  
 `
 
 export default TeamMemberList;

@@ -194,7 +194,7 @@ export const selectPrayerById = (prayerId: string) =>
  * @returns Prayer
  */
  export const selectPrayersByUserId = (userId: string) => (state: R) => {
-  const prayers = selectPrayers(state).filter(({user_id}) => user_id == userId)
+  const prayers = selectPrayers(state)?.filter(({user_id}) => user_id == userId)
   return _.uniqBy(prayers, 'id')
  }
 
@@ -261,7 +261,7 @@ export const getPrayersByTopic = ({published}: {published: boolean}) =>
  */
  export const toPrayer = (data:PrayerInput<RecordedItem>) => {
     
-  let { prayerId, title, description, picture_urls,
+  let { prayerId, title, description, picture_urls, lat_lng,
     recordings, userId, teamId, roomId, topics, published } = data
 
   return new Promise<Prayer>((resolve, reject) => {
@@ -282,14 +282,17 @@ export const getPrayersByTopic = ({published}: {published: boolean}) =>
     )
       .then(audio_urls => {
         resolve ({
-          id: prayerId,
-          user_id: userId,
-          title, audio_urls, duration, is_recording: false,
+
+          // var renaming
+          id: prayerId, user_id: userId,
           team_ids: teamId ? [teamId]: [], room_id: roomId,
-          description, topics, picture_urls,
-          published,
-          updated_at: now,
-          ...(prayerId ? {} : {created_at: now} ),
+
+          // computed fields
+          description, audio_urls, duration, is_recording: false,
+          updated_at: now, ...(prayerId ? {} : {created_at: now} ),
+
+          // following are just copy-paste:
+          title, topics, picture_urls, lat_lng, published,
         } as Prayer)
       })
 

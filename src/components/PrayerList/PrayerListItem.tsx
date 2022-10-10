@@ -68,8 +68,8 @@ const PrayerListItem = styled(
   // ==========================
 
   const [height, setHeight] = useState(isLast? LAST_ITEM_HEIGHT: ITEM_HEIGHT)
-  useLayoutEffect(()=> { setHeight(flipSide == 1 ? // FRONT
-    height : height* prayer.audio_urls?.length||1) }, [flipSide, height])
+  useLayoutEffect(()=> { setHeight(height => flipSide == 1 ? // FRONT
+    height : height* (prayer.audio_urls?.length||1)  )}, [flipSide])
 
   const front = (
     <TouchableOpacity {...{onPress: changeSide}} style={{ 

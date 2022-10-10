@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState, useMemo} from 'react';
+import React, {useEffect, useRef, useState, useMemo, useCallback} from 'react';
 import {View, Text, FlatList, Pressable, useWindowDimensions} from 'react-native';
 import {useNavigation} from "@react-navigation/native"
 import { FontAwesome5 } from '@expo/vector-icons'; 
@@ -22,8 +22,8 @@ import {ScreenCard, Spacer, WIDTH} from "@/components/uiStyle/atoms"
  */
 export default () => {
 
-  // ui setup
-  // ===========================
+  /* ui setup
+  ============================== */
 
   const windowDimensions = useWindowDimensions();
   const flatList = useRef();
@@ -38,11 +38,12 @@ export default () => {
     }
   })
 
-  // Data
-  // ===========================
+  /* Data
+  ============================== */
+  
   const state = useStore().getState()
   const teams = useSelector(selectTeams)
-  const [selectedTeamId, setSelectedTeamId] = useState<Team>();
+  const [selectedTeamId, setSelectedTeamId] = useState<string>();
   const selectedTeamPrayersCount = useMemo(() => 
     selectPrayersByTeamId(state, selectedTeamId).length, [selectedTeamId])
 
@@ -56,11 +57,11 @@ export default () => {
   }, [query])
 
 
-
   /* Zoom/scroll 
-    Zoom map -> selected team location 
-    Scroll TeamCard Flatlist carousel -> selected team location 
+  Zoom map -> selected team location 
+  Scroll TeamCard Flatlist carousel -> selected team location 
   ============================== */
+
   useEffect(() => {
     if (!selectedTeamId || !flatList) { return }
 
@@ -68,12 +69,17 @@ export default () => {
     flatList.current.scrollToIndex({index})
 
     const selectedTeam = teams[index]
-    const coordinate = toLatLng(selectedTeam.lat_lng)
+    const coordinate = toCoords(selectedTeam.lat_lng)
     const region = { ...coordinate, latitudeDelta: 0.05, longitudeDelta: 0.05 }
     map.current.animateToRegion(region)
 
   }, [selectedTeamId])
 
+
+  // const onSelectLocation = useCallback(
+  //   team => setSelectedTeamId(team.id), [])
+  const renderTeamCard = useCallback(
+    ({item}) => <TeamCard team={item} />, [])
 
   return (
     <Container>
@@ -85,24 +91,25 @@ export default () => {
       </AppHeader>
 
       <MapView
-        ref={map}
-        provider={PROVIDER_GOOGLE}
+        ref={map} 
         style={{ width: '100%', height: '100%' }} 
-        initialRegion={{
-          latitude: 5.6352343, longitude: -0.2338485,
-          latitudeDelta: 0.0922, longitudeDelta: 0.0421,
-        }}
+        provider={PROVIDER_GOOGLE}
+        showsUserLocation={true}
+        followsUserLocation={true}
+        // initialRegion={{
+        //   latitude: 14.7273067, longitude: -17.2077234,
+        //   latitudeDelta: 0.0922, longitudeDelta: 0.0421,
+        // }}
       >
-        {
-          teams.map(team => (
-            <LocationMarker
-              key={team.id}
-              isSelected={selectedTeamId===team.id}
-              coordinate={toLatLng(team.lat_lng)} title={selectedTeamPrayersCount}
-              onPress={ () => setSelectedTeamId(team.id)}
-            />
-          ))
-        }
+        {teams.map(team => (
+          <LocationMarker
+            key={team.id}
+            isSelected={selectedTeamId===team.id}
+            coordinate={toCoords(team.lat_lng)} 
+            title={selectedTeamPrayersCount.toString()}
+            onPress={ () => setSelectedTeamId(team.id) }
+          />
+      ))}
       </MapView>
       <View style={{
         position: 'absolute',
@@ -118,9 +125,7 @@ export default () => {
           decelerationRate={'fast'}
           viewabilityConfig={viewabilityConfig.current}
           onViewableItemsChanged={onViewableItemsChanged.current}
-          renderItem={
-            ({item}) => <TeamCard team={item} />
-          }
+          renderItem={renderTeamCard}
         />
         </View>
     </Container>
@@ -212,7 +217,10 @@ const Container = styled(ScreenCard)`
 `
 
 
-const toLatLng = (latLng: string): LatLng => {
+/***
+ * Deserialize string of LatLng 2-uple from db to object
+ */
+ const toCoords = (latLng: string): LatLng => {
   const coords = latLng.split(',').map(v => parseFloat(v))
   return {latitude: coords[0], longitude: coords[1]}
 }

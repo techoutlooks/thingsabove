@@ -1,15 +1,15 @@
-import React, {Reducer, useEffect, useCallback} from 'react'
+import React, {Reducer, useEffect, useCallback, useRef} from 'react'
 import { View, Text, Alert } from 'react-native';
 import { useStore, useSelector } from 'react-redux'
 import styled from 'styled-components/native'
 
+import { selectPrayerById, selectTeamById } from '@/state/prayers';
+import Prayer, { PrayerInput } from '@/types/Prayer';
+import {useAuthId, useLocation} from "@/hooks";
+
 import {ScreenCard, Btn, Spacer} from '@/components/uiStyle/atoms'
 import { RecordedItem } from "@/components/audio-recorder/lib";
 import {AR, AppHeader} from '@/components'
-import { selectPrayerById, selectTeamById } from '@/state/prayers';
-
-import Prayer, { PrayerInput } from '@/types/Prayer';
-import {useAuthId} from "@/hooks";
 
 import { useScreensContext } from "./PrayerContext"
 
@@ -28,6 +28,9 @@ export default ({navigation, route}) => {
   const userId = useAuthId()
   const team = useSelector(selectTeamById(teamId))
   const {prayerInput, sync, status} = useScreensContext()
+  const { location: lat_lng, error: locationErrorMsg} = useLocation(
+    {shouldFormatToLatLng: true}) // geolocation is hidden.
+  const locationRef = useRef(); locationRef.current = lat_lng;
 
   useEffect(() => { // sync existing prayer to context
     const prayer = prayerId && selectPrayerById(prayerId)(store.getState())
@@ -58,6 +61,14 @@ export default ({navigation, route}) => {
 
   }, [prayerInput, status.saved])
 
+  const onChange = useCallback(recordings => {
+    console.log('?????? LOCATION.onChange()', locationRef.current)
+    sync({recordings, prayerId, userId, teamId, lat_lng: locationRef.current})
+
+  }, [prayerId, userId, teamId, lat_lng])
+
+  console.log('?????? LOCATION.hook', lat_lng)
+
 
   return (
     <Container>
@@ -85,10 +96,7 @@ export default ({navigation, route}) => {
         </NewPrayerActions>
       </Section>
 
-      <AR.Recorder {...{
-        onChange: recordings => 
-          sync({recordings, prayerId, userId, teamId}) 
-      }} />
+      <AR.Recorder {...{ onChange }} />
     </Container>
   )
 }
@@ -101,6 +109,7 @@ const NewPrayerActions = styled.View
   justify-content: flex-start;
   align-items: center;
 `
+
 
 
 const Action = styled(Btn)`
@@ -120,4 +129,5 @@ const Section = styled(({children, ...p}) => (
 const Container = styled(ScreenCard)`
   align-items: flex-start;
 `
+
 

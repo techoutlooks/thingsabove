@@ -1,75 +1,38 @@
-import React, {useEffect, useRef, useState, useMemo} from 'react';
-import {View, Text, FlatList, Pressable, useWindowDimensions} from 'react-native';
-import {useNavigation} from "@react-navigation/native"
-import { FontAwesome5 } from '@expo/vector-icons'; 
-
-import {useSelector, useStore} from "react-redux"
+import React, { useEffect, useRef, useState } from 'react';
+import {useSelector } from "react-redux"
 import styled, {useTheme} from 'styled-components/native'
-import MapView, {LatLng, Marker} from "react-native-maps";
+import MapView, {LatLng, Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import isSameDay from 'date-fns/isSameWeek';
 
-import {Team} from "@/types/Prayer";
-import { Image } from "@/lib/supabase"
-import { selectTeams, selectPrayersByTeamId } from '@/state/prayers';
+import { selectPrayers } from '@/state/prayers';
 
 import {AppHeader} from "@/components"
 import SearchBar from "@/components/uiStyle/SearchBar";
 import {ScreenCard, Spacer, WIDTH} from "@/components/uiStyle/atoms"
+import { Feather } from '@expo/vector-icons';
 
-
-// style={[{width: windowWidth-60}]}
 export default () => {
 
   // ui setup
   // ===========================
 
-  const windowDimensions = useWindowDimensions();
-  const flatList = useRef();
   const map = useRef()
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold:70
-  })
 
-  const onViewableItemsChanged = useRef(({viewableItems}) => {
-    if(viewableItems.length>0) {
-      setSelectedTeamId(viewableItems[0].item.id)
-    }
-  })
+  /* Data
+  ============================== */
+  const prayers = useSelector(selectPrayers)
+  const [searchResults, setSearchResults] = useState(prayers)
 
-  // Data
-  // ===========================
-  const state = useStore().getState()
-  const teams = useSelector(selectTeams)
-  const [selectedTeamId, setSelectedTeamId] = useState<Team>();
-  const selectedTeamPrayersCount = useMemo(() => 
-    selectPrayersByTeamId(state, selectedTeamId).length, [selectedTeamId])
-
-  // search: finds only first team matching query words
+  /* Data
+  search: finds only first team matching query words
+  ============================== */
   const [query, setQuery] = useState('')
   useEffect(() => {
     const regexes = query.split(' ').map(word => new RegExp(word, 'i'))
-    const team = teams.find(t => regexes.some(
-      regex => regex.test(t.title) || regex.test(t.description) ))
-    team && setSelectedTeamId(team.id)
-  }, [query])
-
-
-
-  /* Zoom/scroll 
-    Zoom map -> selected team location 
-    Scroll TeamCard Flatlist carousel -> selected team location 
-  ============================== */
-  useEffect(() => {
-    if (!selectedTeamId || !flatList) { return }
-
-    const index = teams.findIndex(p => p.id===selectedTeamId)
-    flatList.current.scrollToIndex({index})
-
-    const selectedTeam = teams[index]
-    const coordinate = toLatLng(selectedTeam.lat_lng)
-    const region = { ...coordinate, latitudeDelta: 0.05, longitudeDelta: 0.05 }
-    map.current.animateToRegion(region)
-
-  }, [selectedTeamId])
+    const results = prayers.filter(p => regexes.some(
+      regex => regex.test(p.title) || regex.test(p.description) ))
+    setSearchResults(results)
+    }, [query])
 
 
   return (
@@ -77,138 +40,89 @@ export default () => {
 
       <AppHeader>
         <SearchBar value={query} onChangeText={setQuery} 
-          placeholder="Search teams..." 
-        />
+          placeholder="Search teams..."  />
       </AppHeader>
 
-      <MapView
+      <MapView 
         ref={map}
+        provider={PROVIDER_GOOGLE}
         style={{ width: '100%', height: '100%' }} 
+        showsUserLocation={true}
+        followsUserLocation={true}
+        toolbarEnabled={ true }
         initialRegion={{
-          latitude: 5.6352343, longitude: -0.2338485,
+          latitude: 14.7273067, longitude: -17.2077234,
           latitudeDelta: 0.0922, longitudeDelta: 0.0421,
         }}
       >
-        {
-          teams.map(team => (
-            <LocationMarker
-              key={team.id}
-              isSelected={selectedTeamId===team.id}
-              coordinate={toLatLng(team.lat_lng)} title={selectedTeamPrayersCount}
-              onPress={ () => setSelectedTeamId(team.id)}
-            />
-          ))
-        }
+        { searchResults.map(prayer => prayer.lat_lng && (
+          <LocationMarker {...{
+            key: prayer.id,
+            highlighted: isSameDay(new Date(prayer.updated_at), Date.now()),
+            coordinate: toCoords(prayer.lat_lng)
+          }} />
+        ))}
       </MapView>
-      <View style={{
-        position: 'absolute',
-        bottom: 40,
-      }}>
-        <FlatList
-          ref={flatList}
-          data={teams}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={windowDimensions.width - 60}
-          snapToAlignment={'start'}
-          decelerationRate={'fast'}
-          viewabilityConfig={viewabilityConfig.current}
-          onViewableItemsChanged={onViewableItemsChanged.current}
-          renderItem={
-            ({item}) => <TeamCard team={item} />
-          }
-        />
-        </View>
+      {/* <PopUp height={ 230 + toolbarHackHeight }>
+        My legend here
+      </PopUp> */}
     </Container>
   )
 }
 
-type LocationMarkerType = {
-  coordinate: LatLng, title: string, isSelected: boolean, onPress: any}
+type LocationMarkerType = { 
+  coordinate: LatLng, highlighted: boolean }
 
-const LocationMarker = ({coordinate, title, isSelected, onPress}: LocationMarkerType) => {
-
+const LocationMarker = styled(({coordinate, highlighted, }: LocationMarkerType) => {
+  const theme = useTheme()
   return (
-    <Marker {...{ coordinate, onPress }} >
-      <View style={{
-        backgroundColor: isSelected ? 'black': 'white',
-        paddingHorizontal: 5,
-        borderRadius: 10,
-        borderWidth:1,
-        borderColor: 'grey'
-      }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <FontAwesome5 name="pray" size={16} color="white" />
-          <Text style={{
-            fontWeight: 'bold', fontSize: 16,
-            color: isSelected ? 'white': 'black',
-            marginLeft: 5
-          }}>
-            {title}
-          </Text>
-        </View>
-      </View>
+
+    // <Marker {...{ coordinate }} >
+    //   <Dot {...{highlighted }} />
+    // </Marker>
+
+    // <Marker {...{ 
+    //   coordinate, 
+    //   pinColor: highlighted ? theme.colors.primaryButtonBg : 'black' ,
+    // }}/>
+    
+    <Marker {...{ 
+      coordinate, 
+    }}>
+      <Feather 
+        name="map-pin" size={30} 
+        color={highlighted ? 'orangered': theme.colors.primaryButtonBg } 
+      />
     </Marker>
   )
-}
+})``
 
 
-const TeamCard = ({team}: {team: Team}) => {
-  const navigation = useNavigation()
-  const theme = useTheme()
-
-  return (
-    <TeamCardContainer>
-      <Pressable 
-        onPress={ () => navigation.navigate("Team", {
-          screen: "TeamPrayers", params: {teamId: team.id }} )
-      }
-        style={{
-          flexDirection: 'row', overflow: 'hidden', height: '100%',
-          backgroundColor: 'white', borderRadius: 5,
-        }}
-      >
-        <Image 
-          path={`avatars/${team.avatar_urls?.[0]}`} 
-          style={{
-            aspectRatio: 1, resizeMode: 'contain', 
-            backgroundColor: theme.colors.cardBg,
-            borderWidth: 1, borderColor: theme.colors.mutedFg,
-          }}
-        />
-        <View style={{padding: 10, flex: 1}}>
-          <Text numberOfLines={1} style={{ fontWeight: 'bold' }} > 
-            {team.title} 
-          </Text>
-          <Spacer height={12} />
-          <Text numberOfLines={3} style={{ color: theme.colors.muted }}>
-            {team.description}
-          </Text>
-        </View>
-      </Pressable>
-    </TeamCardContainer>
-  )
-}
 
 
-const TeamCardContainer = styled.View`
-  width: ${WIDTH-50}px;
-  height: 120px;
-  padding: 5px;
+/***
+ * Dot on the map.
+ * Highlighted dot size = highlightRatio * normal dot size
+ */
+const Dot = styled.View.attrs(p => ({ size: 12, highlightRatio: 1.2, ...p}))`
+  ${p => `
 
-  // https://ethercreative.github.io/react-native-shadow-generator/
-  shadowColor: #000;
-  shadow-offset: 0px 3px;
-  shadowOpacity: 0.27;
-  shadowRadius: 4.65px;
-  elevation: 6;
+  background-color: ${p.highlighted ? 
+    p.theme.colors.primaryButtonBg : 'black' };
+  
+  width: ${p.highlighted ? p.highlightRatio*p.size : p.size}px; 
+  height: ${p.highlighted ? p.highlightRatio*p.size : p.size}px; 
+  border-radius: ${p.highlighted ? p.highlightRatio*p.size/2 : p.size/2}px;
+  `}
 `
 
 const Container = styled(ScreenCard)`
 `
 
-
-const toLatLng = (latLng: string): LatLng => {
+/***
+ * Deserialize string of LatLng 2-uple from db to object
+ */
+const toCoords = (latLng: string): LatLng => {
   const coords = latLng.split(',').map(v => parseFloat(v))
   return {latitude: coords[0], longitude: coords[1]}
 }
