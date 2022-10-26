@@ -10,6 +10,7 @@ import * as storage from "@/lib/supabase/storage"
 import { AppThunk } from './configureStore';
 
 
+type FilterOpts = { published?: boolean }
 
 enum SyncTablesTypes { 'categories', 'topics', 'teams', 'prayers', 'rooms' }
 const syncTables = Object.keys(SyncTablesTypes).filter(x => !(parseInt(x) >= 0))
@@ -155,7 +156,7 @@ export const getStatus = (state: R) => {
 }
 
 export const selectCategories = (state: R) =>
-  getPrayersState(state).categories
+  getPrayersState(state)?.categories?.filter(c => !!c.published) ?? []
 
 export const selectTopics = (state: R) =>
   getPrayersState(state).topics
@@ -163,8 +164,11 @@ export const selectTopics = (state: R) =>
 export const getTopics = (state: R) =>
   selectTopics(state).map(({name}) => name)
 
-export const selectPrayers = (state: R) =>
-  getPrayersState(state).prayers
+export const selectPrayers = (state: R, filter?: FilterOpts) => {
+  const shouldFilter = !!filter && typeof filter?.published !== 'undefined'
+  return (getPrayersState(state).prayers?? []).
+    filter(p => shouldFilter ? p.published==filter?.published : p)
+}
 
 export const selectTeams = (state: R) =>
   getPrayersState(state).teams
@@ -182,10 +186,10 @@ export const selectPrayerById = (prayerId: string) =>
  * Get all prayers by team (teamId)
  * @returns Prayer
  */
- export const selectPrayersByTeamId = (state: R, teamId: string) => {
+export const selectPrayersByTeamId = (state: R, teamId: string) => {
   const prayers = selectPrayers(state).filter(({team_ids}) => team_ids?.includes(teamId))
   return _.uniqBy(prayers, 'id')
- }
+}
 
 
 /***
@@ -193,18 +197,18 @@ export const selectPrayerById = (prayerId: string) =>
  * Get all prayers by user (userId)
  * @returns Prayer
  */
- export const selectPrayersByUserId = (userId: string) => (state: R) => {
-  const prayers = selectPrayers(state)?.filter(({user_id}) => user_id == userId)
+export const selectPrayersByUserId = (userId: string, filter?: FilterOpts) => (state: R) => {
+  const prayers = (selectPrayers(state, filter) ?? []).filter(({user_id}) => user_id == userId)
   return _.uniqBy(prayers, 'id')
- }
+}
 
  /***
  * **countPrayersByUserId()**
  * Get all prayers by user (userId)
  * @returns Prayer
  */
-export const countPrayersByUserId = (userId: string) => (state: R) =>
-  selectPrayersByUserId(userId)(state).length;
+export const countPrayersByUserId = (userId: string, filter?: FilterOpts) => (state: R) =>
+  selectPrayersByUserId(userId, filter)(state).length;
  
 /***
  * **selectUsersByPrayerIds()**
@@ -220,9 +224,9 @@ export const countPrayersByUserId = (userId: string) => (state: R) =>
  * Expand team by its id
  * @returns Team
  */
-  export const selectTeamById = (teamId: string) => (state: R) =>
-    selectTeams(state).find(({id}) => teamId == id)
- 
+export const selectTeamById = (teamId: string) => (state: R) =>
+  selectTeams(state).find(({id}) => teamId == id)
+
 /***
  * **selectTeamsByPrayerId()**
  * Get teams where prayer (prayerId) has been prayed/posted
@@ -233,17 +237,42 @@ export const countPrayersByUserId = (userId: string) => (state: R) =>
   selectTeams(state).filter(({id}) => 
     selectPrayerById(prayerId)(state)?.team_ids?.includes(id))
 
+/***
+ * All teams a user belongs to
+ * @returns Team[]
+ */
+export const selectTeamsByUserId = (state: R, userId: string) =>
+  selectPrayersByUserId(userId)(state)?.flatMap(
+    ({id: prayerId}) => selectTeamsByPrayerId(state, prayerId))
+
+export const selectTeamsCountByUserId = (userId: string) => (state: R) =>
+  selectTeamsByUserId(state, userId)?.length
+
+  
+/***
+ * Map prayers to categories in many-to-many way, 
+ * ie. a prayer may belong to many categories
+ * Category has scope external to prayer creation; 
+ * initial prayer -> category assignment is from external pipelines, mainly NLP.
+ * From model perspective categories store prayerIds, whereas prayer is clueless as
+ * to the category it belongs to.
+ */
 export const getPrayersByCategory = (state: R) => 
   selectCategories(state)?.map(({title, prayer_ids}) => ({        // expand prayers from resp. ids in each category
     [title]: selectPrayers(state)?.filter(                        // one dict per category
       prayer => prayer_ids?.includes(prayer.id))
   })).reduce((s, v) => ({...s, ...v}), {})                        // merge dicts 
 
-  
-export const getPrayersByTopic = ({published}: {published: boolean}) => 
+/***
+ * Map prayers to topics in many-to-many way, 
+ * ie. a prayer may belong to many topics
+ * Topics were initially selected by user when creating prayer 
+ * cf. <EditInfoScreen /> from prayer nav stack
+ */
+export const getPrayersByTopic = (filter: FilterOpts) => 
   (state: R) => getTopics(state).map(topic => ({
-    [topic]: selectPrayers(state)?.filter(
-      p => !!p.published && p.topics?.includes(topic))
+    [topic]: selectPrayers(state, filter)?.filter(
+      p => p.topics?.includes(topic))
   })).reduce((s,v) => ({...s, ...v}), {})
 
     
@@ -273,7 +302,7 @@ export const getPrayersByTopic = ({published}: {published: boolean}) =>
     
     // set some defaults 
     description = description || 
-    `(${audios.length}) prayers (${duration})s  prayed on ${now}.`
+    `(${audios.length}) prayers (${duration})s  prayed on ${format(new Date(now), 'PPP')}.`
 
     // resolve prayer after all audios were uploaded
     // resolved prayer's `.audio_urls` to contain paths of uploaded audios

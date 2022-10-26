@@ -40,13 +40,13 @@ const WelcomeView: React.FC<Props> = ({ animationController }) => {
     >
       <Image
         style={[{ transform: [{ translateX: imageAnim }] }]}
-        source={appImages.onboarding.welcome}
+        source={appImages.branding.logo_brown}
       />
       <Spacer height={18}/>
       <Title ref={careRef}
         style={[{ transform: [{ translateX: welcomeTextAnim }] }]}  
       >
-        Welcome
+        Explore prayer
       </Title>
       <Description>
         What is the key to answered prayers?

@@ -62,12 +62,9 @@ export default ({navigation, route}) => {
   }, [prayerInput, status.saved])
 
   const onChange = useCallback(recordings => {
-    console.log('?????? LOCATION.onChange()', locationRef.current)
     sync({recordings, prayerId, userId, teamId, lat_lng: locationRef.current})
 
   }, [prayerId, userId, teamId, lat_lng])
-
-  console.log('?????? LOCATION.hook', lat_lng)
 
 
   return (

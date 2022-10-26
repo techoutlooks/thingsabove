@@ -1,6 +1,5 @@
 
-import { useCallback } from 'react'
-import { Text, TouchableOpacity } from "react-native"
+import React from 'react'
 import styled from "styled-components/native"
 
 import { selectPrayerById } from '@/state/prayers'
@@ -29,7 +28,7 @@ export default ({ navigation, route }) => {
 
   return (
     <Container>
-      <AppHeader title={`Prayer Preview (${prayer?.published ? 'Published' : 'Private'})`} />      
+      <AppHeader title="Prayer Preview" />      
       <PrayerView {...{prayerId: prayer?.id}} />
     </Container>
   )

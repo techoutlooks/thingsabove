@@ -11,6 +11,7 @@ const Btn = ({
   icon,
   primary,
   size = 24,
+  color,
   ...props
 }) => {
 
@@ -36,7 +37,7 @@ const Btn = ({
         {...props}
       >
         {icon != null ? (
-          icon({ color: theme.colors.mutedFg, size })
+          icon({ color: color ?? theme.colors.mutedFg, size })
         ) : (
           <TextLabel primary={primary} disabled={disabled}>
             {label}

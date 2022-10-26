@@ -30,20 +30,7 @@ type Prayer = {
   published: boolean
   
 }
-/*
-"team": Object {
-  "created_at": "2022-08-15T13:33:10+00:00",
-  "description": "Finishing the Task exists to convene and to catalyze the global body of Christ towards the goal of ensuring that everyone, everywhere has access to a Bible, Believer, and Body of Christ.",
-  "id": "cbde91f6-99da-4b3c-82f1-2164c6c0f737",
-  "lat_lng": "12.773955, 55.578595",
-  "picture_urls": null,
-  "timezone": "US/Eastern",
-  "title": "Finish The Task",
-  "updated_at": "2022-08-17T08:49:07.918253+00:00",
-  "video_url": "https://youtu.be/ZsUn_ULzwrk",
-  "web_url": "https://finishingthetask.com/",
-}
-*/
+
 type Team = {
   id: string
   created_at: string
@@ -56,9 +43,7 @@ type Team = {
   web_url: string
   lat_lng: string
   timezone: string
-
 }
-
 
 type Room = {
   id: string
@@ -76,6 +61,7 @@ type Category = {
   title: string
   description: string
   prayer_ids: string[]
+  published: boolean
 }
 
 

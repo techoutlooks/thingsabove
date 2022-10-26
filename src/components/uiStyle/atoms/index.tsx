@@ -15,6 +15,8 @@ export { default as Spacer } from "./Spacer";
 export { default as SearchInput } from "./SearchInput";
 export {default as ShareButton} from "./ShareButton";
 export {default as NextButtonArrow} from "./NextButtonArrow";
+export {default as PulseAnim} from "./PulseAnim";
+
 
 
 // FIXME: error prone, rather list exhaustively

@@ -11,22 +11,21 @@ import {Image, AVATARS_BUCKET} from "@/lib/supabase/"
  * @param noCache: from `supabase.Image`: disable RN's Image cache
  */
 type Props = { path: string|null } 
-& Pick<ComponentProps<typeof Image>, 'isStale'|'noCache'> 
-& ComponentProps<typeof Avatar>;
+  & Pick<ComponentProps<typeof Image>, 'isStale'|'noCache'> 
+  & ComponentProps<typeof Avatar>;
 
 /***
  * Supabase bucket-aware avartar image component. 
- * Wrapper around <supabase.Image/> that actually implements the Supabase integration.
- * Renders an `supabase.Image` that renders in turn an `atoms.Avatar`.
+ * Custom `supabase.Image` that renders in turn an `atoms.Avatar`.
+ * `supabase.Image` actually implements the Supabase integration.
  */
 export default styled(Image)
   .attrs(({path, ...props}: Props) => ({
     isStale: !!!path,
     path: !!path && `${AVATARS_BUCKET}/${path}`,
     render: ({source, ...p}: ImageProps) => {
-      return (
-      <Avatar {...{...p, avatar: !!source && [source.uri]}} />
-    )},
+      return (<Avatar {...{...p, avatar: !!source && [source?.uri]}} />)
+    },
     ...props
 }))``
 

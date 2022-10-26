@@ -9,7 +9,7 @@ import Animated, {
 
 
 import useLayout from "./useLayout";
-import { Row, Button, Col} from "./elements";
+import { Row } from "./elements";
 import {PADDING, RADIUS} from "./constants";
 import {getChildren} from "@/lib/utils";
 

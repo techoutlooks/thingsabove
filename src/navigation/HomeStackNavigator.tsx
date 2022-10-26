@@ -3,10 +3,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Easing} from 'react-native'
 
 import {useAuthSessionListener} from '@/hooks'
-import {default as HomeStack} from '@/screens/Home';
+
+import HomeStack from '@/screens/Home';
 import AuthStack from '@/screens/Auth'
-import {default as TeamStack} from '@/screens/Team';
-import {default as PrayerStack} from '@/screens/Prayer';
+import TeamStack from '@/screens/Team';
+import PrayerStack from '@/screens/Prayer';
+import ContactStack from '@/screens/Contact';
 
 
 // import SyncScreen from '@/screens/sync'
@@ -30,6 +32,7 @@ const getScreens = () => {
       <Stack.Screen name="Home" component={HomeStack} />
       <Stack.Screen name="Team" component={TeamStack} />
       <Stack.Screen name="Prayer" component={PrayerStack} />
+      <Stack.Screen name="Contact" component={ContactStack} />
     </>
   ) 
 }

@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { selectPrayersByUserId } from "@/state/prayers"
 import { useAuthId } from "@/hooks"
 import { AppHeader, AnimatedPrayerView  } from "@/components"
-import {ScreenCard } from '@/components/uiStyle/atoms'
+import {ScreenCard, Text } from '@/components/uiStyle/atoms'
 
 
 // formatDistance(0, prayer.duration * 1000, { includeSeconds: true })
@@ -24,20 +24,17 @@ export default () => {
   return (
     <Container>
       <AppHeader title="My Prayers" />
-      <Header>
-        <Feather name="activity" size={24} color={theme.colors.titleFg} />
-        {' '} Latest
-      </Header>
+      <Header1><Feather name="activity" size={18}  />{' '}  Prayed lately ...</Header1>
       <PrayerList {...{ prayers }} />
     </Container>
   )
 }
 
-const Header = styled.Text`
-  font-weight: bold;
-  font-size: 18px;
-  color: ${p => p.theme.colors.titleFg};
+const Header1 = styled(Text)`
+  font-family: SFProDisplay-Bold;
+  margin: 24px 0 8px 0;
 `
+
 const Container = styled(ScreenCard)`
   padding: 0 12px;
 `
@@ -60,6 +57,7 @@ const PrayerList = styled(({prayers: data}) => {
     <AnimatedFlatList {...{ 
       data, renderItem, keyExtractor, onScroll,
       scrollEventThrottle: 16, bounces: false,
+      showsVerticalScrollIndicator: false
     }} />
   )
 

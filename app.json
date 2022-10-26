@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "ThingsAbove",
+    "name": "Things Above",
     "slug": "ta-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/thingsabove.png",
+    "icon": "./assets/images/ta.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/thingsabove.png",
+      "image": "./assets/images/ta.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -26,7 +26,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/thingsabove.png",
+        "foregroundImage": "./assets/images/ta.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.thingsabove.app",

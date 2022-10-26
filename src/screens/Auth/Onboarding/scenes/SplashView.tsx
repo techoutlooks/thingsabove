@@ -31,10 +31,9 @@ const SplashView: React.FC<Props> = ({ onNextClick, animationController }) => {
         }}
         source={appImages.onboarding.intro_image}
       />
-      <Text style={styles.title}>Intro</Text>
+      <Text style={styles.title}></Text>
       <Text style={styles.subtitle}>
-      Experience a lasting joy through prayer and meaningful relationships.
-
+        Experience joy through prayer
       </Text>
       <View style={{ height: 48 }} />
       <View style={styles.buttonContainer}>
@@ -46,7 +45,7 @@ const SplashView: React.FC<Props> = ({ onNextClick, animationController }) => {
           android_ripple={{ color: 'powderblue' }}
           onPress={() => onNextClick()}
         >
-          <Text style={styles.buttonText}>Let's begin</Text>
+          <Text style={styles.buttonText}>Explore</Text>
         </Pressable>
       </View>
     </Animated.View>

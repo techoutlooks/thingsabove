@@ -1,11 +1,12 @@
 import React from "react";
-import { TouchableOpacity } from "react-native"
+import { TouchableOpacity, Image } from "react-native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome5 as Icon} from '@expo/vector-icons';
+import { Ionicons as Icon} from '@expo/vector-icons';
 import { useTheme } from "styled-components/native";
 import HomeStackNavigator  from "./HomeStackNavigator";
 import ChatsStack  from "@/screens/Chats";
 import { PrayersMapScreen } from "@/screens/Prayers";
+import * as appImages from '../../assets';
 
 
 const Tab = createBottomTabNavigator();
@@ -25,29 +26,41 @@ export default () => {
       <Tab.Screen name="Discover" 
         component={HomeStackNavigator} 
         options={{
+          // tabBarIcon: ({size, color}) => (
+          //   <Icon name="praying-hands" color={color} size={size} />)
           tabBarIcon: ({size, color}) => (
-            <Icon name="praying-hands" color={color} size={size} />)
+            <Image source={appImages.branding.icon} resizeMode='cover'
+              style={{ width: 45, height: 40 }}
+            />
+          )
         }}
       />
-      <Tab.Screen name="PrayersMap" 
+      <Tab.Screen name="Heat Map" 
         component={PrayersMapScreen} 
         options={{
           tabBarIcon: ({size, color}) => (
-            <Icon name="map-marker-alt" color={color} size={size} />)
+            <Icon name="location-outline" color={color} size={size} />)
+        }}
+      />
+      <Tab.Screen name="Friends" 
+        component={ChatsStack} 
+        options={{
+          tabBarIcon: ({size, color}) => (
+            <Icon name="person-outline" color={color} size={size} />)
         }}
       />
       <Tab.Screen name="Rooms" 
         component={ChatsStack} 
         options={{
           tabBarIcon: ({size, color}) => (
-            <Icon name="facebook-messenger" color={color} size={size} />)
+            <Icon name="flame-outline" color={color} size={size} />)
         }}
       />
       <Tab.Screen name="More"  
         component={ButtonScreen}
         options={({navigation})=> ({
           tabBarIcon: ({size, color}) => (
-            <Icon name="angle-double-right" color={color} size={size} />),
+            <Icon name="ellipsis-horizontal-outline" color={color} size={size} />),
           tabBarButton: props => (
             <TouchableOpacity {...props} onPress={()=> navigation.toggleDrawer()} />)
       })}/>

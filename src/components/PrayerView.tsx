@@ -2,24 +2,24 @@ import { useCallback, useReducer, memo } from "react"
 import { useDispatch, useSelector } from 'react-redux'
 
 import styled, {useTheme} from "styled-components/native"
-import { Animated, FlatList, View, Text, Alert, TouchableOpacity,
+import { Animated, FlatList, View, Alert, TouchableOpacity,
   Dimensions, ViewProps, TextProps, StyleSheet } from "react-native"
 import { Feather } from '@expo/vector-icons'
 import  { format, formatDistance } from 'date-fns'
 
 import Prayer from "@/types/prayer"
 import { upsertPrayers, selectPrayerById } from '@/state/prayers';
-import { Spacer, RADIUS} from "@/components/uiStyle/atoms"
+import { Text, Spacer, RADIUS} from "@/components/uiStyle/atoms"
 
 import AudioPlayer from "./AudioPlayer"
 import SharePrayer from "./SharePrayer"
-import {PrayActionGroup as PrayActions} from "./Pray"
+import {PrayActionGroup as PrayActions} from "./PrayNow"
 
 
 /***
  * <PrayerView />
  */
-const UnmemoizedPrayerView = ({ prayerId, style , ...props}
+const UnmemoizedPrayerView = ({ prayerId,  ...props}
   :{ prayerId: string } & ViewProps ) => {
 
   const dispatch = useDispatch()
@@ -44,11 +44,12 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
       { text: msgs[published ? 'publish' : 'unpublish'].button, 
         onPress: async () => {
           prayer && await dispatch(upsertPrayers([{...prayer, published}]))
-        } 
-      },
+        }},
       { text: "Cancel", style: "cancel"} ]
     )
   }
+
+  // console.log(`<PrayerView /> title=${prayer?.title} pictures=`, prayer?.picture_urls)
 
   if(!prayer) return (
     <NoData message={`Prayer #${prayerId} not synced!`} />
@@ -57,17 +58,18 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
     <Container {...props}>
 
       <Title>{prayer.title}</Title>
-      <Description>{prayer?.description}</Description>
-      <Spacer height={8}/>
       <Time {...{created_at: prayer.created_at, updated_at: prayer.updated_at }} />
+      <Spacer height={6}/>
 
-      <Spacer height={12}/>
       <Row>
         <Tag {...{ 
           name: `${prayer?.published ? 'Published' : 'Unpublished'}`,
           onPress: () => updatePublished({published: !prayer?.published}) 
         }}/> 
       </Row>
+      <Spacer height={18}/>
+
+      <Description>{prayer?.description}</Description>
       <Spacer height={48}/>
 
       <Row>
@@ -76,7 +78,7 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
       </Row>
       <Spacer height={12}/>
 
-      <PrayerPlaylist {...{prayer}} />
+      <AudioList {...{prayer}} />
       {/* <Spacer height={48}/> */}
 
     </Container>
@@ -84,7 +86,7 @@ const UnmemoizedPrayerView = ({ prayerId, style , ...props}
 }
 
 
-const PrayerPlaylist = 
+const AudioList = 
   styled(({prayer, style}: {prayer: Prayer} & ViewProps) => {
 
     const keyExtractor = useCallback((item, i) => item+i, []) 
@@ -100,7 +102,7 @@ const PrayerPlaylist =
     )
 })
 `
-  border: ${p => p.theme.colors.mutedFg} 1px;
+  border: ${p => p.theme.colors.messageBg} 2px;
   border-radius: ${RADIUS}px;
 `
 
@@ -111,7 +113,7 @@ const Tag = styled(({name, ...props}) => {
 		<TouchableOpacity {...props} >
       <Row>
         <Feather name="check-circle" size={24} color={theme.colors.primaryButtonFg} /> 
-        <Text style={{color: 'white'}}>{' ' + name}</Text>
+        <Text style={{color: 'white', fontSize: 14}}>{' ' + name}</Text>
       </Row>
 		</TouchableOpacity>
 	)
@@ -123,13 +125,14 @@ const Tag = styled(({name, ...props}) => {
 const NoData = styled(({message, ...props}: {message?: string} & TextProps) => (
   <Text {...{children: message, ...props}} />
 )).attrs(p => ({ message: 'No content found!', ...p }))`
-  font-weight: bold;
+  font-family: SFProDisplay-Bold;
   font-size: 14px;
 `
 const Info = styled.Text.attrs({numberOfLines: 1})`
-  font-size: 14px;
+  font-size: 13px;
   line-height: 28px;
   color: ${p => p.theme.colors.titleFg};
+  font-family: SFProDisplay-Medium;
 `
 const Time = styled(({created_at, updated_at, style}) => (
   <Row {...{style}}>
@@ -143,13 +146,15 @@ const Time = styled(({created_at, updated_at, style}) => (
   justify-content: flex-start;
 `
 const Title = styled.Text`
-  font-weight: bold;
-  font-size: 16px;
+  font-family: SFProDisplay-Bold;
+  font-size: 18px;
+  line-height: 20px;
   color: ${p => p.theme.colors.fg};
 `
-const Description = styled.Text`
-  font-size: 16px;
-  // color: ${p => p.theme.colors.titleFg};
+const Description = styled.Text.attrs({numberOfLines: 5})`
+  font-size: 15px;
+  font-family: SFProDisplay-Medium;
+
 `
 const Row = styled.View`
   flex-direction: row;
@@ -158,9 +163,6 @@ const Row = styled.View`
 `
 const Container = styled.View `
   padding: 16px;
-  border-radius: ${RADIUS}px;
-  border: ${p => p.theme.colors.mutedFg} 1px;
-  // background-color: ${p => p.theme.colors.inputBg}
 `
 
 const { height: wHeight } = Dimensions.get("window")
@@ -172,7 +174,7 @@ const INIT_HEIGHT = 400 + 2*Y_MARGIN
  * Animated <PrayerView /> with dynamic height.
  * Vertical animation driven by `y`
  */
- const UnmemoizedAnimatedPrayerView = ({prayer, index, y }
+ const UnmemoizedAnimatedPrayerView = ({ prayer, index, y, style }
   : {prayer: Prayer, y: Animated.Value, index: number}) => {
 
   const [height, setHeight] = useReducer((s,a) => a + 2*Y_MARGIN, INIT_HEIGHT)
@@ -215,7 +217,7 @@ const INIT_HEIGHT = 400 + 2*Y_MARGIN
     <Animated.View key={index} style={[ styles.card, 
       {opacity, transform: [{ translateY }, { scale }]} 
     ]} >
-      <UnmemoizedPrayerView {...{ prayerId: prayer.id,  }} /> 
+      <StyledPrayerView {...{ prayerId: prayer.id, style }} /> 
     </Animated.View>
   )
 }
@@ -226,6 +228,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 })
+
+const StyledPrayerView = styled(UnmemoizedPrayerView)`
+  background-color: ${p => p.theme.colors.sentMessageBg};
+  border-radius: ${RADIUS}px;
+`
 
 
 const PrayerView = memo(UnmemoizedPrayerView)

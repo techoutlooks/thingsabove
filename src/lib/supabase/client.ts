@@ -60,6 +60,7 @@ export async function upsert<T extends {id: string}>
     ...(!!id ? {} : ('created_at'     // iff INSERT, also set `created_at` if not supplied
       in _updates ? {} : {created_at: new Date().toISOString()} ))
   }
+  console.log('->>>>>>>> ???? updates', updates)
   const { data, error } = await client.from(table).upsert(_updates)
   if(error) { throw Error(error.message) }
   return (data && data[0] as T)

@@ -2,15 +2,13 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useTheme } from "styled-components/native"
 import { StyleSheet, View, useWindowDimensions, Animated, Easing } from 'react-native';
 
-import { SplashView, RelaxView, CareView, MoodDiaryView, 
+import { SplashView, RecordAndShareView, PrayWithView, TrendingView, 
   WelcomeView, TopBackSkipView,CenterNextButton } from './scenes';
 
 
-interface Props {}
+type Props = {}
 
-
-
-const IntroScreen: React.FC<Props> = ({navigation}) => {
+export default ({navigation}: Props) => {
   
   const theme = useTheme()
   const window = useWindowDimensions();
@@ -91,9 +89,9 @@ const IntroScreen: React.FC<Props> = ({navigation}) => {
           { transform: [{ translateY: relaxTranslateY }] },
         ]}
       >
-        <RelaxView {...{ animationController }} />
-        <CareView {...{ animationController }} />
-        <MoodDiaryView {...{ animationController }} />
+        <RecordAndShareView {...{ animationController }} />
+        <PrayWithView {...{ animationController }} />
+        <TrendingView {...{ animationController }} />
         <WelcomeView {...{ animationController }} />
       </Animated.View>
 
@@ -106,8 +104,7 @@ const IntroScreen: React.FC<Props> = ({navigation}) => {
 const styles = StyleSheet.create({
   scenesContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
     ...StyleSheet.absoluteFillObject,
   },
 });
-
-export default IntroScreen;

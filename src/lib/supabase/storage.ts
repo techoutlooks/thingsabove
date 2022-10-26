@@ -9,22 +9,32 @@ import * as supabase from "./client"
  * from Supabase to local cache dir
  */
  export function download(path: string, cacheDir: string) {
-  
-  return new Promise<[string, string]>((resolve, reject) => {
+
+
+  return new Promise<[string|null, string|null]>((resolve, reject) => {
+
     const fileName = path.slice(path.lastIndexOf("/")+1)
-    supabase.getPublicUrl(path).then(publicURL => {
-      if( publicURL == null) {
-        reject(new Error(`No publicURL found for ${path}`)) 
-      } else {
-          getOrCreateDir(cacheDir).then(dir => {
-            FileSystem.downloadAsync(publicURL, `${dir}/${fileName}`)
-              .then(({uri}) => { 
-                console.log(`>>> cached ${path} -> ${uri}`)
-                resolve([uri, publicURL]) 
-              })
-          })
-      } 
-    })
+    if(!fileName) {
+      resolve([null, null])
+      
+    } else {
+      supabase.getPublicUrl(path).then(publicURL => {
+        if(!publicURL ) {
+          reject(new Error(`No publicURL found for ${path}`)) 
+        } else {
+            getOrCreateDir(cacheDir).then(dir => {
+              FileSystem.downloadAsync(publicURL, `${dir}/${fileName}`)
+                .then(({uri}) => { 
+                  console.debug(`>>> download() cached ${path} -> ${uri}`, fileName)
+                  resolve([uri, publicURL]) 
+                })
+            })
+        } 
+      })
+
+    }
+
+
   })
 
 }
@@ -70,8 +80,23 @@ export async function upload(
   return FileSystem.getInfoAsync(dir).then(info => {
     if(info.exists) { return dir } else {
       // `intermediates==true` means `mkdir -p`
-      return FileSystem.makeDirectoryAsync(dir, { intermediates: true })
+      return FileSystem
+        .makeDirectoryAsync(dir, { intermediates: true })
         .then(() => dir)
     }
+  })
+}
+
+
+/***
+ * @param {string} charToTtrim: trailing character to trim
+ */
+ export function splitPath(path: string, charToTrim="/"): Array<string|null> {
+  const i = path && (path.lastIndexOf("/") + 1)
+
+  return [path?.slice?.(0, i), path?.slice?.(i)].map(name => {
+    let result = path?.replace?.(new RegExp(`${charToTrim}+$`), '') // trim trailing 
+    result = name && (name != 'undefined') ? name : null            // maps "", "undefined", undefined -> null
+    return result 
   })
 }

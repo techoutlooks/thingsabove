@@ -9,7 +9,7 @@ import { selectContactAvatar } from "@/state/contacts"
 import Avatar from "../Avatar"
 import * as FlipCard from "../FlipCard"
 import AudioPlayList from "../AudioPlayList"
-import { Row, Text, RADIUS, WIDTH } from "@/components/uiStyle/atoms";
+import { Row, RADIUS, WIDTH } from "@/components/uiStyle/atoms";
 import * as ar from "@/components/audio-recorder";
 
 

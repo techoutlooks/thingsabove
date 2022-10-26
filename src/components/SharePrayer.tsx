@@ -3,13 +3,10 @@ import { useSelector } from "react-redux"
 
 import { ShareButton } from "./uiStyle/atoms"
 import Prayer from "@/types/Prayer"
-import { useAuthId, useContacts } from '@/hooks'
-import { selectContact } from '@/state/contacts'
-
+import { useAuthId, useContact } from '@/hooks'
 import { AUDIOS_BUCKET, getPublicUrl } from "@/lib/supabase"
-
-import { DOMAIN_URL, BRAND_NAME } from '@env'
 import { bolderize } from "@/lib/utils"
+import { DOMAIN_URL, BRAND_NAME } from '@env'
 
 
 type Props = { prayer: Prayer } 
@@ -28,9 +25,7 @@ export default memo(({prayer, ...rest}: Props) => {
   const url = `🔗 ${DOMAIN_URL}/${prayer.id}`
 
   const senderId = useAuthId()
-  // const sender = useSelector(selectContact(senderId))
-  const [sender] = useContacts([senderId], true)
-  console.log(`senderId=${senderId}`, sender)
+  const sender = useContact(senderId)
 
   const [ audios, setAudios] = useState("")
   useEffect(() => {

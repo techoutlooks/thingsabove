@@ -14,8 +14,16 @@ const drawer = {
 }
 
 const branding = {
-  logo: require('../assets/images/thingsabove.png'),
-  logo2: require('../assets/images/thingsabove-old.png'),
+  logo: require('../assets/images/ta.png'),
+  logo_black: require('../assets/images/ta-black.png'),
+  logo_brown: require('../assets/images/ta-brown.png'),
+  logo_with_border: require('../assets/images/ta-border.png'),
+
+  logo2: require('../assets/images/ta-cloud.png'),
+
+  icon: require('../assets/images/ta-icon.png'),
+  icon_black: require('../assets/images/ta-icon-black.png'),
+  icon_white: require('../assets/images/ta-icon-white.png'),
 }
 
 export { branding, onboarding, drawer }

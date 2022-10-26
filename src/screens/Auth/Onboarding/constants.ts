@@ -1,4 +1,4 @@
 
 
-export const IMAGE_WIDTH = 350;
-export const IMAGE_HEIGHT = 350;
+export const IMAGE_WIDTH = 300;
+export const IMAGE_HEIGHT = 300;

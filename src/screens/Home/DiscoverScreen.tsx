@@ -1,17 +1,19 @@
 import React, {Reducer, useCallback, useEffect, useReducer, useState} from 'react'
-import { SectionList, View, Text, TouchableOpacity } from 'react-native';
+import { SectionList, View, Text, TouchableOpacity, ViewProps } from 'react-native';
 import { useNavigation } from "@react-navigation/native"
-import styled from 'styled-components/native'
+import styled, { useTheme } from 'styled-components/native'
 import {useStore} from "react-redux";
 import _orderBy from 'lodash/orderBy'
 
 import SearchBar from "@/components/uiStyle/SearchBar";
 import Prayer, {Team} from "@/types/Prayer";
-import {Avatar, FlatList, RADIUS, Row, ScreenCard, ScreenFooter, Spacer} from '@/components/uiStyle/atoms'
+import * as atoms from '@/components/uiStyle/atoms'
 import {getPrayersByCategory, selectTeamsByPrayerId} from "@/state/prayers";
+import {AppHeader, PrayNowPulseButton as PrayNow} from "@/components"
+import FriendsList from "./FriendsList";
 import SearchResultItem from "./SearchResultItem";
-import {AppHeader} from "@/components"
-//
+
+
 
 type P = Record<string, Prayer[]>
 type S = {
@@ -109,36 +111,42 @@ export default () => {
 
       <AppHeader hideGoBack>
         <SearchBar value={query} onChangeText={setQuery}
-          placeholder="What would you like to pray?"
-        />
+          placeholder="What would you like to pray?" />
       </AppHeader>
       
-      <ContentNav items={[
-        { name: "Teams", screen: "Home/TeamsMap", active: true },
-        { name: "Prayers", screen: "Home/PrayersByTopic" },
-        { name: "My Prayers", screen: "MyPrayers" }
-      ]} />
+      <Actions>
+        <PrayNowButton />
+        <ContentNav items={[
+          { name: "Teams", screen: "Home/TeamsMap", active: true },
+          { name: "Prayers", screen: "Home/PrayersByTopic" },
+          { name: "My Prayers", screen: "MyPrayers" }
+        ]} />
+      </Actions>
 
-      <SectionList
-        style={{padding: 16}}
-        stickySectionHeadersEnabled={false}
-        sections={resultPrayers}
-        keyExtractor={keyExtractor}
-        renderItem={() => null}
-        renderSectionHeader={({section: {title, data}}) => (
-          <>
-            <SectionHeader>{title}</SectionHeader>
-            <FlatList
-              horizontal
-              data={data}
-              keyExtractor={keyExtractor}
-              renderItem={renderSearchResult}
-              showsHorizontalScrollIndicator={false}
-              ItemSeparatorComponent={() => (<Spacer width={10} />)}
-            />
-          </>
-        )}
-      />
+      <ScreenContent>
+        <SectionHeader>Friends</SectionHeader>
+        <FriendsList />
+        <SectionList
+          stickySectionHeadersEnabled={false}
+          sections={resultPrayers}
+          keyExtractor={keyExtractor}
+          renderItem={() => null}
+          renderSectionHeader={({section: {title, data}}) => (
+            <>
+              <SectionHeader>{title}</SectionHeader>
+              <atoms.FlatList
+                horizontal
+                data={data}
+                keyExtractor={keyExtractor}
+                renderItem={renderSearchResult}
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={ItemSeparatorComponent}
+              />
+            </>
+          )}
+        />
+      </ScreenContent>
+
       <ScreenFooter>
       </ScreenFooter>
     </Container>
@@ -152,41 +160,54 @@ export default () => {
 // Styles
 // ==========================
 
+const Actions = styled(atoms.Row)`
+  alignItems: space-between; 
+  justifyContent: center; 
+`
+const PrayNowButton = styled(PrayNow)`
+  margin: 12px 28px 12px 12px;
+  justify-content: center;
+`
 
+const ItemSeparatorComponent = () => (<atoms.Spacer width={8} />)
 
 const ContentNav = styled(({items, style}) => {
 	const keyExtractor = useCallback((item, i) => item+i, [])
 	const renderItem = useCallback(({item}) => (<Chip {...item} />), [])
 	return (
-		<Row {...{style}}>
-			<FlatList {...{
+		<atoms.Row {...{style}}>
+			<atoms.FlatList {...{
 				data: items, keyExtractor, renderItem, horizontal: true,
-				ItemSeparatorComponent: () => (<Spacer width={8} />)
+				ItemSeparatorComponent
 			}} />
-		</Row>
+		</atoms.Row>
 	)
 })`
-	padding: 12px 16px;
+  flex: 1;
+  justify-content: flex-end;
 `
 
 const Chip = styled(({name, screen: path, active, style}) => {
+  const theme = useTheme()
 	const navigation = useNavigation()
   const [stack, screen] = path.split("/")
 	return (
 		<TouchableOpacity style={style}
 			onPress={() => navigation.navigate(stack, {screen}) } 
 		>
-			<Text>{name}</Text>
+			<Text style={{color: active ? "white" : theme.colors.primaryButtonBg}}>{name}</Text>
 		</TouchableOpacity>
 	)
 })`
-	padding: 12px;
-	border: 1px solid ${p => p.theme.colors.mutedFg};
-	border-radius: ${RADIUS}px;
-  // ${ p => p.active && `background-color: ${p.theme.colors.primaryButtonBg}` }
+	padding: 10px;
+	border: 1px solid ${p => p.theme.colors.primaryButtonBg};
+	border-radius: ${atoms.RADIUS}px;
+  ${ p => p.active && `background-color: ${p.theme.colors.primaryButtonBg}` }
 `
 
-
+const ScreenContent = styled.View`
+  padding: 16px;
+`
 
 const SectionHeader = styled.Text.attrs({
     numberOfLines: 1, ellipsizeMode: 'tail',
@@ -197,11 +218,14 @@ const SectionHeader = styled.Text.attrs({
   color: ${p => p.theme.colors.titleFg};
 `
 
+const ScreenFooter = styled(atoms.ScreenFooter)`
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 100px
+`
 
-const Container = styled(ScreenCard)`
-  //padding: 12px 16px;
-  padding: 20px;
-
+const Container = styled(atoms.ScreenCard)`
+  padding: 16px;
 `
 
 

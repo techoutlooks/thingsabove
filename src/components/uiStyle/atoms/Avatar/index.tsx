@@ -1,5 +1,5 @@
-import React from 'react'
-import {ImageProps, ImageURISource, TouchableOpacity } from "react-native"
+import React, { useMemo } from 'react'
+import {ImageProps, ImageURISource, TouchableOpacity, Text, Image } from "react-native"
 import styled from 'styled-components/native'
 import PropTypes from 'prop-types'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -8,7 +8,7 @@ import { getAvatarColor } from '@/lib/userColor'
 
 type  Props = { 
   avatar?: null | string | string[], 
-  size: number, style: ImageProps["style"], 
+  size: number, style?: ImageProps["style"], 
   onPress?: (ev: any) => void
 }
 // type Props = { 
@@ -26,24 +26,25 @@ type  Props = {
 const Avatar = ({ avatar, size, style, onPress }: Props) => {
 
 
-  const borderRadius = Math.round(size * 0.33)
-  const containerStyles = [{width: size, height: size}, style]
+  const borderRadius = Math.round(size/2) // size * .33 
+  const containerStyles = useMemo(() => [{ width: size, height: size }, style], [])
 
-  if (!!!(avatar?? avatar?.length)) {
+  if (!!!(avatar?? avatar?.length))
     return (
-    <Container {...{onPress, containerStyles}}>
-      <Picture source={require("./default.png")} />
-    </Container>)
-  }
+      <Container {...{onPress, style: containerStyles}}>
+        <Picture source={require("./default.png")} />
+      </Container>
+    )
+  
 
   // display initials instead of image,
   // iff avatar is a string.
   if (typeof avatar === 'string' && avatar.length > 0)  {
     const { backgroundLight, backgroundDark, foreground } = 
-      getAvatarColor(avatar, )
+      getAvatarColor(avatar)
 
     return (
-      <InitialsContainer {...{onPress, style}}
+      <InitialsContainer {...{onPress }}
         style={{ ...containerStyles, borderRadius }}
         colors={[backgroundLight, backgroundDark]}
       >
@@ -96,9 +97,7 @@ const Container = styled.TouchableOpacity`
 //   width: 100%;
 //   height: 100%;
 // `
-const Picture = styled.Image.attrs<ImageProps>(({source}) => ({
-  source
-}))`
+const Picture = styled.Image.attrs({ resizeMode: 'contain'})`
   width: 100%;
   height: 100%;
 `

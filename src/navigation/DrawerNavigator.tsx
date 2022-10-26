@@ -1,13 +1,17 @@
 import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { useTheme } from "styled-components/native";
-import {CustomDrawer2, CustomDrawer} from "@/components"
+import { AntDesign } from '@expo/vector-icons';
+import { Image } from "react-native"
 
+import { useIsAuthed } from '@/hooks';
+import {CustomDrawer2, CustomDrawer} from "@/components"
 import AuthStack, { AuthScreen } from '@/screens/Auth'
 import {MyPrayersScreen} from '@/screens/My'
 
 import BottomNavigator from "./BottomNavigator"
-import { useIsAuthed } from '@/hooks';
+import * as appImages from '../../assets';
+
 
 const Drawer = createDrawerNavigator()
 
@@ -25,15 +29,25 @@ export default () => {
       drawerContent={ props => <CustomDrawer {...props} />}
       screenOptions={{
         headerShown: false,
-        drawerActiveTintColor: theme.colors.primaryButtonBg
+        drawerActiveTintColor: theme.colors.primaryButtonBg, 
+        drawerLabelStyle: { fontFamily: 'SFProDisplay-Medium', fontSize: 16, lineHeight: 16  },
+        drawerStyle: {
+          // backgroundColor: '#c6cbef',
+          // width: 240,
+        },
       }}
     >
       <Drawer.Screen
         name="Home"
         options={{
-          drawerLabel: 'Home',
           groupName: 'Section 2',
           activeTintColor: '#e91e63',
+          drawerLabel: 'Home',
+          drawerIcon: ({ tintColor }) => (
+            <Image source={appImages.branding.icon} resizeMode='cover'
+              style={[{ width: 45, height: 40, margin: -10 }, { tintColor: tintColor }]}
+            />
+          ),
         }}
         component={BottomNavigator}
       />
@@ -42,9 +56,12 @@ export default () => {
           name="MyPrayers"
           component={MyPrayersScreen}
           options={{
-            drawerLabel: 'My Prayers',
             groupName: 'My',
             activeTintColor: '#e91e63',
+            drawerLabel: 'My Prayers',
+            drawerIcon: ({focused, size, color}) => (
+              <AntDesign name="profile" size={size} color={focused ? '#e91e63' : color} />
+            )
           }}
         />
       )}
@@ -53,9 +70,12 @@ export default () => {
           name="DoAuth"
           component={AuthScreen}
           options={{
-            drawerLabel: 'Sign In',
             groupName: 'My',
             activeTintColor: '#e91e63',
+            drawerLabel: 'Sign In',
+            drawerIcon: ({focused, size, color}) => (
+              <AntDesign name="login" size={size} color={focused ? '#e91e63' : color} />
+            )
           }}
         />
       )}
@@ -63,9 +83,12 @@ export default () => {
         name="Auth"
         component={AuthStack}
         options={{
-          drawerLabel: isAuthed ? "My Profile" : "Begin",
           groupName: 'Auth',
           activeTintColor: '#e91e63',
+          drawerLabel: isAuthed ? "My Profile" : "Begin",
+          drawerIcon: ({focused, size, color}) => (
+            <AntDesign name="unlock" size={size} color={focused ? '#e91e63' : color} />
+          )
         }}
       />
 

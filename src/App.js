@@ -1,9 +1,10 @@
+import 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React, { useEffect, useState } from "react";
 import { Platform, StatusBar } from "react-native";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import styled, { ThemeProvider } from "styled-components/native";
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FlashMessage from "react-native-flash-message";
 
 
@@ -26,7 +27,6 @@ const fonts = {
   "SFProDisplay-Medium": require("../assets/fonts/SF-Pro-Display-Medium.otf"),
   "SFProDisplay-Regular": require("../assets/fonts/SF-Pro-Display-Regular.otf"),
 };
-
 
 const themeMap = {
   light: require(`./components/uiStyle/styles/light`).theme,

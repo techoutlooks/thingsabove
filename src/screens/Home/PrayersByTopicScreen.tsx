@@ -105,7 +105,7 @@ const UnStyledSection = styled(({topic, data}: SectionListData<Prayer, SectionT>
 
   return (
     <>
-      <SectionHeader>{topic.toUpperCase()}</SectionHeader>
+      {!!data.length && (<SectionHeader>{topic.toUpperCase()}</SectionHeader>) }
       <FlatList
         ref={flatList}
         horizontal

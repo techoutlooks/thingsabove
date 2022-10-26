@@ -1,6 +1,7 @@
 import { UserCredentials } from "@supabase/supabase-js"
 import * as supabase from "./client"
- 
+import * as constants from "./constants"
+
 
 // Auth / Profile
 // ==========================
@@ -12,26 +13,35 @@ export type UserProfile = {
     username: string,
     first_name: string,
     last_name: string,
+    about: string,
     avatar_url: string
     web_url: string,
+
+    friends_ids: string[]
 }
 
 
-export async function fetchUserProfile(userId: string) {
-  const { data, error, status } = await supabase.client
-    .from<UserProfile>('profiles')
-    .select(
-      `id, username, first_name, last_name, web_url, avatar_url, 
-      created_at, updated_at` )
-    .eq('id', userId)
-    .single()
-  return { data, error, status }
+export async function fetchUserProfile({userId, username}: 
+  { userId?: string } & Partial<Pick<UserProfile, 'username'>>) {
+
+    const filter = {
+      ...(userId ? { id: userId} : {}), 
+      ...(username ? { username } : {}) }
+    
+    const { data, error, status } = await supabase.client
+      .from<UserProfile>('profiles')
+      .select(
+        `id, username, first_name, last_name, web_url, avatar_url, 
+        friends_ids, created_at, updated_at, about` )
+      .match(filter)
+      .single()
+    return { data, error, status }
 }
 
 export async function upsertUserProfile(
   authId: string, updates: Partial<UserProfile>) {
-  return supabase.upsert('profiles', {    // do NOT trust id
-    ...updates, id: authId })             // supplied by caller !
+  return supabase.upsert(constants.PROFILES_TABLE, {    
+    ...updates, id: authId })             // do NOT trust id supplied by caller !
 }
 
 

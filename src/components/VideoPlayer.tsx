@@ -10,10 +10,9 @@ import YoutubePlayer, { YoutubeIframeRef } from "react-native-youtube-iframe";
 
 
 type Props = {
-    height: number;
-    width: number;
-    uri: string;
-    playing: boolean;
+  uri: string;
+  playing: boolean;
+  height: number; width: number;
 }
 
 interface PlayerRef {
@@ -29,25 +28,24 @@ const extractVideoId = (url: string) => {
 
 
 export default forwardRef<PlayerRef, Props>(
-    ({ width, height, uri, playing }, ref) => {
+  ({ width, height, uri, playing }, ref) => {
 
-        const playerRef = useRef<YoutubeIframeRef>(null);
-        useImperativeHandle(ref, () => ({
-            async getDuration() {
-                const duration = await playerRef.current?.getDuration();
-                if (duration === undefined) { throw new Error(
-                    "Could not get duration from react-native-youtube-iframe"); }
-                return duration;
-            },
-        }));
-        return (
-            <YoutubePlayer
-                ref={playerRef}
-                videoId={extractVideoId(uri)}
-                height={height}
-                width={width}
-                play={playing}
-            />
-        );
-    }
+    const playerRef = useRef<YoutubeIframeRef>(null);
+    
+    useImperativeHandle(ref, () => ({
+      async getDuration() {
+        const duration = await playerRef.current?.getDuration();
+        if (duration === undefined) { throw new Error(
+          "Could not get duration from react-native-youtube-iframe"); }
+        return duration;
+      }
+    }));
+
+    return (
+      <YoutubePlayer ref={playerRef} 
+        videoId={extractVideoId(uri)} play={playing}
+        {...{ width, height }}
+      />
+    );
+  }
 );

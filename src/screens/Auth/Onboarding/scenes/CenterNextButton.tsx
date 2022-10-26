@@ -142,9 +142,11 @@ const CenterNextButton: React.FC<Props> = ({ onNextClick, animationController })
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    // paddingBottom: 16,
+    // backgroundColor: 'yellow',
+
+    paddingBottom: 46,
     position: 'absolute',
-    bottom: 0,
+    bottom: 36,
     left: 0,
     right: 0,
   },
@@ -160,6 +162,7 @@ const styles = StyleSheet.create({
   },
   footerTextContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
   },
   loginText: {

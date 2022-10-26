@@ -126,12 +126,13 @@ export default ({navigation}) => {
               () => setSheetLocked(locked => !locked)  }} />
           </Row>
 
-          {/* BottomSheetFlatList. aware of user interactions with prayers */}
+          {/* PrayerList as BottomSheetFlatList. 
+          Is aware of user interactions with prayers */}
           <PrayerList
             {...{ 
               prayers, shouldPlay, shouldReset, 
               onChange: onPrayerListChange,
-              customFlatList: () => BottomSheetFlatList
+              customFlatList: useCallback(() => BottomSheetFlatList, [])
           }} />
 
         </BottomSheetView>

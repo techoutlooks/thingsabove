@@ -17,8 +17,7 @@ import { download } from "./storage";
 const useDownload = (path: string, cacheDir: string, paused=false) => {
 
   const [{fileUri, publicUrl, isStale}, set] = useState({
-    isStale: false, fileUri: null, publicUrl: null,
-  })
+    isStale: false, fileUri: null, publicUrl: null })
   const [error, setError] = useState<Error|null>(null)
 
   useEffect(() => {

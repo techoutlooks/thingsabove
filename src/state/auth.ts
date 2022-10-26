@@ -173,7 +173,7 @@ export const fetchProfile: AppThunk<Promise<void>> =
       return }
 
     dispatch(syncStart)
-    supabase.fetchUserProfile(authId)
+    supabase.fetchUserProfile({userId: authId})
       .then(({ data, error, status }) => { 
         if (error && status !== 406) { throw error }
         if(!error) { dispatch(syncProfile(data)) } else { throw(error) } 
