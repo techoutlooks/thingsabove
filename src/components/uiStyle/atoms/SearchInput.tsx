@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { memo } from 'react'
 import TextInput from './TextInput'
 
 type Props = { postIcon: any } & typeof TextInput
 
-const SearchInput = ({postIcon, ...props}: Props) => (
+const SearchInput = memo(({postIcon, ...props}: Props) => (
   <TextInput
     placeholder="Search..."
     multiline={false}
@@ -11,7 +11,7 @@ const SearchInput = ({postIcon, ...props}: Props) => (
     // postIcon={postIcon ?? "account-search-outline"}
     {...props}
   />
-)
+))
 
 
 const textInputStyle = {flex: 1}

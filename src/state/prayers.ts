@@ -10,8 +10,12 @@ import * as storage from "@/lib/supabase/storage"
 import { AppThunk } from './configureStore';
 
 
+const PRAYERS_TABLE = "prayers"
+
 type FilterOpts = { published?: boolean }
 
+
+// Tables involved in managing prayers
 enum SyncTablesTypes { 'categories', 'topics', 'teams', 'prayers', 'rooms' }
 const syncTables = Object.keys(SyncTablesTypes).filter(x => !(parseInt(x) >= 0))
 
@@ -129,7 +133,7 @@ export const upsertPrayers =
     dispatch(syncStart)
     try {
       return await Promise.all(prayers.map(prayer => 
-        supabase.upsert(supabase.PRAYERS_TABLE, prayer)
+        supabase.upsert(PRAYERS_TABLE, prayer)
           .then(prayer => {
             dispatch(sync({prayers: [prayer]}))
             return prayer

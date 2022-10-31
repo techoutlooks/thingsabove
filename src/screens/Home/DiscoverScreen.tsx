@@ -116,7 +116,7 @@ export default () => {
       
       <Actions>
         <PrayNowButton />
-        <ContentNav items={[
+        <NavButtons items={[
           { name: "Teams", screen: "Home/TeamsMap", active: true },
           { name: "Prayers", screen: "Home/PrayersByTopic" },
           { name: "My Prayers", screen: "MyPrayers" }
@@ -171,7 +171,7 @@ const PrayNowButton = styled(PrayNow)`
 
 const ItemSeparatorComponent = () => (<atoms.Spacer width={8} />)
 
-const ContentNav = styled(({items, style}) => {
+const NavButtons = styled(({items, style}) => {
 	const keyExtractor = useCallback((item, i) => item+i, [])
 	const renderItem = useCallback(({item}) => (<Chip {...item} />), [])
 	return (

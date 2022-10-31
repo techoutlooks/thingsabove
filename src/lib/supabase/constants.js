@@ -9,7 +9,6 @@ import { SUPABASE_AVATARS_BUCKET, SUPABASE_AUDIOS_BUCKET } from '@env'
  * Ensure realtime is enable per-table.
  */
 export const PROFILES_TABLE = "profiles"
-export const PRAYERS_TABLE = "prayers"
 
 /***
  * Supabase buckets

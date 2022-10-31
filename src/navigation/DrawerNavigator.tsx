@@ -20,8 +20,6 @@ export default () => {
   const theme = useTheme()
   const isAuthed = useIsAuthed() 
 
-  console.log(`\n ???????? Drawer isAuthed=`, isAuthed)
-
   return (
     <Drawer.Navigator
       // defaultStatus="open"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContact } from "@/hooks"
-import ContactScreenCard from './ContactScreenCard';
+import ScreenCard from './ScreenCard';
 
 
   // const contact = {
@@ -21,6 +21,6 @@ export default ({route }) => {
   const contact = useContact(userId)
 
   return (
-    <ContactScreenCard {...{ contact }} />
+    <ScreenCard {...{ contact }} />
   )
 }

@@ -1,11 +1,11 @@
-// Imports: Dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createStore, applyMiddleware, combineReducers, compose } from 'redux'
-import thunk from 'redux-thunk'
+import { createStore, applyMiddleware, combineReducers, compose, AnyAction } from 'redux'
+import thunk, { ThunkAction } from 'redux-thunk'
 import { persistStore, persistReducer } from 'redux-persist'
 
 import * as reducers from './reducers'
-import { fetchAll, syncChanges as syncPrayers } from "@/state/prayers"
+import { fetchAll as fetchPrayers, syncChanges as syncPrayerChanges } from "@/state/prayers"
+import { fetchAll as fetchContacts } from "@/state/contacts"
 
 
 const rootReducer = combineReducers(reducers)
@@ -36,8 +36,10 @@ let persistor = persistStore(store)
 
 // Feed/Sync store <-> server
 // ==========================
-store.dispatch(fetchAll)
-// store.dispatch(syncPrayers)
+store.dispatch(fetchPrayers)
+store.dispatch(fetchContacts)
+
+// store.dispatch(syncPrayerChanges)
 
 
 
@@ -45,4 +47,4 @@ export { store, persistor }
 
 // https://redux.js.org/usage/usage-with-typescript
 export type AppThunk<ReturnType = void> = 
-  ThunkAction<ReturnType, RootState, unknown, AnyAction >
+  ThunkAction<ReturnType, typeof reducers, unknown, AnyAction >

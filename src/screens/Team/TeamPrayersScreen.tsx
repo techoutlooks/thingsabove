@@ -13,8 +13,8 @@ import BottomSheet, { BottomSheetView, BottomSheetFlatList
 import Prayer, {Team} from "@/types/Prayer";
 import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
-import { VideoPlayer, Avatar, PrayActionGroup, PrayerList } from "@/components";
-import { Spacer, RADIUS, BackIcon, Btn, Switch, Row, 
+import { VideoPlayer, Avatar, PrayButtonGroup, PrayerList } from "@/components";
+import { Spacer, RADIUS, BackIcon, Btn, SwitchButton, Row, 
   ScreenCard, ScreenHeader, ScreenHeaderCopy } from "@/components/uiStyle/atoms";
 
 import TeamMemberList from "./TeamMemberList";
@@ -81,7 +81,7 @@ export default ({navigation}) => {
           {team && (<TeamSummary {...{team}} />) }
         </Section>
         <Section>
-          <PrayActionGroup {...{team}} />
+          <PrayButtonGroup {...{team}} />
         </Section>
         <Section>
           {team && (<TeamMemberList {...{team, onSelect: memberSelected }} />) }
@@ -111,12 +111,12 @@ export default ({navigation}) => {
 
             {/* playback for all Prayers */}
             {/* <Playback hidden={showPlayback}>
-              <Playall {...{intiallyOn: shouldPlay, onChange: setShouldPlay }} />
+              <Playall {...{initiallyOn: shouldPlay, onChange: setShouldPlay }} />
             </Playback> */}
 
             {/* per-prayer's playback */}
             <Playback>
-              <Playall {...{intiallyOn: shouldPlay, onChange: setShouldPlay }} />
+              <Playall {...{initiallyOn: shouldPlay, onChange: setShouldPlay }} />
               <Spacer width={5} />
               <Reset onReset={setShouldReset} />
             </Playback >
@@ -146,9 +146,9 @@ export default ({navigation}) => {
 const Playback = styled.View`
   flex-direction: row;
   align-items: center;
-  ${p => p.hidden && `display: none;`}
+  ${p => p.hidden && `display: none`};
 `
-const Playall = styled(Switch).attrs({
+const Playall = styled(SwitchButton).attrs({
   size: 18, primary: true,
   icon: p => <SimpleLineIcons name='playlist' {...p} />
 })``

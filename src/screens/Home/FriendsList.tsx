@@ -3,7 +3,7 @@ import React, {useRef, useCallback, useEffect, useMemo, useState} from 'react';
 import { View, ViewStyle, FlatList, Text } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import styled, { useTheme } from 'styled-components/native';
-import { Feather as Icon} from '@expo/vector-icons';
+import { MaterialCommunityIcons as Icon} from '@expo/vector-icons';
 
 import { useFriends } from '@/hooks';
 import { Contact } from '@/state/contacts';
@@ -32,10 +32,11 @@ export default ({style}: Props) => {
   /* Nav
   ========================== */
   const addContact = useCallback(() => {
-    navigation.navigate("Contact", {screen: "AddContact"}) }, [])
+    navigation.navigate("Contact", {screen: "EditFriends"}) }, [])
     
   const showContact = useCallback(({contact}: {contact: Contact}) => {
-    navigation.navigate("Contact", {screen: "ViewContact", params: { userId: contact?.userId }}) }, [])
+    navigation.navigate("Contact", {screen: "ViewContact", params: { 
+      userId: contact?.userId }}) }, [])
 
   
   /* ContactList
@@ -52,7 +53,7 @@ export default ({style}: Props) => {
     <FriendAvatar {...{ index, contact, onPress: showContact }} /> ), [])
 
 
-  // console.log(`current=${current}, contacts=${contacts.length}`)
+  // console.log(`current=${current}, contacts=${contacts.length}`, contacts)
 
   return (
     <Container {...{ style }}>
@@ -61,7 +62,7 @@ export default ({style}: Props) => {
           data: contacts, keyExtractor, renderItem, horizontal: true,
           ItemSeparatorComponent, showsHorizontalScrollIndicator: false, 
         }} />  
-        <AddContactButton onPress={addContact} />
+        <EditFriendsButton onPress={addContact} />
       </ListView>
       <NextButton {...{ hasNext, onNext }} /> 
     </Container>
@@ -77,7 +78,10 @@ const FriendAvatar = styled(({ contact, size, style, ...p }) => (
     path: contact?.avatar?.[0], size, style,
     onPress: () => p.onPress?.({contact}) 
   }} />
-)).attrs({ size: ITEM_SIZE, overlap: ITEM_OVERLAP })`
+)).attrs({ 
+  size: ITEM_SIZE, 
+  overlap: ITEM_OVERLAP 
+})`
   ${p => p.overlap && p.index>0 && `margin-left: -${p.overlap}px`}
   border: 2px solid ${p => p.theme.colors.primaryButtonBg};
   border-radius: ${p => p.size/2}px;
@@ -85,15 +89,15 @@ const FriendAvatar = styled(({ contact, size, style, ...p }) => (
 `
 
 // TouchableHighlight
-const AddContactButton = styled(Icon).attrs(p => ({
-  name: "plus-circle", size: ITEM_SIZE,  
+const EditFriendsButton = styled(Icon).attrs(p => ({
+  name: "circle-edit-outline", size: ITEM_SIZE,  
   color: p.theme.colors.cardBg, 
   ...p
 }))`
   margin-left: -${ (NUM_ITEMS_TO_RENDER) * ITEM_OVERLAP}px
   border-radius: ${p => p.size/2}px;
   ${p => `width: ${p.size}px; height: ${p.size}px;`}
-  background-color: ${p => p.theme.colors.mutedFg};
+  background-color: ${p => p.theme.colors.primaryButtonBg};
 `
   
 const ListView = styled(atoms.Row)`

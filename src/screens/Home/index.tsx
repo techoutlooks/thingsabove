@@ -8,7 +8,7 @@ import TeamsMapScreen from "./TeamsMapScreen";
 const Stack = createNativeStackNavigator();
 
 /***
- * Create or Edit a prayer i successive screens
+ * Home Stack
  */
 export default () => {
   return (

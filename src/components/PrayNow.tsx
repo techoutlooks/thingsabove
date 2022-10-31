@@ -15,7 +15,7 @@ const Pray = styled(({team, style}:
   {team: Team, style?: ViewStyle}) => {
     return (
       <View {...{style}}>
-        <PostPrayer label="Post Prayer" />
+        <PostPrayer />
         <atoms.Spacer width={8} />
         <PrayNow {...{teamId: team?.id }} />
       </View>
@@ -31,7 +31,14 @@ const Pray = styled(({team, style}:
 /***
  * Post Prayer from MyPrayers
  */
-const PostPrayer = styled(atoms.Btn)`
+const PostPrayer = styled((props) => {
+
+  const onPress = () => {
+    navigation.navigate("Contact", {screen: "EditFriends"}) }
+    
+
+  return (<atoms.Btn {...props} />)
+}).attrs({ label: "Send To Friend" })`
 `
 
 
@@ -116,8 +123,8 @@ const PrayNowPulse = styled(({style: containerStyle, innerStyle, ...p}: PrayNowP
   innerStyle: {backgroundColor: 'transparent' 
 }}))``
 
-const PrayActionGroup = memo(Pray)
+const PrayButtonGroup = memo(Pray)
 const PrayNowButton = memo(PrayNow)
 const PrayNowPulseButton = memo(PrayNowPulse)
 
-export { PrayNowButton, PrayActionGroup, PrayNowPulseButton, PostPrayer } 
+export { PrayNowButton, PrayNowPulseButton, PrayButtonGroup } 

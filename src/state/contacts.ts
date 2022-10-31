@@ -6,6 +6,7 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import { AppThunk } from "./configureStore";
 
 
+
 /**
  * Contact aka. the public user profile
  */
@@ -81,8 +82,9 @@ export const getContactsById = (state: R) => {
   return getContactsState(state).contactsById
 }
 
-export const selectContacts = (userIds: string[]) => (state: R) => {
-  return userIds.map(userId => selectContact(userId)(state))
+export const selectContacts = (userIds?: string[]) => (state: R) => {
+  return !userIds?.length?  Object.values(getContactsById(state)) :
+    userIds?.map(userId => selectContact(userId)(state))
 }
 
 export const selectContact = (userId: string) => (state: R) => {
@@ -132,26 +134,63 @@ export const syncContacts = (contacts: Contact[]) => {
   return { type: Actions.SYNC, contactsById }
 }
 
+
+/*** 
+ * Fetch all contacts from TA's directory
+ */
+export const fetchAll = (dispatch, getState) => {
+  return fetchContacts()(dispatch, getState)
+}
+
 /***
- * Fetch contacts by ids if ids defined, else by usernames.
+ * Fetch contacts by their ids or usernames. If none of the above were specified,
+ * fetch the entire contacts directory (all users). 
+ * 
+ * 
  */
 type fetchContactsArgs = { userIds?: string[], usernames?: string[] }
-export const fetchContacts = ({ userIds, usernames }: fetchContactsArgs): AppThunk<Promise<Contact[]>> => 
-  (dispatch, getState) => {
-  
-    const field = userIds? "userId": "username"
-    const values = userIds ?? usernames?? [] 
+export const fetchContacts = (opts?: fetchContactsArgs): AppThunk<Promise<Contact[]>> => 
+  async (dispatch, getState) => {
 
+    // should fetch contacts by their userId? or their username (the default)?
+    // usernames <- the ids and usernames of conacts to fetch
+    const { userIds, usernames } = opts ?? {}
+    const field = opts && (
+      userIds?.length ? "userId" : 
+      usernames?.length? "username" : 
+      null)
+    // const field = opts?.userIds ?? opts?.usernames
+
+    const values = userIds ?? usernames ?? []
+
+    // fetch contacts. returns the entire directory if no id/username supplied
     dispatch(syncStart)
-    const promises = values.map(
-      value => supabase.fetchUserProfile({ [field]: value })
-        .then(({ data: profile, error, status }) => { 
-          if (error && status !== 406) { throw error }
-          if (error || profile == null) { throw(error) } else { 
-            return getContact(profile) } 
-        })
-    )
-    return Promise.all(promises)
+    return new Promise<Contact[]>((resolve) =>  {
+
+      if(!field) {
+
+        supabase.fetchAll([[supabase.PROFILES_TABLE, '*']])
+          .then(data => { 
+            const contacts = data[supabase.PROFILES_TABLE]
+              .map(profile => getContact(profile))
+            resolve(contacts);            
+          }) 
+
+      } else {
+
+        const contacts$ = values.map( value => 
+          supabase.fetchUserProfile({ [field]: value })
+            .then(({ data: profile, error, status }) => { 
+              if (error && status !== 406) { throw error }
+              if (error || profile == null) { throw(error) } else { 
+                return getContact(profile) } 
+            })
+        )
+        Promise.all(contacts$)
+          .then(contacts => { resolve(contacts) })
+      }
+    })
+
       .then(contacts => {
         dispatch(syncContacts(contacts))
         return contacts

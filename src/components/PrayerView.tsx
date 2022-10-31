@@ -12,8 +12,8 @@ import { upsertPrayers, selectPrayerById } from '@/state/prayers';
 import { Text, Spacer, RADIUS} from "@/components/uiStyle/atoms"
 
 import AudioPlayer from "./AudioPlayer"
-import SharePrayer from "./SharePrayer"
-import {PrayActionGroup as PrayActions} from "./PrayNow"
+import SharePrayerLink from "./SharePrayerLink"
+import {PrayButtonGroup} from "./PrayNow"
 
 
 /***
@@ -73,8 +73,8 @@ const UnmemoizedPrayerView = ({ prayerId,  ...props}
       <Spacer height={48}/>
 
       <Row>
-        <PrayActions />
-        <SharePrayer {...{ prayer }} />
+        <PrayButtonGroup />
+        <SharePrayerLink {...{ prayer }} />
       </Row>
       <Spacer height={12}/>
 

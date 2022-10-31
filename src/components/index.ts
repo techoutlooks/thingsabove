@@ -14,8 +14,8 @@ import * as AR from "./audio-recorder"; export { AR }
 
 // Prayer
 export {default as PrayerCard} from "./PrayerCard";
-export {PrayActionGroup, PrayNowButton, PrayNowPulseButton} from "./PrayNow";
-export {default as SharePrayer} from "./SharePrayer";
+export {PrayNowButton, PrayNowPulseButton, PrayButtonGroup} from "./PrayNow";
+export {default as SharePrayerLink} from "./SharePrayerLink";
 export {default as ShareContact} from "./ShareContact";
 export { UnmemoizedPrayerView, UnmemoizedAnimatedPrayerView, 
   PrayerView, AnimatedPrayerView } from "./PrayerView";
@@ -31,4 +31,5 @@ export {default as Avatar} from "./Avatar";
 export {default as AvatarUpload} from "./AvatarUpload";
 export {default as SkeletonCard} from "./SkeletonCard";
 import * as FlipCard from "./FlipCard"; export { FlipCard }
+export { default as ContactPickerCard } from "./ContactPickerCard"
 

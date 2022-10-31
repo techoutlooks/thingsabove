@@ -84,7 +84,7 @@ export const selectAuthUser =
   (state: R) => getAuthState(state).user
 
 export const selectAuthId = 
-  (state: R) => getAuthState(state)?.user?.id
+  (state: R) => getAuthState(state)?.user?.id || null
 
 export const selectAuthProfile =
   (state: R) => getAuthState(state).profile

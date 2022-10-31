@@ -1,24 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { Alert, TextProps } from "react-native"
+import React, { useEffect, useState, useCallback, ComponentProps } from 'react'
+import { TextProps } from "react-native"
 import styled from 'styled-components/native'
-import { useNavigation } from '@react-navigation/native'
 import { useDispatch } from "react-redux"
 
-import { bolderize } from "@/lib/utils"
 import { fetchContacts, Contact } from '@/state/contacts'
+import {Switch as UnStyledSwitch, SwitchProps } from '@/components/uiStyle/atoms'
 import {Avatar} from '@/components'
-import { useAuthProfile } from "@/hooks"
 
 
-type Props = { contact: Contact }
-const SearchResultItem = React.memo(({ contact }: Props) => {
 
-  const navigation = useNavigation()
+enum SelectActions {
+  ADD = "selectContact/ADD",        // contact selected
+  REMOVE = "selectContact/REMOVE",  // contact unselected
+  INIT = "selectContact/INIT" 
+}
+
+type OnSelectArgs = { action: SelectActions, contact: Contact }
+type Props = { contact: Contact,  
+  onSelect: ({ action, contact }: OnSelectArgs) => void 
+} & Pick<SwitchProps, 'initiallyOn'>
+
+
+/***
+ * Found contact from contact's directory
+ */
+const SearchResultItem = React.memo(({ contact, onSelect, initiallyOn }: Props) => {
+
   const dispatch = useDispatch()
   const [fetchedContact, setFetchedContact] = useState<Contact|null>(null)
 
 
-  const { profile: me, update: updateAuthProfile } = useAuthProfile()
 
   useEffect(() => {
     (async () => {
@@ -28,42 +39,39 @@ const SearchResultItem = React.memo(({ contact }: Props) => {
     })()
   }, [contact.username, contact?.isNew])
 
-  const addContact = () => { me?.friends_ids &&
-    Alert.alert("Add Contact", `Add ${bolderize(contact.displayName)} to your friends list?`, [
-      { text: "Yes", onPress: () => { 
-        updateAuthProfile({ friends_ids: [...me.friends_ids, contact.userId]})
-      }},
-      { text: "View Profile", onPress: () => 
-          navigation.navigate("ViewContact", { userId: contact?.userId }) 
-      }
-    ])
-  }
+
+  // dispatch .onChange() with contact and reason for change (contact add/removed ?)
+  const onChange = useCallback((isOn: boolean|undefined) => {
+    onSelect?.({ action: isOn ? SelectActions.ADD : SelectActions.REMOVE, contact })
+  }, [])
 
   return (
-    <Container onPress={addContact}>
+    <Switch {...{ onChange, initiallyOn }}>
       <Avatar path={contact?.avatar?.[0]} size={40} />
       <Summary>
         <Name>{contact?.displayName}</Name>
         <Username>{contact.username}</Username>
       </Summary>
-    </Container>
+    </Switch>
   )
 })
 
-export default SearchResultItem
+export  {OnSelectArgs, SelectActions, SearchResultItem}
 
 // Styles
 // ==========================
-const Container = styled.TouchableOpacity`
-  padding: 8px 16px;
+const Switch = styled(UnStyledSwitch)
+  .attrs({ transparent: true })
+`
+  padding: 8px;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
+  // border-radius: 0;
 `
-
 const Summary = styled.View`
   padding-left: 8px;
 `
-
 const Name = styled.Text.attrs({
   numberOfLines: 1,
   ellipsizeMode: 'tail',
@@ -72,7 +80,6 @@ const Name = styled.Text.attrs({
   font-weight: bold;
   color: ${p => p.theme.colors.fg};
 `
-
 const Username = styled.Text.attrs<TextProps>(p => ({
   children: `@${p.children}`,
   numberOfLines: 1,

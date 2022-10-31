@@ -1,7 +1,7 @@
 export { Row, Col, Button } from "./elements";
 
 export { default as Btn } from "./Btn";
-export { default as Switch } from "./Switch";
+export {  Switch, SwitchButton, SwitchProps } from "./Switch";
 export { default as Text } from "./Text";
 export { default as SendIcon} from "./SendIcon";
 export { Swiper, Swipeable, Underlay } from "./Swiper";
