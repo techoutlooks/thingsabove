@@ -42,7 +42,7 @@ export default ({style}: Props) => {
   /* ContactList
   ========================== */
 
-  const hasNext = current + NUM_ITEMS_TO_RENDER < contacts.length
+  const hasNext = current + NUM_ITEMS_TO_RENDER < contacts?.length || 0
   const onNext = () => { // scroll to next item in current section
     const index = current + 3; setCurrent(index)
     flatList?.current?.scrollToIndex({ index }) }
@@ -53,7 +53,7 @@ export default ({style}: Props) => {
     <FriendAvatar {...{ index, contact, onPress: showContact }} /> ), [])
 
 
-  // console.log(`current=${current}, contacts=${contacts.length}`, contacts)
+  // console.log(`<FriendsList /> current=${current}, contacts=${contacts.length}`, contacts)
 
   return (
     <Container {...{ style }}>

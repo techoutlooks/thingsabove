@@ -10,10 +10,8 @@ import { Contact, selectContacts } from '@/state/contacts'
 import { ContactPickerCard } from '@/components'
 
 
-
 const AddContactScreen = () => {
 
-  
   const navigation = useNavigation()
   const { profile: me, update: updateAuthProfile } = useAuthProfile()
   const [contacts, setContacts] = useState<Contact[]>([])
@@ -31,7 +29,7 @@ const AddContactScreen = () => {
 
     const usernames = contacts.map(c => `@${c.username}`).join(', ')
     const friends_ids =  contacts.map(c => c.userId)
-    me?.friends_ids && Alert.alert( 
+    !!me?.friends_ids.length && Alert.alert( 
       "Manage Friendlist", 
       `Make friends with ${bolderize(usernames)} ?`, [
         { text: "Yes", onPress: () => { 
@@ -48,19 +46,14 @@ const AddContactScreen = () => {
   }
 
   /* Selected contacts changed.
-  a) Exclude already friends 
-  b) save new contacts to friends list
+  a) Exclude already friends  (filter before setContacts)
+  b) save new contacts to friends list (effect)
   ========================= */
   useEffect(() => { saveContacts(contacts) }, [contacts])
 
   const onSelect = useCallback((selectedContacts: Contact[]) => {
-    console.log(`<EditFriendsScreen /> selected contacts (${selectedContacts?.length||0})=`, selectedContacts)
-
-    setContacts(selectedContacts.filter(
-      c => !me?.friends_ids.includes(c.userId)
+    setContacts(selectedContacts.filter(c => !me?.friends_ids.includes(c.userId)
   )) }, [])
-
-  // console.log(`<EditFriendsScreen /> selected contacts (${contacts?.length||0})=`, contacts)
 
   return (
     <ContactPickerCard {...{

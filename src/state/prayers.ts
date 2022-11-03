@@ -1,16 +1,26 @@
 import { showMessage, hideMessage } from "react-native-flash-message";
 
 import { RecordedItem } from "@/components/audio-recorder/lib";
-import Prayer, {PrayerInput, Team, Room, Category, Topic} from "@/types/Prayer";
+import Prayer, { Team, Room, Category, Topic} from "@/types/Prayer";
 
 import {mergeDeep} from "@/lib/mergeDeep";
 import * as _ from "lodash"
 import * as supabase from "@/lib/supabase";
 import * as storage from "@/lib/supabase/storage"
-import { AppThunk } from './configureStore';
+import { AppThunk } from "./configureStore";
 
 
 const PRAYERS_TABLE = "prayers"
+
+/**
+ * PrayerInput. Not a table.
+ * RecordingItem -> Prayer input kwargs 
+ */
+ export type PrayerInput<T> = {
+  prayerId: string, title: string, description: string, recordings: T[], 
+  userId: string, teamId: string, roomId: string, topics: string[],
+  picture_urls?: string[], published: boolean, lat_lng?: string
+}
 
 type FilterOpts = { published?: boolean }
 
@@ -45,21 +55,21 @@ const initialState: S = {
 
 
 const reducer = (state = initialState, action: A) => {
-    const {type, ...payload} = action
+  const {type, ...payload} = action
 
-    switch (action.type) {
-      case Actions.SYNC:
-        // return mergeDeep(state, payload) 
-        return _.merge({}, state, payload)
-      case Actions.SYNC_FAILED:
-        return { ...state, ...payload, }
-      case Actions.SYNC_START: 
-        return {...state, fetching: true}
-      case Actions.SYNC_COMPLETE: 
-        return {...state, fetching: false}
-      default:
-        return state
-    }
+  switch (action.type) {
+    case Actions.SYNC:
+      // return mergeDeep(state, payload) 
+      return _.merge({}, state, payload)
+    case Actions.SYNC_FAILED:
+      return { ...state, ...payload, }
+    case Actions.SYNC_START: 
+      return {...state, fetching: true}
+    case Actions.SYNC_COMPLETE: 
+      return {...state, fetching: false}
+    default:
+      return state
+  }
 }
 
 export default reducer
@@ -88,7 +98,7 @@ export const sync = (data: Partial<S>) => {
 /***
  * Fetch/listen RT data from server
  */
-export const fetchAll = async (dispatch, getState) => {
+export const fetchAll: AppThunk<void> =  (dispatch, getState) => {
   dispatch(syncStart)
   supabase.fetchAll(syncTables.map(t => [t, "*"]))
     .then(data => dispatch(sync(data)))
@@ -100,7 +110,7 @@ export const fetchAll = async (dispatch, getState) => {
  * syncChanges
  * Merge RT row changes from the database into the store
  */
-export const syncChanges = (dispatch, getState) => {
+export const syncChanges: AppThunk<void> = (dispatch, getState) => {
   dispatch(syncStart)
   syncTables.forEach(table => {
     supabase.on<Prayer>({ table }).subscribe({
@@ -133,7 +143,7 @@ export const upsertPrayers =
     dispatch(syncStart)
     try {
       return await Promise.all(prayers.map(prayer => 
-        supabase.upsert(PRAYERS_TABLE, prayer)
+        supabase.upsertOne(PRAYERS_TABLE, prayer)
           .then(prayer => {
             dispatch(sync({prayers: [prayer]}))
             return prayer
@@ -194,7 +204,6 @@ export const selectPrayersByTeamId = (state: R, teamId: string) => {
   const prayers = selectPrayers(state).filter(({team_ids}) => team_ids?.includes(teamId))
   return _.uniqBy(prayers, 'id')
 }
-
 
 /***
  * **selectPrayersByUserId()**

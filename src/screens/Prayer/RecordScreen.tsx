@@ -3,8 +3,8 @@ import { View, Text, Alert } from 'react-native';
 import { useStore, useSelector } from 'react-redux'
 import styled from 'styled-components/native'
 
-import { selectPrayerById, selectTeamById } from '@/state/prayers';
-import Prayer, { PrayerInput } from '@/types/Prayer';
+import { PrayerInput, selectPrayerById, selectTeamById } from '@/state/prayers';
+import Prayer from '@/types/Prayer';
 import {useAuthId, useLocation} from "@/hooks";
 
 import {ScreenCard, Btn, Spacer} from '@/components/uiStyle/atoms'

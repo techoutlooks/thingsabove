@@ -4,10 +4,9 @@
  import { useContext, useMemo, useReducer, Reducer, createContext, Dispatch, SetStateAction, useEffect, useCallback } from "react";
  import { useDispatch, useSelector } from 'react-redux'
  
- import { PrayerInput } from "@/types/Prayer";
  import { RecordedItem } from "@/components/audio-recorder/lib";
  
- import { savePrayers } from '@/state/prayers';
+ import { PrayerInput, savePrayers } from '@/state/prayers';
  
  type T = PrayerInput<RecordedItem>
  

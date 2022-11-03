@@ -1,7 +1,7 @@
 import { RoomInviteState } from '../lib/client'
 import Client from '../lib/client'
 import { getRoomById, getRoomsState } from './rooms'
-import { getContactsById } from './contacts'
+import { getContactsByIds } from './contacts'
 import { getAuthState } from './auth'
 
 export const getRoomEvents = roomId => state => {
@@ -97,12 +97,12 @@ export const getMemberAvatar = (roomId, userId) => state => {
 }
 
 export const selectContactProfile = (state, userId) => {
-  const contact = getContactsById(state)[userId]
+  const contact = getContactsByIds(state)[userId]
   return getContactProfile(contact)
 }
 
 export const selectContactAvatar = (state, userId) => {
-  const contact = getContactsById(state)[userId]
+  const contact = getContactsByIds(state)[userId]
   return getContactAvatar(contact)
 }
 

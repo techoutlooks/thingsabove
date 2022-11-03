@@ -4,8 +4,8 @@ import styled from 'styled-components/native'
 import { useDispatch } from "react-redux"
 
 import { fetchContacts, Contact } from '@/state/contacts'
-import {Switch as UnStyledSwitch, SwitchProps } from '@/components/uiStyle/atoms'
-import {Avatar} from '@/components'
+import {Switch as UnStyledSwitch, SwitchProps, Text } from '../uiStyle/atoms'
+import Avatar from '../Avatar'
 
 
 
@@ -80,7 +80,7 @@ const Name = styled.Text.attrs({
   font-weight: bold;
   color: ${p => p.theme.colors.fg};
 `
-const Username = styled.Text.attrs<TextProps>(p => ({
+const Username = styled(Text).attrs<TextProps>(p => ({
   children: `@${p.children}`,
   numberOfLines: 1,
   ellipsizeMode: 'tail',

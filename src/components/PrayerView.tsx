@@ -13,7 +13,7 @@ import { Text, Spacer, RADIUS} from "@/components/uiStyle/atoms"
 
 import AudioPlayer from "./AudioPlayer"
 import SharePrayerLink from "./SharePrayerLink"
-import {PrayButtonGroup} from "./PrayNow"
+import PostPrayerButton from "./PostPrayerButton"
 
 
 /***
@@ -73,7 +73,7 @@ const UnmemoizedPrayerView = ({ prayerId,  ...props}
       <Spacer height={48}/>
 
       <Row>
-        <PrayButtonGroup />
+        <PostPrayerButton {...{prayers: [prayer]}} />
         <SharePrayerLink {...{ prayer }} />
       </Row>
       <Spacer height={12}/>

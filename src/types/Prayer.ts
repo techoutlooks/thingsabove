@@ -1,16 +1,14 @@
 
-/**
- * PrayerInput
- * RecordingItem -> Prayer input kwargs 
- */
-type PrayerInput<T> = {
-  prayerId: string, title: string, description: string, recordings: T[], 
-  userId: string, teamId: string, roomId: string, topics: string[],
-  picture_urls?: string[], published: boolean, lat_lng?: string
+
+ interface Model {
+  id: string
+  created_at?: string
+  updated_at: string
 }
 
-type Prayer = {
-  id: string
+
+
+interface Prayer extends Model {
   user_id: string
   room_id: string
   team_ids: string[]
@@ -24,18 +22,10 @@ type Prayer = {
   topics: string[]
 
   lat_lng?: string
-
-  created_at: string
-  updated_at: string
   published: boolean
-  
 }
 
-type Team = {
-  id: string
-  created_at: string
-  updated_at: string
-
+interface Team extends Model {
   title: string
   description: string
   avatar_urls: string[]
@@ -45,7 +35,7 @@ type Team = {
   timezone: string
 }
 
-type Room = {
+interface Room {
   id: string
   title: string
   description: string
@@ -65,6 +55,30 @@ type Category = {
 }
 
 
-export {PrayerInput}
+/***
+ * Items types for shareable content, etc.
+ */
+enum ItemTypes { PRAYER = "ItemTypes/Prayer" }
+type SharedItem = Prayer
+
+
+/***
+* Sharings - table to keep track of shared items across the app. 
+* 
+* One item may be re-shared by multiple users.
+* Dedicated table, away from `supabase.UserProfile` by our supabase lib.
+* Separated table also in an effort to avoid duplicate items, save on storage costs,
+* as well as perform and efficient lookup and analytics. 
+
+Nota: id in this table must be manually set, ie. NOT auto-generated on supabase!
+*/
+interface Sharing extends Model  {
+  user_id: string, to_users_ids: string[],
+  item_type: ItemTypes,
+}
+
+
+
 export {Team, Room, Category, Topic}
+export { ItemTypes, Sharing, SharedItem }
 export default Prayer;

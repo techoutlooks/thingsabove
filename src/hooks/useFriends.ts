@@ -1,13 +1,14 @@
 import React from 'react';
+import { Contact } from "@/state/contacts"
 import { useAuthProfile } from './useAuth';
 import {useContacts, useContactsOpts} from './useContact';
 
 
 /*** 
  * Get friends of authenticated user  */
-const useFriends = (opts?: useContactsOpts) => {
+const useFriends = () => {
   const {profile} = useAuthProfile()
-  return useContacts(profile?.friends_ids, opts)
+  return useContacts(profile?.friends_ids ?? []) as Contact[]
 }
 
 /*** 

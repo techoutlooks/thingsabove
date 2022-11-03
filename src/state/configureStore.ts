@@ -4,8 +4,9 @@ import thunk, { ThunkAction } from 'redux-thunk'
 import { persistStore, persistReducer } from 'redux-persist'
 
 import * as reducers from './reducers'
-import { fetchAll as fetchPrayers, syncChanges as syncPrayerChanges } from "@/state/prayers"
-import { fetchAll as fetchContacts } from "@/state/contacts"
+import { fetchAll as fetchPrayers, syncChanges as syncPrayerChanges } from "./prayers"
+import { fetchAll as fetchContacts } from "./contacts"
+import { fetchAll as fetchSharings } from "./sharings"
 
 
 const rootReducer = combineReducers(reducers)
@@ -34,16 +35,18 @@ const store = createStore(
 let persistor = persistStore(store)
 
 
-// Feed/Sync store <-> server
-// ==========================
+// Intial sync backend -> redux
 store.dispatch(fetchPrayers)
 store.dispatch(fetchContacts)
+store.dispatch(fetchSharings)
 
+// RT sync
 // store.dispatch(syncPrayerChanges)
 
 
 
 export { store, persistor }
+
 
 // https://redux.js.org/usage/usage-with-typescript
 export type AppThunk<ReturnType = void> = 

@@ -5,13 +5,13 @@ import * as _ from "lodash"
 import { fetchUserProfile } from "@/lib/supabase"
 import { Contact, getContact, selectContact, syncContacts, syncFailed } from '@/state/contacts'
 
-type UserId = string
-type T = Record<UserId, Contact|null>
-type R1 = Reducer<T, T>           // unflattened, eg. yields array of userids/contacts k,v pairs
-type R2 = Reducer<Contact[], T>   // flattened, eg. yields contacts array
-type R = R1|R2
 
-type useContactsOpts = Partial<{ flatten: boolean }>
+type UserId = string
+type useContactsOpts = Partial<{ flatten: boolean, nullable: boolean }>
+enum Do { ADD = "useContacts/ADD", RESET = "useContacts/RESET" }
+
+type T = Record<UserId, Contact|null>
+type R = Reducer<(T|Contact|null)[], {do: Do, payload?: T}>
 
 
 /***
@@ -23,32 +23,37 @@ type useContactsOpts = Partial<{ flatten: boolean }>
  * Do.RESET -> resets the reducer state to []
  * Do.ADD   -> push contacts
  */
-enum Do { ADD = "useContacts/ADD", RESET = "useContacts/RESET" }
 
-const createContactsReducer = (flatten: boolean) => 
-(s: Contact[]|T[] , a: { do: Do, payload: T }) => a.do != Do.ADD ? [] : // reset
-    flatten ? ({...s, ...a.payload}) : _.uniqBy([...s, ...Object.values(a.payload)], 'userId')
-
+const createContactsReducer = (flatten: boolean): R => 
+  (s, a) => (typeof a.payload == 'undefined') || a.do != Do.ADD ? [] : // reset
+    !flatten ? ({...s, ...a.payload}) : _.uniqBy([...s, ...Object.values(a.payload)], 'userId')
 
 /***
  * useContacts()
- * Get respective profiles from userId list
+ * Map userIds -> resp. contacts (null contact wherever retrieval failed) 
+ * Fetches contacts from the redux cache, failover to Supabase query.
+ * 
  * Careful: may want to memoize `userIds` from host component,
- *  since useContacts performs state update that may cause a loop !
- * TODO: dispatch possibly updated profile to store?
+ *  since useContacts() performs state update that may cause a loop !
+ * 
  * @param userIds lookup ids
+ * @param nullable: filter out null (failed retrieve) contacts in results
  * @returns list of user ids and profiles as key/values 
- *    eg. [{<userId1>: <profile1>, <userId2>: null, ...}]
- *    eg. [<profile1>, null, <profile3>]
+ *    eg. if NOT flattened, [{<userId1>: <profile1>, <userId2>: null, ...}]
+ *    eg. elsewise (the default), [<profile1>, null, <profile3>] 
+ *    Nota: null values represent contact that failed to retrieve
  */
  const useContacts = (userIds: string[], opts?: useContactsOpts) => {
 
     const state = useStore().getState()
     const dispatch = useDispatch()
 
-    // flatten defaults to true if not explicitly set to false
-    const flatten = (!opts && !!opts?.flatten) ? true : false
+    // flatten -> true, unless not explicitly set to false
+    // nullable -> false, unless not explicitly set to true
+    const flatten = !(opts?.hasOwnProperty('flatten') && opts.flatten==false)
+    const nullable = !!opts?.hasOwnProperty('nullable') && opts.nullable==true
 
+    // reducer: yield object[], or contacts[], depending on `opts.flatten`
     const [contacts, push] = useReducer<R>(createContactsReducer(flatten), [])
 
     const getProfile = useCallback((userId: string) => {
@@ -63,38 +68,38 @@ const createContactsReducer = (flatten: boolean) =>
               if (error || profile == null) { throw(error) } else { 
                 const contact = getContact(profile)
                 dispatch(syncContacts([contact]))
-                push({ do: Do.ADD, payload: {[userId]: contact} })
-              } 
+                push({ do: Do.ADD, payload: {[userId]: contact} }) } 
             })
             .catch(error => {
               const msg = `Error loading profile ${userId}: `
               dispatch(syncFailed(new Error(msg + error.msg)))
-              push({ do: Do.ADD, payload: {[userId]: null} })
+              nullable && push({ do: Do.ADD, payload: {[userId]: null} })
             })
         }
       }
     }, [])
   
-    useEffect(() => { if(userIds) {
-      push({ do: Do.RESET, payload: null })
-      userIds.forEach(userId => getProfile(userId))
+    useEffect(() => { if(userIds && !!userIds?.length) {
+      push({ do: Do.RESET })           // resets fetched contacts to [] 
+      userIds.forEach(getProfile)      // before pulling contacts again
     }}, [userIds])
 
-    // console.log(`->>>>>>> userIds=${userIds} flatten=${flatten} contacts`, contacts )
+    // console.log(`useContacts() ->>>>>>> userIds=${userIds} flatten=${flatten} nullable=${nullable} contacts=`, contacts )
     return contacts
   }
 
 
 /***
  * useContact
- * Get contact by its userId
+ * Get contact by its userId. 
+ * Safer than useContacts([<userId>]) for retrieving a single contact.
  */
-const useContact = (userId: string): Contact => {
+const useContact = (userId: string): Contact|null => {
   const userIds = useMemo(() => [userId], [userId])
   const [contact] = useContacts(userIds)
-  return contact
+  return (contact as Contact)
 }
 
 
 export type { useContactsOpts }
-export { useContact, useContacts}
+export { useContact, useContacts }

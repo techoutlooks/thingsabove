@@ -21,7 +21,8 @@ type Props = {
   initialContacts: Contact[],
   selectedIds?: string[],
   title?: string,
-  onSelect?: (contacts: Contact[]) => void }
+  onSelect?: (contacts: Contact[]) => void 
+}
 
 
 type A =  { action: SelectActions, contacts: Contact[] }
@@ -169,7 +170,7 @@ const AddButton = styled(atoms.Button)
 `
 
 const SearchBar = styled(atoms.SearchInput)` 
-flex: 1;
+  flex: 1;
 `
 
 const ScreenFooter = styled(atoms.ScreenFooter)`
@@ -182,6 +183,7 @@ const ScreenFooter = styled(atoms.ScreenFooter)`
 const ScreenCard = styled(atoms.ScreenCard)`
  padding: 16px;
  margin: 16px;
+ width: 100%
 `
 
 const getNewContactFromQuery = (query: string) => {

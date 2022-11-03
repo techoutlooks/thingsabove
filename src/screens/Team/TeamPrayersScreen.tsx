@@ -13,7 +13,7 @@ import BottomSheet, { BottomSheetView, BottomSheetFlatList
 import Prayer, {Team} from "@/types/Prayer";
 import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
-import { VideoPlayer, Avatar, PrayButtonGroup, PrayerList } from "@/components";
+import { VideoPlayer, Avatar, PostPrayerButton, PrayerList } from "@/components";
 import { Spacer, RADIUS, BackIcon, Btn, SwitchButton, Row, 
   ScreenCard, ScreenHeader, ScreenHeaderCopy } from "@/components/uiStyle/atoms";
 
@@ -81,7 +81,7 @@ export default ({navigation}) => {
           {team && (<TeamSummary {...{team}} />) }
         </Section>
         <Section>
-          <PrayButtonGroup {...{team}} />
+          <PostPrayerButton {...{team}} />
         </Section>
         <Section>
           {team && (<TeamMemberList {...{team, onSelect: memberSelected }} />) }

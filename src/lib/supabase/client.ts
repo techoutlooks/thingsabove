@@ -51,37 +51,67 @@ export async function signOut() {
 //   })
 //   return { error }
 // }
-export async function upsert<T extends {id: string}>
-(table: string, updates: Partial<T>) {
+export async function upsertOne<T extends {id: string}>
+(table: string, update: Partial<T>) {
 
-  let {id, ..._updates} = updates               
-  _updates = {  
-    ...(!!id ? updates : _updates),   // drop `id` of undefined or null (triggers an INSERT) 
+  let {id, ..._update} = update               
+  _update = {  
+    ...(!!id ? update : _update),   // drop `id` of undefined or null (triggers an INSERT) 
     ...(!!id ? {} : ('created_at'     // iff INSERT, also set `created_at` if not supplied
-      in _updates ? {} : {created_at: new Date().toISOString()} ))
+      in _update ? {} : {created_at: new Date().toISOString()} ))
   }
-  console.log('->>>>>>>> ???? updates', updates)
-  const { data, error } = await client.from(table).upsert(_updates)
+  console.log('->>>>>>>> ???? updates', update)
+  const { data, error } = await client.from(table).upsert(_update)
   if(error) { throw Error(error.message) }
   return (data && data[0] as T)
 }
 
+// testing
+export async function upsertMany<T extends {id: string}>
+(table: string, updates: Partial<T>[]) {
+
+  const _updates = updates.map(update => {
+    let {id, ..._update} = update               
+    return {  
+      ...(!!id ? update : _update),   // drop `id` of undefined or null (triggers an INSERT) 
+      ...(!!id ? {} : ('created_at'     // iff INSERT, also set `created_at` if not supplied
+        in _update ? {} : {created_at: new Date().toISOString()} ))
+    }
+  })
+  console.log('->>>>>>>> ???? updates', _updates)
+  const { data, error } = await client.from(table).upsert(_updates)
+  if(error) { throw Error(error.message) }
+  return (data && data[0] as T[])
+}
+
+
+
 /***
  * fetchAll()
- * Fetch data from tables. Optionally filter row per-table 
+ * Fetch data from tables. Optionally apply per-table rows filtering.
  * using the `query` arg. Yields  {table1: [row1, ...], ...}
+ * @param table: table to select from
+ * @param select: select statement (parameterized query)
+ * @param filter: paramters for query
  */
-type fetchAllArgs = [table: string, query?: string][]
+type FieldValue = [string, string]
+type FilterOpts = { eq?: FieldValue, contains?: [string, string[]] }
+type fetchAllArgs = [table: string, select?: string, filter?: FilterOpts][]
 
-export async function fetchAll(args: fetchAllArgs) {
-  const data: Record<string, any> = {}
-  const promises = args.map(
-    ([table, query]) => client.from(table).select(query))
+export async function fetchAll<T extends Record<string>>(args: fetchAllArgs) {
+  const data: { [table: string]: T[] } = {}
+  const promises = args.map(([table, select, filter]) => {
+
+    let query = client.from<T>(table).select(select)
+    if(filter?.eq) { query = query.eq(...filter.eq) } 
+    if(filter?.contains) { query = query.contains(...filter.contains) } 
+    return query
+  })
 
   await Promise.all(promises)
     .then(r => r.forEach(({data: rows, error}, i) => {
       const table = args[i][0]
-      data[table] = rows
+      data[table] = rows ?? []
     }))
   
   return data

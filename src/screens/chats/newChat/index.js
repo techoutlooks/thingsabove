@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
 import _orderBy from 'lodash/orderBy'
 
-import { getContactsById } from '@/state/contacts'
+import { getContactsByIds } from '@/state/contacts'
 import { useAuthId } from '@/hooks'
 
 import {
@@ -22,7 +22,7 @@ const ChatScreen = () => {
   const [query, setQuery] = useState('')
   const [resultContacts, setResultContacts] = useState([])
 
-  const contactsById = useSelector(getContactsById)
+  const contactsById = useSelector(getContactsByIds)
 
   useEffect(() => {
     const regex = new RegExp(`\\b[@:]?${query}`, 'i')

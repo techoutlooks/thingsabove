@@ -13,7 +13,7 @@ import { countPrayersByUserId, selectTeamsCountByUserId } from "@/state/prayers"
 import { Contact } from "@/state/contacts"
 import * as atoms from '@/components/uiStyle/atoms';
 import { Avatar, SkeletonCard as Loader, ShareContact,
-  PrayNowButton as PrayNow, ChatNowButton as ChatNow } from "@/components"
+  RecordPrayerButton as RecordPrayer, ChatNowButton as ChatNow } from "@/components"
 
 import PrayerList from "./PrayerList"
 
@@ -52,7 +52,7 @@ const ContactScreenCard = memo(({ contact }: Props) => {
         <IMStats {...{ stats }} />
 
         <Buttons>
-          <PrayNowButton />
+          <RecordPrayerButton />
           <ChatNowButton />
           <ShareFriend {...{ contact }} />
           <UnFriendButton {...{ contact }} />
@@ -204,7 +204,7 @@ const ChatNowButton = styled(Button(ChatNow)).attrs({
   name: 'chat', label: "Chat"
 })``
 
-const PrayNowButton = styled(Button(PrayNow)).attrs({
+const RecordPrayerButton = styled(Button(RecordPrayer)).attrs({
   name: 'mic', label: "Pray"
 })``
 

@@ -6,6 +6,7 @@ import * as constants from "./constants"
 // Auth / Profile
 // ==========================
 
+
 export type UserProfile = {
     id: string
     updated_at: string,
@@ -17,7 +18,11 @@ export type UserProfile = {
     avatar_url: string
     web_url: string,
 
-    friends_ids: string[]
+    // data out of auth's scope. just point to it 
+    // TODO: make them optional, feg., 
+    //  - get the friends_ids from db lookup instead of static db rel. 
+    //  - create extentable UserProfile
+    friends_ids: string[],  
 }
 
 
@@ -30,7 +35,7 @@ export async function fetchUserProfile({userId, username}:
     
     const { data, error, status } = await supabase.client
       .from<UserProfile>('profiles')
-      .select(
+      .select( // make sure to specify all fields from `UserProfile`
         `id, username, first_name, last_name, web_url, avatar_url, 
         friends_ids, created_at, updated_at, about` )
       .match(filter)
@@ -40,7 +45,7 @@ export async function fetchUserProfile({userId, username}:
 
 export async function upsertUserProfile(
   authId: string, updates: Partial<UserProfile>) {
-  return supabase.upsert(constants.PROFILES_TABLE, {    
+  return supabase.upsertOne(constants.PROFILES_TABLE, {    
     ...updates, id: authId })             // do NOT trust id supplied by caller !
 }
 

@@ -4,6 +4,7 @@ export * from "./useAuth"
 // -- User
 export { useContact, useContacts, useContactsOpts } from "./useContact"
 export { useFriends, useFriendsCount } from "./useFriends"
+export { useSharings } from "./useSharings"
 
 // -- Prayers
 export { default as usePrayersByCategory } from "./usePrayersByCategory"

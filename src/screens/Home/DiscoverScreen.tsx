@@ -9,7 +9,7 @@ import SearchBar from "@/components/uiStyle/SearchBar";
 import Prayer, {Team} from "@/types/Prayer";
 import * as atoms from '@/components/uiStyle/atoms'
 import {getPrayersByCategory, selectTeamsByPrayerId} from "@/state/prayers";
-import {AppHeader, PrayNowPulseButton as PrayNow} from "@/components"
+import {AppHeader, RecordPrayerPulseButton as RecordPrayerPulse} from "@/components"
 import FriendsList from "./FriendsList";
 import SearchResultItem from "./SearchResultItem";
 
@@ -115,7 +115,7 @@ export default () => {
       </AppHeader>
       
       <Actions>
-        <PrayNowButton />
+        <RecordPrayerPulseButton />
         <NavButtons items={[
           { name: "Teams", screen: "Home/TeamsMap", active: true },
           { name: "Prayers", screen: "Home/PrayersByTopic" },
@@ -164,7 +164,7 @@ const Actions = styled(atoms.Row)`
   alignItems: space-between; 
   justifyContent: center; 
 `
-const PrayNowButton = styled(PrayNow)`
+const RecordPrayerPulseButton = styled(RecordPrayerPulse)`
   margin: 12px 28px 12px 12px;
   justify-content: center;
 `

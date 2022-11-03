@@ -5,7 +5,6 @@ import { View, ImageBackground, Image, TouchableOpacity, ViewStyle, TouchableOpa
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import styled, {useTheme} from "styled-components/native";
 import { Ionicons } from '@expo/vector-icons'; 
-import { FontAwesome5 } from '@expo/vector-icons';
 
 import {UserProfile} from "@/lib/supabase"
 import { checkForUpdates } from '@/lib/expo'
