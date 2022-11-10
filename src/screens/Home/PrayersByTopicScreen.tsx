@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import {useNavigation} from "@react-navigation/native";
 
 import {getPrayersByTopic} from "@/state/prayers"
-import Prayer from "@/types/Prayer"
+import {Prayer} from "@/types/models"
 import {AppHeader, PrayerCard} from "@/components"
 import SearchBar from "@/components/uiStyle/SearchBar";
 import { ScreenCard, Spacer, WIDTH } from '@/components/uiStyle/atoms'

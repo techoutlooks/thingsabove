@@ -9,7 +9,7 @@ type Props = {
 } & ViewProps
 
 
-export default ({ button, children, style, containerStyle }: Props) => {
+export default ({ button, children, containerStyle, style, ...props }: Props) => {
 
   const [modalVisible, setModalVisible] = useState(false)
   const onPress = () => setModalVisible(true)
@@ -21,10 +21,11 @@ export default ({ button, children, style, containerStyle }: Props) => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
+        // onRequestClose={() => {
+        //   Alert.alert("Modal has been closed.");
+        //   setModalVisible(!modalVisible);
+        // }}
+        {...props}
       >
         <Container style={containerStyle}>
           <View style={[styles.modalView, style]}>
@@ -36,7 +37,7 @@ export default ({ button, children, style, containerStyle }: Props) => {
       </Modal>
 
       { button({ onPress }) ?? (
-        <OpenButton {...{onPress}} />
+        <DefaultOpenButton {...{onPress}} />
       )}
 
     </Container>
@@ -74,14 +75,15 @@ const styles = StyleSheet.create({
 const Text = styled(atoms.Text)`
   color: ${p => p.theme.colors.cardBg};
   font-weight: bold;
+  font-size: 12px;
   text-align: center;
 `
 const Button = styled(Pressable)`
-  border-radius: 20px;
+  border-radius: ${atoms.RADIUS}px;
   padding: 10px;
   elevation: 2;
 `
-const OpenButton = styled(Button)
+const DefaultOpenButton = styled(Button)
   .attrs({ children: <Text>Show</Text> })
 `
   background-color: ${p => p.theme.colors.mutedFg};

@@ -5,7 +5,7 @@ import styled, {useTheme} from "styled-components/native";
 import { SimpleLineIcons, Feather } from '@expo/vector-icons';
 
 import * as atoms from '@/components/uiStyle/atoms'
-import {Team} from "@/types/Prayer";
+import {Team} from "@/types/models";
 import { DEFAULT_TEAM_ID } from '@env'
 
 

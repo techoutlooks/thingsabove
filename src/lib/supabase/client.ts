@@ -38,6 +38,18 @@ export async function signOut() {
   return { error}
 }
 
+
+/***
+ * Base Supabase table model for apps based on this lib
+ * Represents a table row.
+ */
+export interface Model {
+  id: string
+  created_at?: string
+  updated_at: string
+}
+
+
 /***
  * UPSERT a singe row into table, ie.,
  * UPDATE row matching `id` iff primary key `id` is present and defined
@@ -51,23 +63,22 @@ export async function signOut() {
 //   })
 //   return { error }
 // }
-export async function upsertOne<T extends {id: string}>
+export async function upsertOne<T extends Model>
 (table: string, update: Partial<T>) {
 
   let {id, ..._update} = update               
   _update = {  
     ...(!!id ? update : _update),   // drop `id` of undefined or null (triggers an INSERT) 
-    ...(!!id ? {} : ('created_at'     // iff INSERT, also set `created_at` if not supplied
+    ...(!!id ? {} : ('created_at'   // iff INSERT, also set `created_at` if not supplied
       in _update ? {} : {created_at: new Date().toISOString()} ))
   }
-  console.log('->>>>>>>> ???? updates', update)
   const { data, error } = await client.from(table).upsert(_update)
   if(error) { throw Error(error.message) }
   return (data && data[0] as T)
 }
 
 // testing
-export async function upsertMany<T extends {id: string}>
+export async function upsertMany<T extends Model>
 (table: string, updates: Partial<T>[]) {
 
   const _updates = updates.map(update => {
@@ -78,10 +89,12 @@ export async function upsertMany<T extends {id: string}>
         in _update ? {} : {created_at: new Date().toISOString()} ))
     }
   })
-  console.log('->>>>>>>> ???? updates', _updates)
   const { data, error } = await client.from(table).upsert(_updates)
+  console.log(`->>>>>>>> [${table}] updates=`, _updates, 'data=', data, 'error=', error)
+
   if(error) { throw Error(error.message) }
-  return (data && data[0] as T[])
+
+  return (data as T[])
 }
 
 
@@ -93,12 +106,13 @@ export async function upsertMany<T extends {id: string}>
  * @param table: table to select from
  * @param select: select statement (parameterized query)
  * @param filter: paramters for query
+ * https://supabase.com/docs/reference/javascript/using-filters
  */
 type FieldValue = [string, string]
 type FilterOpts = { eq?: FieldValue, contains?: [string, string[]] }
 type fetchAllArgs = [table: string, select?: string, filter?: FilterOpts][]
 
-export async function fetchAll<T extends Record<string>>(args: fetchAllArgs) {
+export async function fetchAll<T extends Model>(args: fetchAllArgs) {
   const data: { [table: string]: T[] } = {}
   const promises = args.map(([table, select, filter]) => {
 

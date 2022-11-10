@@ -7,8 +7,9 @@ export {
 } from "./auth"
 
 export { default as Image } from "./Image"
-export { default as useDownload } from "./useDownload"
+export { default as useDownloads } from "./useDownloads"
 export { default as useMedia } from "./useMedia"
+export { default as useAsset } from "./useAsset"
 
 
 

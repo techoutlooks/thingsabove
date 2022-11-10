@@ -53,15 +53,17 @@ export async function upsertUserProfile(
 // Auth
 // ==========================
 
+type T = Required<Pick<UserCredentials, 'email'|'password'>>
+
 export type AuthTypes = typeof signInWithEmail | typeof signUpWithEmail | 
   typeof signInWithProvider
 
-export async function signInWithEmail({email, password}: UserCredentials) {
-  return supabase.signIn({email, password })    
+export async function signInWithEmail({email, password}: T) {
+  return supabase.signIn({email: email.toLowerCase(), password})    
 }
     
-export async function signUpWithEmail({email, password}: UserCredentials) {
-  return supabase.signUp({email, password })
+export async function signUpWithEmail({email, password}: T) {
+  return supabase.signUp({email: email.toLowerCase(), password })
 }    
 
 export async function signInWithProvider({provider}: UserCredentials) {

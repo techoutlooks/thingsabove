@@ -2,7 +2,7 @@ import { memo, ComponentProps, useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 
 import { ShareButton } from "./uiStyle/atoms"
-import Prayer from "@/types/Prayer"
+import {Prayer} from "@/types/models"
 import { useAuthId, useContact } from '@/hooks'
 import { AUDIOS_BUCKET, getPublicUrl } from "@/lib/supabase"
 import { bolderize } from "@/lib/utils"

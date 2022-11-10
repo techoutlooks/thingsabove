@@ -7,7 +7,7 @@ import {useSelector, useStore} from "react-redux"
 import styled, {useTheme} from 'styled-components/native'
 import MapView, {LatLng, Marker, PROVIDER_GOOGLE} from "react-native-maps";
 
-import {Team} from "@/types/Prayer";
+import {Team} from "@/types/models";
 import { Image } from "@/lib/supabase"
 import { selectTeams, selectPrayersByTeamId } from '@/state/prayers';
 

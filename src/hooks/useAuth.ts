@@ -29,7 +29,7 @@ export const useAuthProfile = () => {
   const {fetching, error} = useSelector(getAuthStatus)
   const session = useSelector(selectAuthSession)
   const p = useSelector(selectAuthProfile)
-  
+
   // forces this hook to refresh on new auth,
   useEffect(() => { 
     !!p ? set(p) :  fetch() }, [session, p]) 

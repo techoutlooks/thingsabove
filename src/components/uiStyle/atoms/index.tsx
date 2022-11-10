@@ -1,7 +1,7 @@
 export { Row, Col, Button } from "./elements";
 
 export { default as Btn } from "./Btn";
-export {  Switch, SwitchButton, SwitchProps } from "./Switch";
+export { Switch, SwitchButton, SwitchProps } from "./Switch";
 export { default as Text } from "./Text";
 export { default as SendIcon} from "./SendIcon";
 export { Swiper, Swipeable, Underlay } from "./Swiper";
@@ -13,10 +13,10 @@ export { default as MultiSelectField } from "./MultiSelectField";
 export { default as ProgressBar } from "./ProgressBar";
 export { default as Spacer } from "./Spacer";
 export { default as SearchInput } from "./SearchInput";
-export {default as ShareButton} from "./ShareButton";
-export {default as NextButtonArrow} from "./NextButtonArrow";
-export {default as PulseAnim} from "./PulseAnim";
-
+export { default as ShareButton } from "./ShareButton";
+export { default as NextButtonArrow } from "./NextButtonArrow";
+export { default as PulseAnim } from "./PulseAnim";
+import * as Accordion from "./Accordion"; export { Accordion } ;
 
 
 // FIXME: error prone, rather list exhaustively

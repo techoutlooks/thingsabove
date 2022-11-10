@@ -1,11 +1,9 @@
 import React, { useCallback, memo, ComponentProps} from 'react'
-import { useSelector } from "react-redux"
 import styled, { useTheme } from 'styled-components/native'
 import { FlatList } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import  { format, formatDistance } from 'date-fns'
 
-import { selectPrayersByUserId } from "@/state/prayers"
+import { useLatestPrayers } from "@/hooks"
 import { Contact } from "@/state/contacts"
 import { PrayerCard } from "@/components"
 import * as atoms from '@/components/uiStyle/atoms';
@@ -27,8 +25,7 @@ export default memo(styled(({ contact, published=true, onPress, style }: Props) 
 
   const navigation = useNavigation()
 
-  const prayers = useSelector(selectPrayersByUserId(contact?.userId, 
-    { published }))
+  const prayers = useLatestPrayers({ published })
   
   const ItemSeparatorComponent = useCallback(() => <atoms.Spacer height={10} />, [])
   const renderItem = useCallback(({item: prayer}) => {

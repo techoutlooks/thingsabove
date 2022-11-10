@@ -6,7 +6,7 @@ import {useStore} from "react-redux";
 import _orderBy from 'lodash/orderBy'
 
 import SearchBar from "@/components/uiStyle/SearchBar";
-import Prayer, {Team} from "@/types/Prayer";
+import {Prayer, Team} from "@/types/models";
 import * as atoms from '@/components/uiStyle/atoms'
 import {getPrayersByCategory, selectTeamsByPrayerId} from "@/state/prayers";
 import {AppHeader, RecordPrayerPulseButton as RecordPrayerPulse} from "@/components"
@@ -117,9 +117,9 @@ export default () => {
       <Actions>
         <RecordPrayerPulseButton />
         <NavButtons items={[
-          { name: "Teams", screen: "Home/TeamsMap", active: true },
+          { name: "Dashboard", screen: "Dashboard/Index", active: true },
+          { name: "Teams", screen: "Home/TeamsMap" },
           { name: "Prayers", screen: "Home/PrayersByTopic" },
-          { name: "My Prayers", screen: "MyPrayers" }
         ]} />
       </Actions>
 

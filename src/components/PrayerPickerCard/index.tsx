@@ -5,7 +5,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import styled from 'styled-components/native'
 import lodash from 'lodash'
 
-import Prayer from '@/types/Prayer'
+import {Prayer} from '@/types/models'
 import * as atoms from '@/components/uiStyle/atoms/'
 
 import {OnSelectArgs, SelectActions, SearchResultItem} from './SearchResultItem'
@@ -136,7 +136,7 @@ export default ({ initial=[], selectedIds: initialSelectedIds=[], ...props } : P
         <SearchBar autoFocus value={query} onChangeText={setQuery} 
           postIcon="account-search-outline" 
         />
-        <AddButton onPress={add} />
+        <AddButton onPress={add} disabled={!selectedPrayers?.length} />
       </ScreenFooter>
       
     </ScreenCard>
@@ -153,8 +153,8 @@ const PrayerList = styled(atoms.FlatList)`
 
 const AddButton = styled(atoms.Btn)
   .attrs(p => ({ 
-    color: p.theme.colors.primaryButtonBg,
-    icon: p => <FontAwesome5 name="praying-hands" {...p} />
+    primary: true, color: p.theme.colors.cardBg,
+    icon: p => <FontAwesome5 name="praying-hands" {...p} />,
   }))
 `
   margin: 0 0 0 16px;

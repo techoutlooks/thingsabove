@@ -8,7 +8,7 @@ import { AppThunk } from "./configureStore";
 export enum Auth {
 
   // Syncs: Supabase -> store
-  SYNC_RESET = 'auth/SYNC_RESET',           // reset store
+  SYNC_RESET = 'auth/SYNC_RESET',           // reset auth state
   SYNC_START = 'auth/SYNC_START',           // sync started
   SYNC_COMPLETE = 'auth/COMPLETE',          // sync ended
   SYNC_SESSION = 'auth/SYNC_SESSION',       // sync session object 
@@ -175,6 +175,8 @@ export const fetchProfile: AppThunk<Promise<void>> =
     dispatch(syncStart)
     supabase.fetchUserProfile({userId: authId})
       .then(({ data, error, status }) => { 
+        console.log(`fetchUserProfile()  -> `, data)
+
         if (error && status !== 406) { throw error }
         if(!error) { dispatch(syncProfile(data)) } else { throw(error) } 
       }).catch(e => {

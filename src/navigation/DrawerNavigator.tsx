@@ -7,7 +7,7 @@ import { Image } from "react-native"
 import { useIsAuthed } from '@/hooks';
 import {CustomDrawer2, CustomDrawer} from "@/components"
 import AuthStack, { AuthScreen } from '@/screens/Auth'
-import {MyPrayersScreen} from '@/screens/My'
+import { MyPrayersScreen, MySharingsScreen} from '@/screens/Dashboard'
 
 import BottomNavigator from "./BottomNavigator"
 import * as appImages from '../../assets';
@@ -36,19 +36,33 @@ export default () => {
       }}
     >
       <Drawer.Screen
-        name="Home"
+        name="BottomStack"
+        component={BottomNavigator}
         options={{
           groupName: 'Section 2',
           activeTintColor: '#e91e63',
-          drawerLabel: 'Home',
+          drawerLabel: 'Discover',
           drawerIcon: ({ tintColor }) => (
             <Image source={appImages.branding.icon} resizeMode='cover'
               style={[{ width: 45, height: 40, margin: -10 }, { tintColor: tintColor }]}
             />
           ),
         }}
-        component={BottomNavigator}
       />
+      { isAuthed && (
+        <Drawer.Screen
+          name="MySharings"
+          component={MySharingsScreen}
+          options={{
+            groupName: 'My',
+            activeTintColor: '#e91e63',
+            drawerLabel: "Inbox",
+            drawerIcon: ({focused, size, color}) => (
+              <AntDesign name="profile" size={size} color={focused ? '#e91e63' : color} />
+            )
+          }}
+        />
+      )}
       { isAuthed && (
         <Drawer.Screen
           name="MyPrayers"
@@ -56,7 +70,7 @@ export default () => {
           options={{
             groupName: 'My',
             activeTintColor: '#e91e63',
-            drawerLabel: 'My Prayers',
+            drawerLabel: "Archive",
             drawerIcon: ({focused, size, color}) => (
               <AntDesign name="profile" size={size} color={focused ? '#e91e63' : color} />
             )
@@ -83,7 +97,7 @@ export default () => {
         options={{
           groupName: 'Auth',
           activeTintColor: '#e91e63',
-          drawerLabel: isAuthed ? "My Profile" : "Begin",
+          drawerLabel: isAuthed ? "Profile" : "Begin",
           drawerIcon: ({focused, size, color}) => (
             <AntDesign name="unlock" size={size} color={focused ? '#e91e63' : color} />
           )

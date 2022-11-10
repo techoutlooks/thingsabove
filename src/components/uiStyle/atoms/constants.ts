@@ -9,6 +9,7 @@ export enum Sizes { xs = 18, sm = 24, md = 36,  lg = 48, xl = 96 }
 
 // VALUES
 // =====
+export const BUTTON_SIZE = 24
 export const BUTTON_HEIGHT = 45;
 export const CONTAINER_PADDING = 12;
 export const CONTAINER_RATIO = 1.6;

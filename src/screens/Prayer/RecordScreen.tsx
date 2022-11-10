@@ -4,7 +4,7 @@ import { useStore, useSelector } from 'react-redux'
 import styled from 'styled-components/native'
 
 import { PrayerInput, selectPrayerById, selectTeamById } from '@/state/prayers';
-import Prayer from '@/types/Prayer';
+import {Prayer} from '@/types/models';
 import {useAuthId, useLocation} from "@/hooks";
 
 import {ScreenCard, Btn, Spacer} from '@/components/uiStyle/atoms'

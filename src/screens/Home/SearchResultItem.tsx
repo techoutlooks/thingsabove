@@ -1,4 +1,4 @@
-import {Team} from "@/types/Prayer";
+import {Team} from "@/types/models";
 import React from "react";
 import {useNavigation} from "@react-navigation/native";
 import styled from "styled-components/native"

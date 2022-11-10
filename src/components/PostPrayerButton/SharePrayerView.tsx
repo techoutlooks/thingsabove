@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import { Alert } from "react-native"
 
 import { bolderize } from "@/lib/utils"
-import Prayer, { ItemTypes } from "@/types/Prayer"
+import {Prayer, ItemTypes } from "@/types/models"
 import { useFriends, useSharings } from "@/hooks"
 import { Contact, selectContacts } from '@/state/contacts'
 import ContactPickerCard from '../ContactPickerCard'

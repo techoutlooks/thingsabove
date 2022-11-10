@@ -148,7 +148,7 @@ export default ({ initialContacts=[], selectedIds: initialSelectedIds=[], ...pro
           onChangeText={setQuery}
            postIcon="account-search-outline" 
         />
-        <AddButton onPress={add} />
+        <AddButton onPress={add} disabled={!selectedContacts?.length} />
       </ScreenFooter>
       
     </ScreenCard>
@@ -163,8 +163,10 @@ const ContactList = styled(atoms.FlatList)`
   `}
 `
 
-const AddButton = styled(atoms.Button)
-  .attrs({ name: "group-add"})
+const AddButton = styled(atoms.Button).attrs(p => ({ 
+    name: "group-add", primary: true, 
+    color: p.theme.colors.cardBg,
+}))
 `
   margin: 0 0 0 16px;
 `

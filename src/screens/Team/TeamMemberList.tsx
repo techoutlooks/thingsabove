@@ -3,7 +3,7 @@ import {Text, View, FlatList, ViewStyle} from "react-native";
 import styled from "styled-components/native";
 import {useStore, useSelector} from "react-redux";
 
-import Prayer, {Team} from "@/types/Prayer";
+import {Prayer, Team} from "@/types/models";
 import { useContacts } from "@/hooks";
 import { Contact } from "@/state/contacts";
 

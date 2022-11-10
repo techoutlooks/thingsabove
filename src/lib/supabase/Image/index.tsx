@@ -1,8 +1,7 @@
-import { useMemo, useEffect, memo } from "react"
-import {Image, ImageProps, View} from "react-native"
-import styled from "styled-components/native"
+import { useMemo, memo } from "react"
+import {Image, ImageProps } from "react-native"
 
-import useMedia from "../useMedia"
+import useAsset from "../useAsset"
 import { AVATARS_CACHE } from "../constants"
 
 /***
@@ -26,16 +25,16 @@ type Props = {
  * Renders an image with props similar to RN's ImageProps.
  * Renders a default image if path is null/undefined or the empty string.
  */
-export default memo(({ path, render, isStale: shouldDownload, noCache, 
+export default memo(({ path, render, isStale: forceDownload, noCache, 
   ...props }: Props) => {
   
   // isStale==true iff download actually was performed (useMedia -> useDownload), 
   // ie., iff didn't use cache, add `?v=xxx` to the image uri to force <Image/> to refresh
   // https://github.com/facebook/react-native/issues/12606
-  const [{uri, isStale}] = useMedia(path, AVATARS_CACHE, shouldDownload)
-  const source = useMemo(() => uri && ({ uri: uri + 
-    ((noCache || isStale) ? `?v=${new Date().toISOString()}` : '')
-  }), [uri, isStale, noCache])
+  const { fileUri } = useAsset(path, AVATARS_CACHE, forceDownload)
+  const source = useMemo(() => fileUri && ({ uri: fileUri + 
+    (noCache ? `?v=${new Date().toISOString()}` : '')
+  }), [fileUri, noCache])
 
   // console.log(`supabase.Image(${path}) uri=${uri} path=${path} source=`, source)
   

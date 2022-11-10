@@ -25,7 +25,7 @@ import * as supabase from "./client"
             getOrCreateDir(cacheDir).then(dir => {
               FileSystem.downloadAsync(publicURL, `${dir}/${fileName}`)
                 .then(({uri}) => { 
-                  console.debug(`>>> download() cached ${path} -> ${uri}`, fileName)
+                  // console.debug(`>>> download() cached ${path} -> ${uri}`, fileName)
                   resolve([uri, publicURL]) 
                 })
             })
@@ -91,12 +91,22 @@ export async function upload(
 /***
  * @param {string} charToTtrim: trailing character to trim
  */
- export function splitPath(path: string, charToTrim="/"): Array<string|null> {
-  const i = path && (path.lastIndexOf("/") + 1)
+ export function splitPath(path: string|null, charToTrim="/"): Array<string|null> {
+  if(!path) return []
+  const i = path.lastIndexOf("/") + 1
 
   return [path?.slice?.(0, i), path?.slice?.(i)].map(name => {
     let result = path?.replace?.(new RegExp(`${charToTrim}+$`), '') // trim trailing 
     result = name && (name != 'undefined') ? name : null            // maps "", "undefined", undefined -> null
     return result 
   })
+}
+
+
+/***
+ * Extract the filename part of path
+ * @param path 
+*/
+export const getFileName  = (path: string|null) => {
+  return ( path && splitPath(path)?.[1] ) || null
 }

@@ -123,8 +123,6 @@ export const selectContactAvatar = (userId: string) => (state: R) => {
 export const syncStart = () => ({ type: Actions.SYNC_START })
 
 export const syncComplete = () => {
-  showMessage({ message: "Sync success", type: "success", 
-    statusBarHeight: 30, description: "Contact(s) sync complete." })
   return { type: Actions.SYNC_COMPLETE }
 }
 
@@ -137,6 +135,8 @@ export const syncFailed = (error: Error) => {
 export const syncContacts = (contacts: Contact[] = []) => {
   const contactsByIds: { [id: string]: Contact } = {}
   contacts.forEach(p => { contactsByIds[p.userId] = p })
+  showMessage({ message: "Sync success", type: "success", 
+    statusBarHeight: 30, description: `Syncing (${contacts.length}) contacts.` })
   return { type: Actions.SYNC, contactsByIds }
 }
 
@@ -144,9 +144,9 @@ export const syncContacts = (contacts: Contact[] = []) => {
 /*** 
  * Fetch all contacts from TA's directory
  */
-export const fetchAll = (dispatch, getState) => {
-  return fetchContacts()(dispatch, getState)
-}
+export const fetchAll = (dispatch, getState) => 
+  fetchContacts()(dispatch, getState)
+
 
 /***
  * Fetch contacts by their ids or usernames. ,

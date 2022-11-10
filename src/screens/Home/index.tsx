@@ -8,7 +8,7 @@ import TeamsMapScreen from "./TeamsMapScreen";
 const Stack = createNativeStackNavigator();
 
 /***
- * Home Stack
+ * Discover Stack
  */
 export default () => {
   return (

@@ -1,7 +1,7 @@
 import { showMessage, hideMessage } from "react-native-flash-message";
 
 import { RecordedItem } from "@/components/audio-recorder/lib";
-import Prayer, { Team, Room, Category, Topic} from "@/types/Prayer";
+import { Prayer, Team, Room, Category, Topic} from "@/types/models";
 
 import {mergeDeep} from "@/lib/mergeDeep";
 import * as _ from "lodash"
@@ -22,7 +22,7 @@ const PRAYERS_TABLE = "prayers"
   picture_urls?: string[], published: boolean, lat_lng?: string
 }
 
-type FilterOpts = { published?: boolean }
+export type FilterOpts = { published?: boolean }
 
 
 // Tables involved in managing prayers
@@ -192,8 +192,8 @@ export const selectTeams = (state: R) =>
  * Expand Prayer by its id
  * @returns Prayer
  */
-export const selectPrayerById = (prayerId: string) => 
-  (state: R) => selectPrayers(state).find(({id}) => prayerId == id)
+export const selectPrayerById = (prayerId: string|null) => 
+  (state: R) => prayerId && selectPrayers(state).find(({id}) => prayerId == id) || null
 
 /***
  * **selectPrayersByTeamId()**
@@ -287,7 +287,6 @@ export const getPrayersByTopic = (filter: FilterOpts) =>
     [topic]: selectPrayers(state, filter)?.filter(
       p => p.topics?.includes(topic))
   })).reduce((s,v) => ({...s, ...v}), {})
-
     
 
 // Funcs
@@ -342,4 +341,3 @@ export const getPrayersByTopic = (filter: FilterOpts) =>
 }
 
 
-        

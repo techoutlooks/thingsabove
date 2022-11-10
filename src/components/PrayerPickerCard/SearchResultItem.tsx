@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, ComponentProps } from 'react'
 import { TextProps } from "react-native"
 import styled from 'styled-components/native'
 
-import Prayer from '@/types/Prayer'
+import {Prayer} from '@/types/models'
 import {Switch as UnStyledSwitch, SwitchProps } from '../uiStyle/atoms'
 import Avatar from '../Avatar'
 

@@ -9,8 +9,7 @@ import AuthStack from '@/screens/Auth'
 import TeamStack from '@/screens/Team';
 import PrayerStack from '@/screens/Prayer';
 import ContactStack from '@/screens/Contact';
-
-
+import DashboardStack from '@/screens/Dashboard';
 // import SyncScreen from '@/screens/sync'
 
 
@@ -33,11 +32,16 @@ const getScreens = () => {
       <Stack.Screen name="Team" component={TeamStack} />
       <Stack.Screen name="Prayer" component={PrayerStack} />
       <Stack.Screen name="Contact" component={ContactStack} />
+      <Stack.Screen name="Dashboard" component={DashboardStack} />
     </>
   ) 
 }
 
-const Navigator = () => {
+
+/***
+ * AppStack: all private (authenticated) routes
+ */
+export default () => {
   const screens = getScreens()
 
   return (
@@ -57,7 +61,7 @@ const Navigator = () => {
   )
 }
 
-export default Navigator
+
 
 
 const transitionConfigIn = {

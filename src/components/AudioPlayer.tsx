@@ -1,5 +1,5 @@
-import { memo, ComponentProps } from "react"
-import { useMedia, AUDIOS_CACHE, AUDIOS_BUCKET} from "@/lib/supabase"
+import { ComponentProps } from "react"
+import { useAsset, AUDIOS_CACHE, AUDIOS_BUCKET} from "@/lib/supabase"
 import PlayerWidget from "./audio-recorder/PlayerWidget"
 
 
@@ -9,10 +9,10 @@ type Props = { path: string, isStale?: boolean, key?: any}
 
 export default ({path: rPath, isStale, ...p}: Props) => {
   const path = rPath && `${AUDIOS_BUCKET}/${rPath}`
-  const [{ uri}] = useMedia(path, AUDIOS_CACHE, isStale)
+  const { fileUri } = useAsset(path, AUDIOS_CACHE, isStale)
   return (
     <PlayerWidget {...{
-      ...p, src: { uri, overrideFileExtensionAndroid: "m4a" }}} 
+      ...p, src: { uri: fileUri, overrideFileExtensionAndroid: "m4a" }}} 
     />
   )
 }

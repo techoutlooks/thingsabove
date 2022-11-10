@@ -1,4 +1,4 @@
-import React, {useCallback, ComponentProps, useState} from "react";
+import React, { useCallback, ComponentProps } from "react";
 import {useNavigation} from "@react-navigation/native";
 import styled from "styled-components/native";
 
@@ -33,7 +33,7 @@ export default styled(({children, hideGoBack=false, leftIcon,  ...p}: Props) => 
         <BackIcon onPress={p.navigateBack ?? navigateBack} />)
       }}
     >
-      {<Avatar noCache
+      {<Avatar 
         path={profile?.avatar_url} size={60} style={{marginRight: 12}}
         onPress={() => navigation.navigate('Auth', {screen: 'AuthProfile'})}
       />}

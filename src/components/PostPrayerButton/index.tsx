@@ -1,8 +1,8 @@
 /***
  * PostPrayerButton
- * Opens up modals that let the user pick prayers and send them to selected friends.
- * Reveals the **SelectPrayersView* modal iff not supplied initially with prayers (props.prayers),
- * else opens up the **SharePrayerView** modal for picking friends to send the prayers to.
+ * Renders hidden modals (its revealing button visible instead).
+ * Reveals the **SharePrayerView** modal lets the user pick prayers and/or send them to selected friends. 
+ * If not supplied initially with prayers (props.prayers), the **SelectPrayersView** modal in shown first.
  */
 import React, {memo, useCallback, useState, useMemo, ComponentProps} from "react";
 import { View, ViewStyle, ViewProps } from "react-native";
@@ -11,7 +11,7 @@ import styled, {useTheme} from "styled-components/native";
 import Modal from "../Modal"
 import RecordPrayer from "../RecordPrayerButton"
 import * as atoms from '../uiStyle/atoms'
-import Prayer, {Team} from "@/types/Prayer";
+import {Prayer, Team} from "@/types/models";
 
 // Views to display as modals
 import SelectPrayerView from "./SelectPrayerView"
@@ -54,7 +54,7 @@ type Props = {
 
 /***
  * PostPrayerButton - Core functionality
- * Renders a hidden Modal (its revealing button visible instead)
+ * Renders hidden modals (its revealing button visible instead)
  * 
  * Decides which view (`SelectPrayerView` vs `SharePrayerView`) to display
  * depending on whether prayers were already available for sharing.

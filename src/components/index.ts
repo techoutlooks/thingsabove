@@ -11,11 +11,8 @@ export {default as AudioPlayList } from "./AudioPlayList";
 export {default as VideoPlayer} from "./VideoPlayer";
 import * as AR from "./audio-recorder"; export { AR }
 
-// Contact
-export { default as ContactPickerCard } from "./ContactPickerCard"
-export { default as PrayerPickerCard } from "./PrayerPickerCard"
-
 // Prayer
+export { default as ContactPickerCard } from "./ContactPickerCard"
 export {default as PrayerCard } from "./PrayerCard";
 export { default as PostPrayerButton } from "./PostPrayerButton";
 export { default as RecordPrayerButton, RecordPrayerPulseButton } from "./RecordPrayerButton";
@@ -25,11 +22,16 @@ export {  UnmemoizedPrayerView, UnmemoizedAnimatedPrayerView,
   PrayerView, AnimatedPrayerView } from "./PrayerView";
 export { default as PrayerList } from "./PrayerList"
 
+// Contact
+export { default as PrayerPickerCard } from "./PrayerPickerCard"
+export { default as NotificationWidget } from "./NotificationWidget"
+
+
 // Chat
 export {default as ChatNowButton} from "./ChatNow";
 
 
-// Misc UI
+// Misc
 export {default as AppHeader} from "./AppHeader";
 export {default as Avatar} from "./Avatar";
 export {default as AvatarUpload} from "./AvatarUpload";

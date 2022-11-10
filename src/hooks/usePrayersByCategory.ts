@@ -1,4 +1,4 @@
-import {Team} from "@/types/Prayer";
+import {Team} from "@/types/models";
 import {getPrayersByCategory, selectTeamsByPrayerId} from "@/state/prayers";
 import {useStore} from "react-redux";
 import {Reducer, useReducer} from "react";

@@ -5,7 +5,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import  { format } from 'date-fns'
 
 
-import Prayer from "@/types/Prayer"
+import {Prayer} from "@/types/models"
 import { Image } from "@/lib/supabase"
 
 import {WIDTH, useFmtTime, Text } from '@/components/uiStyle/atoms'

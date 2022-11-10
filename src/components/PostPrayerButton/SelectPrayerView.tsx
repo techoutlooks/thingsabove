@@ -4,7 +4,7 @@ import { Alert } from "react-native"
 
 import { useSelector } from "react-redux"
 
-import Prayer from "@/types/Prayer"
+import {Prayer} from "@/types/models"
 import { useAuthId } from "@/hooks"
 import { selectPrayersByUserId } from '@/state/prayers'
 

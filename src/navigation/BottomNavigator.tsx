@@ -3,7 +3,7 @@ import { TouchableOpacity, Image } from "react-native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons as Icon} from '@expo/vector-icons';
 import { useTheme } from "styled-components/native";
-import HomeStackNavigator  from "./HomeStackNavigator";
+import AppStackNavigator  from "./AppStackNavigator";
 import ChatsStack  from "@/screens/Chats";
 import { PrayersMapScreen } from "@/screens/Prayers";
 import * as appImages from '../../assets';
@@ -23,8 +23,8 @@ export default () => {
         tabBarActiveTintColor: theme.colors.primaryButtonBg
       }}
     >
-      <Tab.Screen name="Discover" 
-        component={HomeStackNavigator} 
+      <Tab.Screen name="AppStack" 
+        component={AppStackNavigator} 
         options={{
           // tabBarIcon: ({size, color}) => (
           //   <Icon name="praying-hands" color={color} size={size} />)

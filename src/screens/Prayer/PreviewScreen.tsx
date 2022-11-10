@@ -3,7 +3,7 @@ import React from 'react'
 import styled from "styled-components/native"
 
 import { selectPrayerById } from '@/state/prayers'
-import Prayer from "@/types/prayer"
+import {Prayer} from "@/types/models"
 import { useScreensContext } from "./PrayerContext"
 
 import { AppHeader, PrayerView } from "@/components";

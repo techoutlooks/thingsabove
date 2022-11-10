@@ -2,11 +2,11 @@ import React, {useCallback, useState, useEffect, ComponentProps} from "react";
 import {FlatList as RNFlatList, ViewStyle } from "react-native";
 import styled, {useTheme} from "styled-components/native";
 
-import Prayer from "@/types/Prayer";
+import {Prayer} from "@/types/models";
+import { usePlaylist } from "@/hooks";
 import { Spacer, Row } from "@/components/uiStyle/atoms";
 
 import PrayerListItem, {PrayerListItemState} from "./PrayerListItem"
-import { usePlaylist } from "@/hooks";
 
 
 /**

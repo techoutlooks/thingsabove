@@ -12,7 +12,7 @@
  * https://echobind.com/post/react-hook-form-for-react-native
  */
  import { useEffect, forwardRef } from "react";
- import {View, Text, TextInputProps} from "react-native"
+ import {View, TextInputProps} from "react-native"
  import styled from "styled-components/native"
  import {useController, useFormContext, UseControllerProps} from "react-hook-form"
  import { ErrorMessage } from '@hookform/error-message';

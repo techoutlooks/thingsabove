@@ -10,7 +10,7 @@ import { SimpleLineIcons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetView, BottomSheetFlatList 
 } from "@gorhom/bottom-sheet";
 
-import Prayer, {Team} from "@/types/Prayer";
+import {Prayer, Team} from "@/types/models";
 import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
 import { VideoPlayer, Avatar, PostPrayerButton, PrayerList } from "@/components";

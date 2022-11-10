@@ -1,55 +1,92 @@
 import React, { useCallback, Reducer, useReducer, useEffect, } from "react"
-import { useDispatch, useSelector } from 'react-redux';
-
-import { Contact } from '@/state/contacts'
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import { orderBy } from "lodash"
+import { ItemTypes, Shareable, Sharing } from "@/types/models"
 import * as sharings from "@/state/sharings"
-import Prayer, { Sharing, ItemTypes, SharedItem } from "@/types/Prayer"
-import { useAuthProfile } from "./useAuth"
+import * as prayers from "@/state/prayers"
+import { useAuthId } from "./useAuth"
 
+
+const ITEMS_LIMIT = 10
+
+/**
+ * Obtain a "get-item-by-id" function suitabe to the item type 
+ * @param itemType: ItemTypes
+ * @returns {Function}
+ */
+const getfunc = (itemType: ItemTypes) => {
+  switch(itemType) {
+    case ItemTypes.PRAYER: return prayers.selectPrayerById
+  }
+}
 
 
 /**
  * Args types */
-type useSharedContentArgs = { itemType: ItemTypes, reversed?: boolean }
-type shareCallbackArgs = {items: SharedItem[] } & Pick<sharings.SharingInput, 'contactsIdsTo'>
+type useSharingsArgs = { itemType: ItemTypes, limit?: number}
+type shareCallbackArgs = {items: Shareable[]  } & Pick<sharings.SharingInput, 'contactsIdsTo'>
 
 /**
- * Reducer */
-type S = { items: SharedItem[] }
+ * Reducer    */
+type S = { sent: Sharing[], received: Sharing[] }
 type R = Reducer<S, Partial<S>>
-const initialState : S = { items: [] }
-const createItemsReducer = (reversed: boolean): R => 
-  (s, a) => ({ ...s, ...a})
+const initialState = { sent: [], received: [] }
 
 /***
+ * Obtain refs to shared items (`models.Shareable`) 
  * - Get items shared to/by the current user
- * - Exposes a primitive to set items shared with ppl to their profiles.
+ * - Exposes a primitive to share items to people.
  * 
  * Items are retrieved from reducer if available/unchanged, or
  * fetched from supabase.
  * */
-const useSharings = ({ itemType }: useSharedContentArgs) => {
+const useSharings = ({ itemType, limit=ITEMS_LIMIT }: useSharingsArgs) => {
 
+  const store = useStore()
   const dispatch = useDispatch()
-  const { profile: me, update: updateAuthProfile } = useAuthProfile()
-  const sent = useSelector(sharings.selectSharingsSent(me?.id, itemType))
-  const received = useSelector(sharings.selectSharingsReceived(me?.id, itemType))
 
+  const authId = useAuthId()
+  const [{sent, received}, set] = useReducer<R>((s, a) => ({ ...s, ...a }), initialState)
 
+  useEffect(() => { if(authId) {
+    const state = store.getState()
+    set({ sent: sharings.selectSharingsSent(authId, itemType)(state)})
+    set({ received: sharings.selectSharingsReceived(authId, itemType)(state)})
+  }}, [authId, itemType])
+
+  /***
+   * Fetch items from the store given their ids  
+   * Discards null or undefined items */
+   const get = useCallback((itemsIds: string[]) => 
+    (itemsIds ?? [])?.map(id => getfunc(itemType)(id)(store.getState()))
+      .filter(item => !!item), [])
+
+  /**
+   * Expand all items in given direction ie., received, sent.
+   * Limit retrieved count to `ITEMS_LIMIT`  */
+   const expand = useCallback((direction: sharings.DirectionTypes) => {
+    const items = orderBy(direction == sharings.DirectionTypes.RECEIVED ? 
+      received : sent, ['created_at'], ['desc']
+    ).slice(0, limit)
+    return get(items.map(sharing => sharing.item_id))
+   }, [received, sent, limit])
+
+  
   /***
    * Share item with contacts, as the curent user 
    * Nota: The user/sharings relationship is established at load time
-   *       via the sharings reducer's sync() dispatch
-   * */
+   *       via the sharings reducer's sync() dispatch  */
   const share = useCallback(({ items, contactsIdsTo }: shareCallbackArgs) => {  
-    if(me?.id && !!items?.length) {
+    if(authId && !!items?.length) {
       const inputs = items?.map(item => ({ 
-        item, itemType, userId: me.id, contactsIdsTo }))
+        item, itemType, userId: authId, contactsIdsTo }))
       dispatch(sharings.upsert(inputs)) }
-  }, [itemType, me?.id])
+  }, [itemType, authId])
 
 
-  return { sent, received, share }
+  return { sent, received, share, get, expand }
 }
 
-export { useSharings }
+
+export default useSharings
+export { useSharingsArgs }

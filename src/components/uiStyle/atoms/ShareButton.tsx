@@ -2,13 +2,13 @@ import { memo, useCallback } from "react"
 import { ViewStyle, Share, ShareContent, ShareOptions } from "react-native"
 import styled, {useTheme} from "styled-components/native";
 import { SimpleLineIcons } from '@expo/vector-icons';
+import { BUTTON_SIZE } from "./constants"
 
 import Text from "./Text"
 import Btn from "./Btn"
 
 
 
-const DEFAULT_BUTTON_SIZE = 24
 
 type Props = { 
   content: ShareContent, options?: ShareOptions, 
@@ -20,7 +20,7 @@ const ShareButton = styled(({content, options, label, style, ...p}: Props) => {
 
   const theme = useTheme()
   const color = p.color ?? theme.colors.fg
-  const size = p.size ?? DEFAULT_BUTTON_SIZE
+  const size = p.size ?? BUTTON_SIZE
   // const defaultIcon = <SimpleLineIcons {...{ name: 'share-alt', size, color }} /> 
 
   const defaultIcon = () => (

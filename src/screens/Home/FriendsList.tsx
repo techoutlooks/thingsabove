@@ -62,7 +62,7 @@ export default ({style}: Props) => {
           data: contacts, keyExtractor, renderItem, horizontal: true,
           ItemSeparatorComponent, showsHorizontalScrollIndicator: false, 
         }} />  
-        <EditFriendsButton onPress={addContact} />
+        <NewContact onPress={addContact} />
       </ListView>
       <NextButton {...{ hasNext, onNext }} /> 
     </Container>
@@ -89,7 +89,7 @@ const FriendAvatar = styled(({ contact, size, style, ...p }) => (
 `
 
 // TouchableHighlight
-const EditFriendsButton = styled(Icon).attrs(p => ({
+const NewContact = styled(Icon).attrs(p => ({
   name: "circle-edit-outline", size: ITEM_SIZE,  
   color: p.theme.colors.cardBg, 
   ...p

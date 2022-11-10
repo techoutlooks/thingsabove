@@ -3,7 +3,7 @@ import { TouchableOpacity, ViewStyle, View } from "react-native";
 import {useSelector, useStore} from "react-redux";
 import styled, {useTheme} from "styled-components/native";
 
-import Prayer, {Team} from "@/types/Prayer";
+import {Prayer, Team} from "@/types/models";
 import { selectContactAvatar } from "@/state/contacts"
 
 import Avatar from "../Avatar"
