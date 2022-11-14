@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, Animated } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 import styled, { useTheme } from "styled-components/native"
 import {useNavigation} from "@react-navigation/native";
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {NextButtonArrow} from '@/components/uiStyle/atoms';
+import * as atoms from '@/components/uiStyle/atoms';
 
 
 
@@ -117,7 +117,7 @@ const CenterNextButton: React.FC<Props> = ({ onNextClick, animationController })
         ))}
       </Animated.View>
 
-      <NextButtonArrow {...{ animationController }} onBtnPress={onNextClick} />
+      <atoms.NextButtonArrow {...{ animationController }} onBtnPress={onNextClick} />
 
       <Animated.View
         style={[
@@ -125,14 +125,14 @@ const CenterNextButton: React.FC<Props> = ({ onNextClick, animationController })
           { transform: [{ translateY: loginTextMoveAnimation }] },
         ]}
       >
-        <Text style={{ color: theme.colors.primaryButtonFg, fontFamily: 'SFProDisplay-Regular' }}>
+        <atoms.Text style={{ color: theme.colors.primaryButtonFg, fontFamily: 'SFProDisplay-Regular' }}>
           Already have an account?{' '}
-        </Text>
-        <Text 
+        </atoms.Text>
+        <atoms.Text 
           style={styles.loginText} 
           onPress={() => navigation.navigate('DoAuth')}>
             Login
-        </Text>
+        </atoms.Text>
       </Animated.View>
     </Animated.View>
   );
@@ -142,11 +142,8 @@ const CenterNextButton: React.FC<Props> = ({ onNextClick, animationController })
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    // backgroundColor: 'yellow',
-
-    paddingBottom: 46,
     position: 'absolute',
-    bottom: 36,
+    bottom: 10,
     left: 0,
     right: 0,
   },

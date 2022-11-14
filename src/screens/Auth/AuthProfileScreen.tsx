@@ -9,8 +9,7 @@ import { UserCredentials } from '@supabase/supabase-js'
 import { signOut } from "@/state/auth"
 import { useAuthProfile, useAuthUser } from "@/hooks"
 import {AvatarUpload, AppHeader} from "@/components"
-import {ScreenCard, Spacer, Btn, TextField
-} from "@/components/uiStyle/atoms";
+import * as atoms from "@/components/uiStyle/atoms";
 
 
 export default ({navigation}) => {
@@ -79,7 +78,7 @@ export default ({navigation}) => {
             {`Hi, ${profile?.first_name ?? profile?.username ?? 'warrior !'}`}
           </DisplayName>
           <AuthProfileForm {...methods}>
-            <TextField
+            <atoms.TextField
               name="email"
               placeholder="Email"
               textContentType="emailAddress"
@@ -87,8 +86,8 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="email-outline"
             />
-            <Spacer height={8} />
-            <TextField
+            <atoms.Spacer height={8} />
+            <atoms.TextField
               name="username"
               placeholder="Username"
               textContentType="username"
@@ -96,8 +95,8 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="identifier"
             />
-            <Spacer height={8} />
-            <TextField
+            <atoms.Spacer height={8} />
+            <atoms.TextField
               name="first_name"
               placeholder="First Name"
               textContentType="givenName"
@@ -105,8 +104,8 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="rename-box"
             />
-            <Spacer height={8} />
-            <TextField
+            <atoms.Spacer height={8} />
+            <atoms.TextField
               name="last_name"
               placeholder="Last Name"
               textContentType="familyName"
@@ -114,9 +113,9 @@ export default ({navigation}) => {
               // onInvalid={setError}
               preIcon="rename-box"
             />
-            <Spacer height={8} />
+            <atoms.Spacer height={8} />
 
-            <TextField
+            <atoms.TextField
               name="web_url"
               placeholder="Website"
               textContentType="URL"
@@ -124,7 +123,7 @@ export default ({navigation}) => {
               preIcon="web"
             />
             <View style={{display: 'none'}}>
-              <TextField 
+              <atoms.TextField 
                 name="avatar_url" 
               />
             </View>
@@ -137,7 +136,7 @@ export default ({navigation}) => {
       )}
 
       <Buttons>
-        <Spacer height={48} />
+        <atoms.Spacer height={48} />
         {( isDirty || isAvatarDirty) ? (
           <SaveButton 
             onPress={methods.handleSubmit(onSave, onError)}
@@ -149,8 +148,10 @@ export default ({navigation}) => {
             disabled={!isValid || fetching } 
           />
         )}
+        <atoms.Spacer height={8} />
         <ResetButton
           onPress={reset} disabled={fetching} />
+        <atoms.Spacer height={8} />
         <SignOutButton label="Sign Out" onPress={logOut} />
       </Buttons>
 
@@ -160,11 +161,10 @@ export default ({navigation}) => {
 
 
 const AuthProfileForm = styled(({style, ...p}) => (
-    <View {...{style}}>
-        <FormProvider {...p} />
-    </View>
-  ))
-`
+  <View {...{style}}>
+    <FormProvider {...p} />
+  </View>
+))`
   flex: 1;
   justify-content: flex-end;
 `
@@ -175,23 +175,16 @@ const DisplayName = styled.Text`
   margin-left: 5px;
   align-self: center;
 `
-const ResetButton = styled(Btn).attrs(({
+const ResetButton = styled(atoms.Btn).attrs(({
     label: "Reset"
-}))`
-  margin-top: 16px;
-`
-const GoBackButton = styled(Btn).attrs(({
+}))``
+const GoBackButton = styled(atoms.Btn).attrs(({
   primary: true, label: "Back"
-}))`
-  margin-top: 16px;
-`
-const SaveButton = styled(Btn).attrs(({
+}))``
+const SaveButton = styled(atoms.Btn).attrs(({
     primary: true, label: "Save"
-}))`
-  margin-top: 16px;
-`
-const SignOutButton = styled(Btn)`
-  margin-top: 16px;
+}))``
+const SignOutButton = styled(atoms.Btn)`
 `
 const Loading = styled.Text
   .attrs({children: 'Saving ...'})
@@ -203,6 +196,6 @@ const Body = styled.View`
   justify-content: flex-start;
   padding: 16px;
 `
-const Container = styled(ScreenCard)`
+const Container = styled(atoms.ScreenCard)`
   padding: 20px;
 `

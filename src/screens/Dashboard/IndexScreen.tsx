@@ -1,6 +1,6 @@
 
 import React, { useEffect, useCallback } from "react"
-import { Feather as Icon } from '@expo/vector-icons'
+import { ScrollView } from "react-native"
 import styled, {useTheme} from "styled-components/native"
 
 import { ItemTypes, Shareable, Sharing } from "@/types/models"
@@ -26,31 +26,32 @@ export default ({ navigation }) => {
   const navigateToPrayers = useCallback(() => 
     navigation.navigate("Dashboard", { screen: "MyPrayers" }), [])
   
-
+  
   return (
     <Container>
       <AppHeader title="My Dashboard" />
 
-      <LatestItemsList items={received} 
-        heading="Received Lately ..." 
-        onViewAll={mkNavigateToSarings(DirectionTypes.RECEIVED)}
-      />
-      <LatestItemsList items={sent} 
-        heading="Shared Lately ..." 
-        onViewAll={mkNavigateToSarings(DirectionTypes.SENT)}
-      />
-      
-      <LatestItemsList items={prayers} 
-        heading="Prayed Lately ..." 
-        onViewAll={navigateToPrayers}
-      />      
+        <LatestItemsList items={received} listKey="received" 
+          onViewAll={mkNavigateToSarings(DirectionTypes.RECEIVED)}
+          heading="Received Lately ..." 
+          hasBorderBottom  
+        />
+        <LatestItemsList  items={sent} listKey="sent"
+          onViewAll={mkNavigateToSarings(DirectionTypes.SENT)}
+          heading="Shared Lately ..." 
+          hasBorderBottom  
+        />
+        <LatestItemsList listKey="prayers" items={prayers} 
+          onViewAll={navigateToPrayers}
+          heading="Prayed Lately ..." 
+        />
+
     </Container>
   )
 }
 
 
-
 export const Container = styled(atoms.ScreenCard)`
-  padding: 0 16px;
-  justify-content: flex-start;
+  padding: 0 16px 24px 16px;
+  // justify-content: flex-start;
 `

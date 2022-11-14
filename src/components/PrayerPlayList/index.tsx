@@ -6,7 +6,7 @@ import {Prayer} from "@/types/models";
 import { usePlaylist } from "@/hooks";
 import { Spacer, Row } from "@/components/uiStyle/atoms";
 
-import PrayerListItem, {PrayerListItemState} from "./PrayerListItem"
+import PlayListItem, {PlayListItemState} from "./PlayListItem"
 
 
 /**
@@ -18,7 +18,7 @@ import PrayerListItem, {PrayerListItemState} from "./PrayerListItem"
 type PrayerListProps = {
   prayers: Prayer[], style?: ViewStyle, 
   customFlatList?: (props: any) => React.ReactElement<typeof RNFlatList>
-} & Omit<ComponentProps<typeof PrayerListItem>, 'prayer'>
+} & Omit<ComponentProps<typeof PlayListItem>, 'prayer'>
 
 
 
@@ -45,7 +45,7 @@ export default styled(({prayers, shouldReset, style,
     useEffect(() => { onChange?.({flipped, ...status})
     }, [flipped, status.ready, status.playing, status.ended])
 
-    const setState = (index: number, {flipSide, ...status}: PrayerListItemState) => { 
+    const setState = (index: number, {flipSide, ...status}: PlayListItemState) => { 
       setFlipped(() => !flipSide)   // FRONT=1 (info), BACK=0 (audios) 
       setStatus([index, status])    //
     }
@@ -59,10 +59,10 @@ export default styled(({prayers, shouldReset, style,
     const ItemSeparatorComponent = useCallback(() => (<Spacer height={8} />), [])
     const keyExtractor = useCallback((item, i) => item+i, [])
     const renderItem = useCallback(({item: prayer, index}) => (
-      <PrayerListItem {...{
+      <PlayListItem {...{
         prayer, shouldReset, keyExtractor, isLast: index+1==prayers.length,
         shouldPlay: shouldPlay[index], // ie., iff first prayer
-        onChange: (status: PrayerListItemState) => setState(index, status)
+        onChange: (status: PlayListItemState) => setState(index, status)
       }} />
     ), [shouldPlay, shouldReset])
 

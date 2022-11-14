@@ -8,7 +8,8 @@ import { DEFAULT_USER_ID, DEFAULT_PASSWORD } from '@env'
 import { useIsAuthed } from "@/hooks"
 import { getAuthState, doAuth } from '@/state/auth'
 import {signInWithEmail, signUpWithEmail, signInWithProvider} from "@/lib/supabase"
-import {ScreenCard, ScreenHeaderCopy, Btn, TextField} from "@/components/uiStyle/atoms";
+import * as atoms from "@/components/uiStyle/atoms"
+import { LogoIcon } from "@/components"
 
 
 type AuthData = { email: string, password: string}
@@ -54,11 +55,13 @@ const AuthScreen = ({ navigation, route }) => {
   return (
     <Container>
       <HeaderContainer>
+        <Logo color="white" />
+        <atoms.Spacer height={48} />
         <Header>Welcome!</Header>
       </HeaderContainer>
 
       <AuthForm {...methods}>
-        <TextField
+        <atoms.TextField
           name="email"
           placeholder="email"
           textContentType="username"
@@ -67,7 +70,7 @@ const AuthScreen = ({ navigation, route }) => {
           preIcon="email-outline"
         />
         <InputSpacer />
-        <TextField
+        <atoms.TextField
           name="password"
           placeholder="password"
           textContentType="password"
@@ -76,7 +79,7 @@ const AuthScreen = ({ navigation, route }) => {
           // onInvalid={setError}
           preIcon="key"
         />
-        <InputSpacer />
+        <atoms.Spacer height={48} />
         { action==="signUp" ? (
           <SignUpButton
             label="Sign Up"
@@ -103,7 +106,12 @@ const AuthScreen = ({ navigation, route }) => {
 
 export default AuthScreen
 
-const Container = styled(ScreenCard)``
+const Container = styled(atoms.ScreenCard)`
+  background-color: ${p => p.theme.colors.mutedFg};
+  margin: 16px;
+  padding: 24px;
+
+`
 
 const HeaderContainer = styled.View`
   justify-content: center;
@@ -111,8 +119,8 @@ const HeaderContainer = styled.View`
   height: 60%;
 `
 
-const Header = styled(ScreenHeaderCopy)`
-  font-size: 30px;
+const Header = styled(atoms.ScreenHeaderCopy)`
+  font-size: 20px;
 `
 
 const AuthForm = styled(({style, ...p}) => (
@@ -129,10 +137,14 @@ const InputSpacer = styled.View`
   height: 8px;
 `
 
-const SignInButton = styled(Btn)`
-  margin-top: 16px;
+const SignInButton = styled(atoms.Btn)`
+  // margin-top: 16px;
 `
 
-const SignUpButton = styled(Btn)`
-  margin-top: 16px;
+const SignUpButton = styled(atoms.Btn)`
+  // margin-top: 16px;
+`
+const Logo = styled(LogoIcon)`
+  width: 100px;
+  height: 150px;
 `

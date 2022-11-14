@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 import { Text, Animated, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native'
-import { Spacer, RADIUS } from '@/components/uiStyle/atoms';
+import * as atoms from '@/components/uiStyle/atoms';
 
 import * as appImages from '../../../../../assets';
-import * as consts from "../constants"
+import { IMAGE_WIDTH, Container, Title, Description, Image } from "../elements"
 
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 
 // 1.
 
-const OneView = ({ animationController }: Props) => {
+export default ({ animationController }: Props) => {
   
   const window = useWindowDimensions();
   const relaxRef = useRef<Text | null>(null);
@@ -50,7 +50,7 @@ const OneView = ({ animationController }: Props) => {
       >
         Record and share your prayers with your friends. Spread joy ++
       </Description>
-      <Spacer height={18}/>
+      <atoms.Spacer height={18}/>
       <Image
         style={[ { transform: [{ translateX: imageAnim }] }]}
         source={appImages.onboarding.relax_image}
@@ -59,30 +59,5 @@ const OneView = ({ animationController }: Props) => {
   );
 };
 
-const Image = styled(Animated.Image)`
-  maxWidth: ${consts.IMAGE_WIDTH}px;
-  maxHeight: ${consts.IMAGE_HEIGHT}px;
-  border-radius: ${RADIUS}px;
-`
-const Title = styled(Animated.Text)`
-  fontSize: 24px;
-  textAlign: center;
-  fontFamily: SFProDisplay-Bold;
-  color: ${p => p.theme.colors.primaryButtonFg}
-`
-const Description = styled(Animated.Text)`
-  textAlign: center;
-  fontSize: 15px;
-  fontFamily: SFProDisplay-Regular;
-  paddingVertical: 16px;
-  // color: ${p => p.theme.colors.primaryButtonFg}
-`
-const Container = styled(Animated.View)`
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 100px;
-  align-items: center;
-  paddingHorizontal: 28px;
-`
-export default OneView;
+
+

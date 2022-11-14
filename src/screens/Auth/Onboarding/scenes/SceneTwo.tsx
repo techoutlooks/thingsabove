@@ -1,9 +1,8 @@
 import React, { useRef } from 'react';
 import { Text, Animated, useWindowDimensions } from 'react-native';
-import styled from 'styled-components/native'
-import { RADIUS, Spacer } from '@/components/uiStyle/atoms';
+import { Spacer } from '@/components/uiStyle/atoms';
 import * as appImages from '../../../../../assets';
-import * as consts from "../constants"
+import { IMAGE_WIDTH, Container, Title, Description, Image } from "../elements"
 
 
 type Props = {
@@ -26,7 +25,7 @@ export default ({ animationController }: Props) => {
     outputRange: [careEndVal, careEndVal, 0, -careEndVal, -careEndVal],
   });
 
-  const imageEndVal = consts.IMAGE_WIDTH * 4;
+  const imageEndVal = IMAGE_WIDTH * 4;
   const imageAnim = animationController.current.interpolate({
     inputRange: [0, 0.2, 0.4, 0.6, 0.8],
     outputRange: [imageEndVal, imageEndVal, 0, -imageEndVal, -imageEndVal],
@@ -54,30 +53,5 @@ export default ({ animationController }: Props) => {
   );
 };
 
-const Image = styled(Animated.Image)`
-  maxWidth: ${consts.IMAGE_WIDTH}px;
-  maxHeight: ${consts.IMAGE_HEIGHT}px;
-  border-radius: ${RADIUS}px;
-`
-const Title = styled(Animated.Text)`
-  fontSize: 24px;
-  textAlign: center;
-  fontFamily: SFProDisplay-Bold;
-  color: ${p => p.theme.colors.primaryButtonFg}
-`
-const Description = styled(Animated.Text)`
-  textAlign: center;
-  fontSize: 15px;
-  fontFamily: SFProDisplay-Regular;
-  // paddingHorizontal: 64px;
-  paddingVertical: 16px;
-`
-const Container = styled(Animated.View)`
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 100px;
-  align-items: center;
-  paddingHorizontal: 28px;
-`
+
 

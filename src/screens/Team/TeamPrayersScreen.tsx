@@ -13,7 +13,7 @@ import BottomSheet, { BottomSheetView, BottomSheetFlatList
 import {Prayer, Team} from "@/types/models";
 import { selectPrayerById, selectTeamById } from "@/state/prayers";
 
-import { VideoPlayer, Avatar, PostPrayerButton, PrayerList } from "@/components";
+import { VideoPlayer, Avatar, PostPrayerButton, PrayerPlayList } from "@/components";
 import { Spacer, RADIUS, BackIcon, Btn, SwitchButton, Row, 
   ScreenCard, ScreenHeader, ScreenHeaderCopy } from "@/components/uiStyle/atoms";
 
@@ -126,9 +126,9 @@ export default ({navigation}) => {
               () => setSheetLocked(locked => !locked)  }} />
           </Row>
 
-          {/* PrayerList as BottomSheetFlatList. 
+          {/* PrayerPlayList as BottomSheetFlatList. 
           Is aware of user interactions with prayers */}
-          <PrayerList
+          <PrayerPlayList
             {...{ 
               prayers, shouldPlay, shouldReset, 
               onChange: onPrayerListChange,

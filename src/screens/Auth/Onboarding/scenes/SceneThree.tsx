@@ -4,7 +4,7 @@ import styled from 'styled-components/native'
 import { Spacer, RADIUS } from '@/components/uiStyle/atoms';
 
 import * as appImages from '../../../../../assets';
-import * as consts from "../constants"
+import { IMAGE_WIDTH, Container, Title, Description, Image } from "../elements"
 
 
 
@@ -30,7 +30,7 @@ export default ({ animationController }: Props) => {
     outputRange: [textEndVal, textEndVal, 0, -textEndVal],
   });
 
-  const imageEndVal = consts.IMAGE_WIDTH * 4;
+  const imageEndVal = IMAGE_WIDTH * 4;
   const imageAnim = animationController.current.interpolate({
     inputRange: [0, 0.4, 0.6, 0.8],
     outputRange: [imageEndVal, imageEndVal, 0, -imageEndVal],
@@ -57,33 +57,4 @@ export default ({ animationController }: Props) => {
   );
 };
 
-
-
-const Image = styled(Animated.Image)`
-  border-radius: ${RADIUS}px;
-  maxWidth: ${consts.IMAGE_WIDTH}px;
-  maxHeight: ${consts.IMAGE_HEIGHT}px;
-`
-const Title = styled(Animated.Text)`
-  fontSize: 24px;
-  textAlign: center;
-  fontFamily: SFProDisplay-Bold;
-  color: ${p => p.theme.colors.primaryButtonFg}
-`
-const Description = styled(Animated.Text)`
-  textAlign: center;
-  fontSize: 15px;
-  fontFamily: SFProDisplay-Regular;
-  paddingHorizontal: 64px;
-  paddingVertical: 16px;
-
-`
-const Container = styled(Animated.View)`
-position: absolute;
-align-items: center;
-justify-content: center;
-padding-bottom: 100px;
-align-items: center;
-paddingHorizontal: 28px;
-`
 

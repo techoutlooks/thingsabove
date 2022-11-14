@@ -7,6 +7,7 @@ export { default as SendIcon} from "./SendIcon";
 export { Swiper, Swipeable, Underlay } from "./Swiper";
 export { default as Avatar } from "./Avatar";
 export { default as FlatList } from "./FlatList";
+export { default as VirtualizedList } from "./VirtualizedList";
 export { default as TextInput } from "./TextInput";
 export { default as TextField } from "./TextField";
 export { default as MultiSelectField } from "./MultiSelectField";

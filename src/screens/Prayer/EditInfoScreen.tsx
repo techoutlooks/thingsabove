@@ -146,11 +146,10 @@ export default ({navigation, route}) => {
           onPress={methods.handleSubmit(onSave, onError)}
           disabled={ (!isDirty && !pictureState.touched) || !isValid || !isempty(errors)  }
         />
+        <atoms.Spacer height={8} />
         { status.saved && !status.dirty && (
           <PublishButton onPress={onPublish} disabled={pictureState.uploading} />
-          // { status.published && (
-          //     <></>
-          // )}
+
         )}
       </Form>
       
@@ -176,7 +175,6 @@ const Form = styled(({style, ...p}) => (
 const Action = styled(atoms.Btn)`
   // background-color: transparent;
   // border: ${p => p.theme.colors.fg} 2px;
-  margin-top: 16px;
 `
 
 const SaveButton = styled(Action).attrs({

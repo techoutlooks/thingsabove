@@ -15,14 +15,16 @@ import { Heading1, Row } from "./elements"
 
 type Props = { 
   heading: string, items: Shareable[],
+  hasBorderBottom?: boolean,
+  listKey?: string,
   onSelect?: (item: Shareable) => void,
   onViewAll?: () => void
 } & ViewProps
 
 
-export default memo(({ heading, items, ...props }: Props) => {
+export default memo(({ heading, items, hasBorderBottom, listKey, ...props }: Props) => {
   
-  // console.log(`\n\n ?????? items=`, items)
+  console.log(`\n\n ?????? listKey=`, listKey)
   const theme = useTheme()
   const data = items?.map(({description, ...item}) => ({ 
     time: datefmt.shortRelativeFormat(new Date(item?.shared_at ?? item?.updated_at)), 
@@ -30,7 +32,7 @@ export default memo(({ heading, items, ...props }: Props) => {
     ...item }))
     
   return (
-    <Container itemsLength={data?.length} style={props.style}>
+    <Container itemsLength={data?.length} style={props.style} listKey={listKey}>
       <atoms.Spacer height={24} />
       <Row>
         <Heading1><Icon name="activity" size={18}  />{' '}  { heading }</Heading1>
@@ -39,6 +41,8 @@ export default memo(({ heading, items, ...props }: Props) => {
       <atoms.Spacer height={16} />
       { !items?.length ? <NoData /> : (
         <ItemsList {...{
+          listKey,
+          hasBorderBottom,
           data, lineColor: theme.colors.primaryButtonBg, 
           circleColor: theme.colors.primaryButtonBg,
           onEventPress: props.onSelect
@@ -55,6 +59,12 @@ const ViewAllButton = styled(atoms.Btn)
 ``
 
 const ItemsList = styled(Timeline)`
+  ${p => p.hasBorderBottom && `
+    // background-color: ${p.theme.colors.cardBg};
+    border-bottom-width: .5px; 
+    border-style: solid; 
+    border-color: ${p.theme.colors.inputPlaceholder};
+  `}
 `
 
 export const NoData = styled(({message, ...props}: {message?: string} & TextProps) => (

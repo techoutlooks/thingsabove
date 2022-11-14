@@ -85,7 +85,7 @@ const Container = styled(
 
 const TextLabel = styled(({ primary, disabled, ...props }) => {
   return (
-    <View style={{ justifyContent: 'center', height: BUTTON_HEIGHT}} >
+    <View style={{ justifyContent: 'center', alignItems: 'center', height: BUTTON_HEIGHT }} >
       <Text {...props} />
     </View>
   )

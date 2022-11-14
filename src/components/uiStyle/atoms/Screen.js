@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components/native'
 import { TouchableWithoutFeedback } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import Text from "./Text"
 
 
 export const ScreenCard = styled.SafeAreaView`
@@ -34,8 +35,8 @@ const LeftIconWrapper = styled.View`
   margin-right: 10px;
 `
 
-export const ScreenHeaderCopy = styled.Text`
-  font-weight: bold;
+export const ScreenHeaderCopy = styled(Text)`
+  font-family: SFProDisplay-Bold;
   font-size: 16px;
   color: ${p => p.theme.colors.titleFg};
 `

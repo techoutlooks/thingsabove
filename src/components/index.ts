@@ -20,7 +20,7 @@ export { default as SharePrayerLink } from "./SharePrayerLink";
 export { default as ShareContact } from "./ShareContact";
 export {  UnmemoizedPrayerView, UnmemoizedAnimatedPrayerView, 
   PrayerView, AnimatedPrayerView, AnimatedPrayerViewList } from "./PrayerView";
-export { default as PrayerList } from "./PrayerList"
+export { default as PrayerPlayList } from "./PrayerPlayList"
 
 // Contact
 export { default as PrayerPickerCard } from "./PrayerPickerCard"

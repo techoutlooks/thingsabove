@@ -17,6 +17,7 @@ const ITEM_HEIGHT = 50
 const LAST_ITEM_HEIGHT = 75
 
 type State = { flipSide: FlipCard.FlipSide } & ar.PlaybackStatus
+export { State as PlayListItemState}
 
 type Props = {
   isLast: boolean,
@@ -33,7 +34,7 @@ type Props = {
  * 
  * PrayerListItem -> AudioPlayList -> AudioPlayer
  */    
-const PrayerListItem = styled(
+export default styled(
   ({prayer, shouldPlay, shouldReset, shouldStop: intiallyStopped, isLast, style, onChange}: Props) => {
 
   // Data
@@ -136,5 +137,3 @@ const Title = styled.Text`
   `}
 `
 
-export default PrayerListItem
-export { State as PrayerListItemState}

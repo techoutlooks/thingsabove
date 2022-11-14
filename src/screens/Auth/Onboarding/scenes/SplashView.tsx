@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Animated, useWindowDimensions } from 'react-native';
 import * as appImages from '../../../../../assets';
 import { isAndroid } from "@/lib/utils"
+import { Description } from "../elements"
 
 
 interface Props {
@@ -32,9 +33,9 @@ const SplashView: React.FC<Props> = ({ onNextClick, animationController }) => {
         source={appImages.onboarding.intro_image}
       />
       <Text style={styles.title}></Text>
-      <Text style={styles.subtitle}>
+      <Description >
         Experience joy through prayer
-      </Text>
+      </Description>
       <View style={{ height: 48 }} />
       <View style={styles.buttonContainer}>
         <Pressable
@@ -52,17 +53,13 @@ const SplashView: React.FC<Props> = ({ onNextClick, animationController }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     textAlign: 'center',
     fontFamily: 'SFProDisplay-Bold',
     paddingVertical: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    fontFamily: 'SFProDisplay-Regular',
-    paddingHorizontal: 64,
   },
   buttonContainer: {
     marginBottom: 16,
