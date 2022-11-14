@@ -38,8 +38,8 @@ const TeamMemberList = React.memo(styled(({team, onSelect }: Props) => {
   const memberIds = useMemo(() => [...new Set(teamPrayers.map(p => p.user_id))], [teamPrayers])
   const members = useContacts(memberIds)
 
-  console.log('<TeamMemberList />', `teamPrayers=${teamPrayers.length}`, `team=${team.title}`, 
-  `members=${members?.length}`)
+  // console.log('<TeamMemberList />', `teamPrayers=${teamPrayers.length}`, `team=${team.title}`, 
+  // `members=${members?.length}`)
 
   return (
     <View>

@@ -24,6 +24,8 @@ const branding = {
   icon: require('../assets/images/ta-icon.png'),
   icon_black: require('../assets/images/ta-icon-black.png'),
   icon_white: require('../assets/images/ta-icon-white.png'),
+  icon_disabled: require('../assets/images/ta-icon-disabled.png'),
+
 }
 
 export { branding, onboarding, drawer }

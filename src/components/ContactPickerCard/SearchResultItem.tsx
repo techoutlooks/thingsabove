@@ -4,7 +4,7 @@ import styled from 'styled-components/native'
 import { useDispatch } from "react-redux"
 
 import { fetchContacts, Contact } from '@/state/contacts'
-import {Switch as UnStyledSwitch, SwitchProps, Text } from '../uiStyle/atoms'
+import * as atoms from '../uiStyle/atoms'
 import Avatar from '../Avatar'
 
 
@@ -18,7 +18,7 @@ enum SelectActions {
 type OnSelectArgs = { action: SelectActions, contact: Contact }
 type Props = { contact: Contact,  
   onSelect: ({ action, contact }: OnSelectArgs) => void 
-} & Pick<SwitchProps, 'initiallyOn'>
+} & Pick<atoms.SwitchProps, 'initiallyOn'>
 
 
 /***
@@ -26,10 +26,10 @@ type Props = { contact: Contact,
  */
 const SearchResultItem = React.memo(({ contact, onSelect, initiallyOn }: Props) => {
 
+  // Data
+  // ==========================
   const dispatch = useDispatch()
   const [fetchedContact, setFetchedContact] = useState<Contact|null>(null)
-
-
 
   useEffect(() => {
     (async () => {
@@ -39,19 +39,27 @@ const SearchResultItem = React.memo(({ contact, onSelect, initiallyOn }: Props) 
     })()
   }, [contact.username, contact?.isNew])
 
+  // UI
+  // ==========================
+  const [isOn, setIsOn] = useState<boolean|undefined>(initiallyOn)
+  const [label, setLabel] = useState<'add'|'remove'>(initiallyOn ? 'remove' : 'add')
 
-  // dispatch .onChange() with contact and reason for change (contact add/removed ?)
-  const onChange = useCallback((isOn: boolean|undefined) => {
+  useEffect(() => {  
+    setLabel(isOn? 'remove' : 'add')
     onSelect?.({ action: isOn ? SelectActions.ADD : SelectActions.REMOVE, contact })
-  }, [])
+  }, [isOn])
+
 
   return (
-    <Switch {...{ onChange, initiallyOn }}>
-      <Avatar path={contact?.avatar?.[0]} size={40} />
-      <Summary>
-        <Name>{contact?.displayName}</Name>
-        <Username>{contact.username}</Username>
-      </Summary>
+    <Switch primary {...{ onChange: setIsOn, initiallyOn }}>
+      <Content>
+        <Avatar path={contact?.avatar?.[0]} size={40} />
+        <Summary>
+          <Name {...{isOn}}>{contact?.displayName}</Name>
+          <Username {...{isOn}}>{contact.username}</Username>
+        </Summary>
+      </Content>
+      <Action {...{label, onPress: () => setIsOn(b => !b)}}/>
     </Switch>
   )
 })
@@ -60,32 +68,41 @@ export  {OnSelectArgs, SelectActions, SearchResultItem}
 
 // Styles
 // ==========================
-const Switch = styled(UnStyledSwitch)
+const Switch = styled(atoms.Switch)
   .attrs({ transparent: true })
 `
-  padding: 8px;
+  padding: 5px 8px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  // height: 40px;
+
+`
+const Content = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  // border-radius: 0;
 `
 const Summary = styled.View`
   padding-left: 8px;
 `
-const Name = styled.Text.attrs({
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
-})`
+
+const Text = styled(atoms.Text)
+.attrs<TextProps & {isOn: boolean}>(p => ({
+  numberOfLines: 1, ellipsizeMode: 'tail', ...p
+}))``
+const Name = styled(Text)`
   font-size: 15px;
   font-weight: bold;
-  color: ${p => p.theme.colors.fg};
+  color: ${p => p.isOn? p.theme.colors.cardBg : p.theme.colors.fg };
 `
 const Username = styled(Text).attrs<TextProps>(p => ({
   children: `@${p.children}`,
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
 }))`
-  color: ${p => p.theme.colors.mutedFg};
+  color: ${p => p.isOn? p.theme.colors.inputDisabledBg : p.theme.colors.mutedFg };
   font-size: 12px;
   font-weight: normal;
 `
+const Action = styled(atoms.Button).attrs(({label}) => ({
+  name: `person-${label}-alt-1`
+}))``

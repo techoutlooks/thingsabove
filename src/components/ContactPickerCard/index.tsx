@@ -120,11 +120,9 @@ export default ({ initialContacts=[], selectedIds: initialSelectedIds=[], ...pro
 
   const navigateBack = useMemo(() => () => navigation.goBack(), [])
 
-  // console.log(`<ContactPickerCard /> selectedContacts=${selectedContacts.length}`, 
-  //  selectedContacts.map(c => c.displayName))
 
   return (
-    <ScreenCard>
+    <ScreenCard {...props}>
       <atoms.ScreenHeader
         title={props.title || "Pick Contacts"}
         leftIcon={<atoms.BackIcon onPress={navigateBack} />}
@@ -157,6 +155,7 @@ export default ({ initialContacts=[], selectedIds: initialSelectedIds=[], ...pro
 
 
 const ContactList = styled(atoms.FlatList)`
+  flex: 1;
   ${p => p.selected && `
     border-top-width: 1px; border-top-style: solid; 
     border-top-color: ${p.theme.colors.mutedFg}
@@ -183,9 +182,8 @@ const ScreenFooter = styled(atoms.ScreenFooter)`
 `
 
 const ScreenCard = styled(atoms.ScreenCard)`
- padding: 16px;
- margin: 16px;
- width: 100%
+  margin-bottom: 24px;
+  width: 100%;
 `
 
 const getNewContactFromQuery = (query: string) => {

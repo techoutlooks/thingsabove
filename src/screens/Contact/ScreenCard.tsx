@@ -8,7 +8,7 @@ import { Feather as Icon } from '@expo/vector-icons';
 import  { format, formatDistance } from 'date-fns'
 
 import { bolderize } from "@/lib/utils"
-import { useFriendsCount, useAuthProfile } from "@/hooks"
+import { useFriends, useAuthProfile } from "@/hooks"
 import { countPrayersByUserId, selectTeamsCountByUserId } from "@/state/prayers"
 import { Contact } from "@/state/contacts"
 import * as atoms from '@/components/uiStyle/atoms';
@@ -27,15 +27,17 @@ type Props = { contact: Contact }
 const ContactScreenCard = memo(({ contact }: Props) => {
 
   const [isOnline, ] = useState(false)
-  const friendsCount = useFriendsCount()
-  const prayersCount = useSelector(countPrayersByUserId(contact?.userId, 
-    { published: true}))
+  const {friends, friendsCount} = useFriends()
+  const prayersCount = useSelector(countPrayersByUserId(contact?.userId, { published: true}))
   const teamsCount = useSelector(selectTeamsCountByUserId(contact?.userId))
   const stats = [ 
     { icon: 'activity', label: "Prayers", count: prayersCount  }, 
     { icon: 'users', label: "Friends", count: friendsCount  }, 
     { icon: 'slack', label: "Teams", count: teamsCount  }, 
   ] 
+
+  // whether contact is already friend
+  const isFriend = !!friends.filter(({userId}) => userId==contact?.userId)?.length
 
   return !contact ? ( <Loader /> ) : (
     <ScreenCard>
@@ -55,7 +57,7 @@ const ContactScreenCard = memo(({ contact }: Props) => {
           <RecordPrayerButton />
           <ChatNowButton />
           <ShareFriend {...{ contact }} />
-          <UnFriendButton {...{ contact }} />
+          {isFriend && (<UnFriendButton {...{ contact }} />) }
         </Buttons>
       </ScreenHeaderContainer>
 
@@ -183,8 +185,6 @@ const UnFriendButton = styled(({ contact, ...props}) => {
     ])
   }
   
-  
-  console.log('<UnFriendButton /> me.friends_ids.filter(id => id !== contact.userId)', me?.friends_ids.filter(id => id !== contact.userId))
   return (
     <TouchableOpacity {...{onPress, ...p}}>
       <ButtonIcon {...{name, size, color}} />

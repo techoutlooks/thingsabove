@@ -1,31 +1,42 @@
 import React, { memo, ComponentProps } from "react"
 import { TextProps, ViewProps, Pressable } from "react-native"
+import { useNavigation } from "@react-navigation/native"
 import { Feather as Icon } from '@expo/vector-icons'
 import styled, {useTheme} from "styled-components/native"
 import Timeline from 'react-native-timeline-flatlist'
 import * as datefmt from "@/lib/prettyTime"
+import { trunc } from "@/lib/utils"
 
 import { Shareable } from "@/types/models"
 import * as atoms from "@/components/uiStyle/atoms"
-import { Heading1 } from "./elements"
+import { Heading1, Row } from "./elements"
 
 
 
 type Props = { 
   heading: string, items: Shareable[],
-  onSelect?: (item: Shareable) => void
+  onSelect?: (item: Shareable) => void,
+  onViewAll?: () => void
 } & ViewProps
 
 
 export default memo(({ heading, items, ...props }: Props) => {
   
+  // console.log(`\n\n ?????? items=`, items)
   const theme = useTheme()
-  const data = items?.map(item => ({ time: 
-    datefmt.shortRelativeFormat(new Date(item.updated_at)), ...item }))
+  const data = items?.map(({description, ...item}) => ({ 
+    time: datefmt.shortRelativeFormat(new Date(item?.shared_at ?? item?.updated_at)), 
+    description: trunc(description, 24),
+    ...item }))
     
   return (
     <Container itemsLength={data?.length} style={props.style}>
-      <Heading1><Icon name="activity" size={18}  />{' '}  { heading }</Heading1>
+      <atoms.Spacer height={24} />
+      <Row>
+        <Heading1><Icon name="activity" size={18}  />{' '}  { heading }</Heading1>
+        <ViewAllButton onPress={props.onViewAll} />
+      </Row>
+      <atoms.Spacer height={16} />
       { !items?.length ? <NoData /> : (
         <ItemsList {...{
           data, lineColor: theme.colors.primaryButtonBg, 
@@ -37,8 +48,15 @@ export default memo(({ heading, items, ...props }: Props) => {
   )
 })
 
+
+
+const ViewAllButton = styled(atoms.Btn)
+  .attrs({label: "View All"})
+``
+
 const ItemsList = styled(Timeline)`
 `
+
 export const NoData = styled(({message, ...props}: {message?: string} & TextProps) => (
   <atoms.Text {...{children: message, ...props}} />
 )).attrs(p => ({ message: 'No content', ...p }))`

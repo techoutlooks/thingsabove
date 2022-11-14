@@ -1,6 +1,6 @@
 
-import React, {useRef, useCallback, useEffect, useMemo, useState} from 'react';
-import { View, ViewStyle, FlatList, Text } from 'react-native';
+import React, {useRef, useCallback, useState} from 'react';
+import { ViewStyle, TouchableHighlight } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import styled, { useTheme } from 'styled-components/native';
 import { MaterialCommunityIcons as Icon} from '@expo/vector-icons';
@@ -17,6 +17,7 @@ const NUM_ITEMS_TO_RENDER = 3
 const ITEM_SIZE = 80
 const ITEM_SEP_WIDTH = 0
 const ITEM_OVERLAP = 8
+const CONTAINER_RATIO = 1.4*atoms.CONTAINER_RATIO
 
 type Props = { style?: ViewStyle }
 
@@ -25,7 +26,7 @@ export default ({style}: Props) => {
   const theme = useTheme()
   const navigation = useNavigation()
   const flatList = useRef()
-  const contacts = useFriends()
+  const {friends: contacts} = useFriends()
   const [current, setCurrent] = useState<number>(0)
 
 
@@ -52,8 +53,6 @@ export default ({style}: Props) => {
   const renderItem = useCallback(({item: contact, index}) => (
     <FriendAvatar {...{ index, contact, onPress: showContact }} /> ), [])
 
-
-  // console.log(`<FriendsList /> current=${current}, contacts=${contacts.length}`, contacts)
 
   return (
     <Container {...{ style }}>
@@ -89,14 +88,20 @@ const FriendAvatar = styled(({ contact, size, style, ...p }) => (
 `
 
 // TouchableHighlight
-const NewContact = styled(Icon).attrs(p => ({
-  name: "circle-edit-outline", size: ITEM_SIZE,  
-  color: p.theme.colors.cardBg, 
+const NewContact = styled(({name, size, color, ...p}) => (
+  <TouchableHighlight {...p}>
+    <Icon {...{ name, size, color }} />
+  </TouchableHighlight>
+)).attrs(p => ({  
+  name: "account-edit-outline", size: ITEM_SIZE/CONTAINER_RATIO,
+  color: p.theme.colors.cardBg,
   ...p
 }))`
+  align-items: center; justify-content: center;
+  width: ${ITEM_SIZE}px; height: ${ITEM_SIZE}px;
   margin-left: -${ (NUM_ITEMS_TO_RENDER) * ITEM_OVERLAP}px
-  border-radius: ${p => p.size/2}px;
-  ${p => `width: ${p.size}px; height: ${p.size}px;`}
+  border-radius: ${ITEM_SIZE/2}px;
+  ${p => `width: ${ITEM_SIZE}px; height: ${ITEM_SIZE}px;`}
   background-color: ${p => p.theme.colors.primaryButtonBg};
 `
   

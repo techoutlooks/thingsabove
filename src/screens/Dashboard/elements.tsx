@@ -7,10 +7,15 @@ export const Description = styled(atoms.Text)`
   margin: 24px 0 8px 0;
 `
 export const Heading1 = styled(atoms.Text)`
-color: ${p => p.theme.colors.primaryButtonBg};
-font-family: SFProDisplay-Bold;
-  margin: 24px 0 8px 0;
+  color: ${p => p.theme.colors.primaryButtonBg};
+  font-family: SFProDisplay-Bold;
+  // margin: 24px 0 8px 0;
+`
+export const Row = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `
 export const Container = styled(atoms.ScreenCard)`
-  padding: 0 12px;
+  padding: 0 24px;
 `

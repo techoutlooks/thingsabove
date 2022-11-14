@@ -120,7 +120,8 @@ const Front = styled(Row)`
   justify-content: flex-start;
   border-radius: ${RADIUS}px;
   border: 2px ${p => p.theme.colors.cardBg};
-  background-color: ${p => !p.highlighted? p.theme.colors.mutedFg: p.theme.colors.primaryButtonBg};
+  background-color: ${p => !p.highlighted? 
+    p.theme.colors.mutedFg: p.theme.colors.primaryButtonBg};
 `
 
 const Description = styled.Text`

@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TouchableWithoutFeedback } from "react-native";
+import { View, TouchableWithoutFeedback } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import {BUTTON_HEIGHT, CONTAINER_RATIO, RADIUS} from "./constants";
+import Text from "./Text"
 
 
 const Btn = ({
@@ -17,6 +18,8 @@ const Btn = ({
 
   const [isDown, setIsDown] = useState(false);
   const theme = useContext(ThemeContext);
+
+  // label style (if any)
 
   const pressIn = () => { setIsDown(true); onPressIn?.() }
   const pressOut = () => {setIsDown(false); onPressOut?.()}
@@ -39,7 +42,7 @@ const Btn = ({
         {icon != null ? (
           icon({ color: color ?? theme.colors.mutedFg, size })
         ) : (
-          <TextLabel primary={primary} disabled={disabled}>
+          <TextLabel {...{ primary, disabled, ...props  }}>
             {label}
           </TextLabel>
         )}
@@ -58,9 +61,9 @@ const Container = styled(
   align-items: center;
   padding: 0 16px;
   ${(p) => p.icon && `
-  padding: 0;
-  width: ${p.size * CONTAINER_RATIO}px;
-  height: ${p.size * CONTAINER_RATIO}px; `}
+    padding: 0;
+    width: ${p.size * CONTAINER_RATIO}px;
+    height: ${p.size * CONTAINER_RATIO}px; `}
 
   ${(p) => p.primary && `
   background-color: ${
@@ -80,14 +83,15 @@ const Container = styled(
   background-color: ${p.theme.colors.inputDisabledBg}; `}
 `;
 
-const TextLabel = styled(({ primary, disabled, ...props }) => (
-  <View style={{
-    display: 'flex', justifyContent: 'center',
-    height: BUTTON_HEIGHT}} >
-    <Text {...props} />
-  </View>
-))`
+const TextLabel = styled(({ primary, disabled, ...props }) => {
+  return (
+    <View style={{ justifyContent: 'center', height: BUTTON_HEIGHT}} >
+      <Text {...props} />
+    </View>
+  )
+})`
   font-weight: bold;
+  font-size: 14px;
 
   ${(p) => p.primary && `
   color: ${p.theme.colors.primaryButtonFg};`}

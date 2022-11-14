@@ -36,7 +36,7 @@ export default memo(({ path, render, isStale: forceDownload, noCache,
     (noCache ? `?v=${new Date().toISOString()}` : '')
   }), [fileUri, noCache])
 
-  // console.log(`supabase.Image(${path}) uri=${uri} path=${path} source=`, source)
+  // console.log(`supabase.Image(${path}) uri=${fileUri} path=${path} source=`, source)
   
   return !render ? (
     source ? <Image {...{source, ...props}} /> : <NoImage {...props} />

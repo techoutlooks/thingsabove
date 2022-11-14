@@ -14,7 +14,7 @@ import { signOut } from "@/state/auth"
 import * as appImages from '../../assets';
 import { RADIUS, Spacer, Text, Row } from './uiStyle/atoms';
 import Avatar from './Avatar';
-
+import LogoIcon from './LogoIcon';
 
 
 
@@ -69,7 +69,7 @@ const ProfileImage = styled(({profile, style}
       <Greetings {...{profile}} />
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', alignItems: 'center'} }>
-          <LogoIcon />
+          <LogoIcon color="white" />
           <Spacer width={12} />
           <View>
             <Info>Prayers  ({myPrayersCount?? 0})</Info> 
@@ -93,15 +93,6 @@ const Greetings = styled.Text.attrs(({ profile }) => ({
 const ProfilePicture = styled(Avatar).attrs({ size: 80 })`
   border: 1px solid ${p => p.theme.colors.primaryButtonFg}; 
   border-radius: ${p => p.size/2}px;
-`
-const LogoIcon = styled.Image.attrs({
-  resizeMode: 'cover',
-  source: appImages.branding.icon_white, 
-})`
-  width: 45px; height: 55px; 
-  border-width: 1px;  
-  border-color: ${p => p.theme.colors.primaryButtonFg}; 
-  border-radius: ${RADIUS}px;
 `
 const Info = styled(Text)`
   color: ${p => p.theme.colors.primaryButtonFg }

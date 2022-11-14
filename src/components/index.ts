@@ -19,7 +19,7 @@ export { default as RecordPrayerButton, RecordPrayerPulseButton } from "./Record
 export { default as SharePrayerLink } from "./SharePrayerLink";
 export { default as ShareContact } from "./ShareContact";
 export {  UnmemoizedPrayerView, UnmemoizedAnimatedPrayerView, 
-  PrayerView, AnimatedPrayerView } from "./PrayerView";
+  PrayerView, AnimatedPrayerView, AnimatedPrayerViewList } from "./PrayerView";
 export { default as PrayerList } from "./PrayerList"
 
 // Contact
@@ -32,10 +32,10 @@ export {default as ChatNowButton} from "./ChatNow";
 
 
 // Misc
+export { default as LogoIcon } from "./LogoIcon" 
 export {default as AppHeader} from "./AppHeader";
 export {default as Avatar} from "./Avatar";
 export {default as AvatarUpload} from "./AvatarUpload";
 export {default as SkeletonCard} from "./SkeletonCard";
 export {default as Modal} from "./Modal";
 import * as FlipCard from "./FlipCard"; export { FlipCard }
-

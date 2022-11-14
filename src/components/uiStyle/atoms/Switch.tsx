@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, memo } from "react";
-import { View, Text, TouchableWithoutFeedback } from "react-native";
+import React, { useState, useCallback, useEffect, useMemo, memo } from "react";
+import { View, ViewProps, TouchableWithoutFeedback } from "react-native";
 import styled, { useTheme } from "styled-components/native";
 import {BUTTON_HEIGHT, CONTAINER_RATIO, RADIUS} from "./constants";
 
@@ -9,7 +9,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 type Props = { 
   initiallyOn?: boolean, icon?: any, size?: number, 
   disabled?: boolean, transparent?: boolean, primary?: boolean,
-  onChange: (on: boolean|undefined) => void }
+  onChange: (on: boolean|undefined) => void 
+} & ViewProps
 
 
 /*** 

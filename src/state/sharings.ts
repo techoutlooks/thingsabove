@@ -21,6 +21,7 @@
  */
 
  import { showMessage, hideMessage } from "react-native-flash-message";
+ import * as lightTheme from "@/components/uiStyle/styles/light"
 
  import { mergeDeep } from '@/lib/mergeDeep'
  import * as supabase from "@/lib/supabase";
@@ -155,6 +156,7 @@
      sharingsByUserIds[item.user_id] = [...old, item]  })
  
    showMessage({ message: "Sync success", type: "success", 
+    backgroundColor: lightTheme.theme.colors.primaryButtonBgDown,
      statusBarHeight: 30, description: `Shared (${items.length}) item(s) .` })
  
    return { type: Actions.SYNC, sharingsByUserIds }

@@ -43,7 +43,7 @@ const createContactsReducer = (flatten: boolean): R =>
  *    eg. elsewise (the default), [<profile1>, null, <profile3>] 
  *    Nota: null values represent contact that failed to retrieve
  */
- const useContacts = (userIds: string[], opts?: useContactsOpts) => {
+ const useContacts = (userIds?: string[], opts?: useContactsOpts) => {
 
     const state = useStore().getState()
     const dispatch = useDispatch()
@@ -79,10 +79,14 @@ const createContactsReducer = (flatten: boolean): R =>
       }
     }, [])
   
-    useEffect(() => { if(userIds && !!userIds?.length) {
-      push({ do: Do.RESET })           // resets fetched contacts to [] 
-      userIds.forEach(getProfile)      // before pulling contacts again
-    }}, [userIds])
+    /*
+    resets fetched contacts to []
+    before pulling contacts again, or not (userIds=[])
+    ------------------------------ */
+    useEffect(() => { 
+      push({ do: Do.RESET })            
+      if(userIds && !!userIds?.length) userIds.forEach(getProfile)      
+    }, [userIds])
 
     // console.log(`useContacts() ->>>>>>> userIds=${userIds} flatten=${flatten} nullable=${nullable} contacts=`, contacts )
     return contacts

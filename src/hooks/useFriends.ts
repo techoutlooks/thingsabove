@@ -8,13 +8,9 @@ import {useContacts, useContactsOpts} from './useContact';
  * Get friends of authenticated user  */
 const useFriends = () => {
   const {profile} = useAuthProfile()
-  return useContacts(profile?.friends_ids ?? []) as Contact[]
+  const friends = useContacts(profile?.friends_ids) as Contact[]
+  const friendsCount = (friends?.length || 0) as number
+  return { friends, friendsCount }
 }
 
-/*** 
- * The authed user's friends count  */
-const useFriendsCount = () =>
-  (useFriends()?.length as number)
-
-
-export { useFriends, useFriendsCount }
+export { useFriends }

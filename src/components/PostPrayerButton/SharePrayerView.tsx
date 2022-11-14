@@ -18,7 +18,7 @@ type Props = { prayers: Prayer[] }
 export default ({ prayers }: Props) => {
 
   const navigation = useNavigation()
-  let initialContacts = useFriends()
+  let {friends: initialContacts} = useFriends()
   const [contactsTo, onSelect] = useState<Contact[]>([])
   const { share } = useSharings({ itemType: ItemTypes.PRAYER })
 

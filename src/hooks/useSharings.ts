@@ -55,7 +55,7 @@ const useSharings = ({ itemType, limit=ITEMS_LIMIT }: useSharingsArgs) => {
   }}, [authId, itemType])
 
   /***
-   * Fetch items from the store given their ids  
+   * Fetch items from the store given their type and id  
    * Discards null or undefined items */
    const get = useCallback((itemsIds: string[]) => 
     (itemsIds ?? [])?.map(id => getfunc(itemType)(id)(store.getState()))
@@ -64,11 +64,15 @@ const useSharings = ({ itemType, limit=ITEMS_LIMIT }: useSharingsArgs) => {
   /**
    * Expand all items in given direction ie., received, sent.
    * Limit retrieved count to `ITEMS_LIMIT`  */
-   const expand = useCallback((direction: sharings.DirectionTypes) => {
-    const items = orderBy(direction == sharings.DirectionTypes.RECEIVED ? 
+  const expand = useCallback((direction: sharings.DirectionTypes): Shareable[] => {
+
+    const resultSharings = orderBy(direction == sharings.DirectionTypes.RECEIVED ? 
       received : sent, ['created_at'], ['desc']
     ).slice(0, limit)
-    return get(items.map(sharing => sharing.item_id))
+
+    return get(resultSharings.map(sharing => sharing.item_id))
+     .map((item, i) => ({ shared_at: resultSharings[i].created_at, ...item}))
+
    }, [received, sent, limit])
 
   
@@ -89,4 +93,4 @@ const useSharings = ({ itemType, limit=ITEMS_LIMIT }: useSharingsArgs) => {
 
 
 export default useSharings
-export { useSharingsArgs }
+export { useSharingsArgs, ITEMS_LIMIT }

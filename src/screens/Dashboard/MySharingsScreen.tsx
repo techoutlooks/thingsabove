@@ -4,56 +4,53 @@ import { Animated, FlatList, LayoutChangeEvent } from "react-native"
 import styled, { useTheme } from "styled-components/native"
 import { Feather as Icon } from '@expo/vector-icons';
 
-import { selectPrayersByUserId } from "@/state/prayers"
-import { useAuthId } from "@/hooks"
-import { AppHeader, AnimatedPrayerView  } from "@/components"
+import { ItemTypes, Shareable, Sharing } from "@/types/models"
+import { DirectionTypes } from "@/state/sharings"
+import * as atoms from "@/components/uiStyle/atoms"
+import { useAuthId, useShareables } from "@/hooks"
+import { AppHeader, AnimatedPrayerViewList  } from "@/components"
 import { Heading1, Container } from "./elements"
 
 
-// formatDistance(0, prayer.duration * 1000, { includeSeconds: true })
+const screenData = { 
+  [DirectionTypes.RECEIVED]: {
+    title: "Inbox", 
+    heading: "All Received Items "
+  },
+  [DirectionTypes.SENT]: {
+    title: "Sentbox", 
+    heading: "All Sent Items "
+  }
+}
+
+
+
 export default ({ route }) => {
 
-  
-  const userId = useAuthId() 
-  // const prayers = useSelector(selectPrayersByUserId(userId))
-  const store= useStore()
-  const prayers = selectPrayersByUserId(userId)(store.getState())
+  const { params: { direction }} = route
 
+  const { sent: sentPrayers, received: receivedPrayers } = useShareables({ 
+    itemType: ItemTypes.PRAYER, limit: 100 })
 
-  const theme = useTheme()
   
   return (
     <Container>
-      <AppHeader title="My Inbox" />
-      <Heading1><Icon name="activity" size={18}  />{' '}  Shared with me ...</Heading1>
-      <PrayerList {...{ prayers }} />
+
+      <AppHeader title={screenData[direction]?.title} />
+      <atoms.Spacer height={24} />
+      <Heading1>
+        <Icon name="activity" size={18}  />
+        {' '}{screenData[direction]?.heading}
+      </Heading1>
+      <atoms.Spacer height={16} />
+
+      <AnimatedPrayerViewList {...{ prayers: 
+        direction===DirectionTypes.RECEIVED ? receivedPrayers : sentPrayers }} />
+
     </Container>
   )
 }
 
 
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
-
-const PrayerList = styled(({prayers: data}) => {
-
-  // items animation drive
-  const y = new Animated.Value(0)
-  const onScroll = Animated.event(
-    [{ nativeEvent: {contentOffset: { y }}}], { useNativeDriver: true })
-
-  // item rendered 
-  const keyExtractor = useCallback((item, i) => `${i}.${item.id}`, [])
-  const renderItem = useCallback(({item: prayer, index}) => (
-    <AnimatedPrayerView {...{ y, index, prayer }} /> ), [y])
-
-  return (
-    <AnimatedFlatList {...{ 
-      data, renderItem, keyExtractor, onScroll,
-      scrollEventThrottle: 16, bounces: false,
-      showsVerticalScrollIndicator: false
-    }} />
-  )
-
-})``
 

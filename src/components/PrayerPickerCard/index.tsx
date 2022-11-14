@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback, 
   useReducer, Reducer, memo  } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons as Icon } from '@expo/vector-icons';
 import styled from 'styled-components/native'
 import lodash from 'lodash'
 
@@ -126,6 +126,7 @@ export default ({ initial=[], selectedIds: initialSelectedIds=[], ...props } : P
         keyboardShouldPersistTaps="handled"
         renderItem={renderPrayer}
       />
+
       <PrayerList selected 
         data={selectedPrayers}
         initialNumToRender={15}
@@ -154,7 +155,7 @@ const PrayerList = styled(atoms.FlatList)`
 const AddButton = styled(atoms.Btn)
   .attrs(p => ({ 
     primary: true, color: p.theme.colors.cardBg,
-    icon: p => <FontAwesome5 name="praying-hands" {...p} />,
+    icon: p => <Icon name="md-people-outline" {...p} />,
   }))
 `
   margin: 0 0 0 16px;
@@ -163,17 +164,12 @@ const AddButton = styled(atoms.Btn)
 const SearchBar = styled(atoms.SearchInput)` 
 flex: 1;
 `
-
 const ScreenFooter = styled(atoms.ScreenFooter)`
   align-items: center;
   justify-content: space-between;
   padding: 0; // cancel padding from ancestor
   margin-top: 32px;
 `
-
 const ScreenCard = styled(atoms.ScreenCard)`
- padding: 16px;
- margin: 16px;
- width: 100%
-
+ margin-bottom: 24px;
 `

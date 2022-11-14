@@ -22,7 +22,8 @@ const sorted = (items: Shareable[]) => orderBy(
  * useShareable()
  * Extended version of `useSharings()` 
  * that expands shared items, ie., `item_id` -> full item data 
- * ordered DESC by `updated_at` time.
+ * ordered DESC by `updated_at` time. 
+ * Fetches latest useSharings.ITEMS_LIMIT=10 items by default.
  * */
  const useShareables = (args: useSharingsArgs) => {
 

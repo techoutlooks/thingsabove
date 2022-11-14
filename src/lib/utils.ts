@@ -9,9 +9,15 @@ export const isAndroid = () => Platform.OS === 'android'
 export type ValueOf<T> = T[keyof T]
 
 
+/***
+ * Text utils 
+ * @member trunc: List of words from text
+ */
 export const isempty = (o: Object) => !!o && !Object.keys(o).length
-
 export const trim = (text: string) => text.replace(/^\s+|\s+$/g, '')
+export const words = (text: string) => text?.match(/[^\s]+/g) ?? []
+export const trunc = (text: string, len: number, ellipsize=true) => 
+  words(text).slice(0, len).join(" ") + (ellipsize ? "..." : "")
 
 
 /***
@@ -20,7 +26,6 @@ export const trim = (text: string) => text.replace(/^\s+|\s+$/g, '')
 export const arrayequal: boolean = 
   <T extends []>(a: T, b: T) => 
     a.length === b.length && a.every((v, i) => v === b[i]);
-
 
 /**
  * Gets the string type of the component or core html (JSX) element. React Fragments will return type 'react.fragment'. Priority will be given to the prop '__TYPE'.

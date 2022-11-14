@@ -1,8 +1,10 @@
+import { showMessage, hideMessage } from "react-native-flash-message";
+import * as lightTheme from "@/components/uiStyle/styles/light"
+
 import { Auth } from './auth'
 import { UserProfile } from "@/lib/supabase"
 import { mergeDeep } from '@/lib/mergeDeep'
 import * as supabase from "@/lib/supabase";
-import { showMessage, hideMessage } from "react-native-flash-message";
 import { AppThunk } from "./configureStore";
 
 
@@ -136,6 +138,7 @@ export const syncContacts = (contacts: Contact[] = []) => {
   const contactsByIds: { [id: string]: Contact } = {}
   contacts.forEach(p => { contactsByIds[p.userId] = p })
   showMessage({ message: "Sync success", type: "success", 
+    backgroundColor: lightTheme.theme.colors.primaryButtonBgDown,
     statusBarHeight: 30, description: `Syncing (${contacts.length}) contacts.` })
   return { type: Actions.SYNC, contactsByIds }
 }

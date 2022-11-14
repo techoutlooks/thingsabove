@@ -138,8 +138,8 @@ const useMedia = (paths: Parameters<typeof useDownloads>[0]|null,
 
   }
 
-  !!paths?.length && console.debug(`**** useMedia(paths=${paths}, forceDownload=${forceDownload}) -> `, 
-    `status=${JSON.stringify(status)}`, `cached=`,cached)
+  // !!paths?.length && console.debug(`**** useMedia(paths=${paths}, forceDownload=${forceDownload}) -> `, 
+  //   `status=${JSON.stringify(status)}`, `cached=`,cached)
 
   return { cached, errors }
 

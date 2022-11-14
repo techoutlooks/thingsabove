@@ -1,4 +1,5 @@
 import { showMessage, hideMessage } from "react-native-flash-message";
+import * as lightTheme from "@/components/uiStyle/styles/light"
 
 import { RecordedItem } from "@/components/audio-recorder/lib";
 import { Prayer, Team, Room, Category, Topic} from "@/types/models";
@@ -58,9 +59,11 @@ const reducer = (state = initialState, action: A) => {
   const {type, ...payload} = action
 
   switch (action.type) {
-    case Actions.SYNC:
-      // return mergeDeep(state, payload) 
+
+    // deep merge from lodash - merges all levels!
+    case Actions.SYNC: 
       return _.merge({}, state, payload)
+      
     case Actions.SYNC_FAILED:
       return { ...state, ...payload, }
     case Actions.SYNC_START: 
@@ -87,6 +90,7 @@ export const syncFailed = (error: Error) => {
 
 export const syncComplete = () => {
   showMessage({ message: "Sync success", type: "success", 
+    backgroundColor: lightTheme.theme.colors.primaryButtonBgDown,
     statusBarHeight: 30, description: "Prayer(s) sync complete." })
   return { type: Actions.SYNC_COMPLETE } }
 

@@ -52,7 +52,7 @@ type Category = {
  * Shareable: Generic type for all shareable items
  * Items types for shareable content, etc. */
 enum ItemTypes { PRAYER = "ItemTypes/Prayer" }
-type Shareable = Prayer
+type Shareable = {shared_at: string } & Prayer
 
 
 /***

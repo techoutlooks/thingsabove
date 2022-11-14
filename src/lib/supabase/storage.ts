@@ -5,18 +5,21 @@ import * as supabase from "./client"
 
 
 /***
- * Download resource at bucket's `path` 
+ * Download resource at `path`
  * from Supabase to local cache dir
+ * @param path: full path of resource incl. bucket name
+ * @param cacheDir: destination folder on device. 
  */
  export function download(path: string, cacheDir: string) {
 
-
   return new Promise<[string|null, string|null]>((resolve, reject) => {
 
-    const fileName = path.slice(path.lastIndexOf("/")+1)
-    if(!fileName) {
-      resolve([null, null])
-      
+    const noDownload = [null, null]
+    const sep = path.lastIndexOf("/")
+    const fileName = path.slice(sep+1)
+
+    if(sep < 0 ) { reject(noDownload); return }
+    if(!fileName) { resolve(noDownload)
     } else {
       supabase.getPublicUrl(path).then(publicURL => {
         if(!publicURL ) {
@@ -25,7 +28,7 @@ import * as supabase from "./client"
             getOrCreateDir(cacheDir).then(dir => {
               FileSystem.downloadAsync(publicURL, `${dir}/${fileName}`)
                 .then(({uri}) => { 
-                  // console.debug(`>>> download() cached ${path} -> ${uri}`, fileName)
+                  // console.debug(`>>> download(${path}) cached ${publicURL} -> ${uri}`)
                   resolve([uri, publicURL]) 
                 })
             })
@@ -33,7 +36,6 @@ import * as supabase from "./client"
       })
 
     }
-
 
   })
 

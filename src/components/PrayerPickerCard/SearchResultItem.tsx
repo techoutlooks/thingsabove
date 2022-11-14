@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useCallback, ComponentProps } from 'react'
-import { TextProps } from "react-native"
+import React, { useEffect, useState, ComponentProps } from 'react'
+import { TextProps, View } from "react-native"
 import styled from 'styled-components/native'
 
 import {Prayer} from '@/types/models'
-import {Switch as UnStyledSwitch, SwitchProps } from '../uiStyle/atoms'
-import Avatar from '../Avatar'
-
+import { useContact } from "@/hooks"
+import * as atoms from '../uiStyle/atoms'
+import * as supabase from "@/lib/supabase"
 
 
 enum SelectActions {
@@ -18,7 +18,7 @@ type OnSelectArgs = { action: SelectActions, prayer: Prayer }
 type Props = { 
   prayer: Prayer,  
   onSelect: ({ action, prayer }: OnSelectArgs) => void 
-} & Pick<SwitchProps, 'initiallyOn'>
+} & Pick<atoms.SwitchProps, 'initiallyOn'>
 
 
 /***
@@ -26,17 +26,25 @@ type Props = {
  */
 const SearchResultItem = React.memo(({ prayer, onSelect, initiallyOn }: Props) => {
 
-  // dispatch .onChange() with contact and reason for change (contact add/removed ?)
-  const onChange = useCallback((isOn: boolean|undefined) => {
-    onSelect?.({ action: isOn ? SelectActions.ADD : SelectActions.REMOVE, prayer })
-  }, [])
+  /* Data
+  -------------------------------- */
+  const contact = useContact(prayer?.user_id)
+
+  /* UI
+  -------------------------------- */
+  const [isOn, setIsOn] = useState<boolean|undefined>(initiallyOn)
+  useEffect(() => onSelect?.({ 
+    action: isOn ? SelectActions.ADD : SelectActions.REMOVE, prayer }), [isOn])
 
   return (
-    <Switch {...{ onChange, initiallyOn }}>
-      <Avatar path={prayer?.picture_urls?.[0]} size={40} />
+    <Switch primary {...{ onChange: setIsOn, initiallyOn }}>
+      <Image {...{isOn, path: `avatars/${prayer?.picture_urls?.[0]}`}}  />
       <Summary>
-        <Name>{prayer?.title}</Name>
-        <Username>{prayer?.description}</Username>
+        <Title {...{isOn}}>{prayer?.title}</Title>
+        <Info>
+          <Username {...{isOn}}>{contact?.username}{" "}</Username>
+          <Description {...{isOn}}>{prayer?.description}</Description>
+        </Info>
       </Summary>
     </Switch>
   )
@@ -46,32 +54,50 @@ export  {OnSelectArgs, SelectActions, SearchResultItem}
 
 // Styles
 // ==========================
-const Switch = styled(UnStyledSwitch)
+const Switch = styled(atoms.Switch)
   .attrs({ transparent: true })
 `
   padding: 8px;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  // border-radius: 0;
 `
 const Summary = styled.View`
   padding-left: 8px;
 `
-const Name = styled.Text.attrs({
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
-})`
-  font-size: 15px;
-  font-weight: bold;
-  color: ${p => p.theme.colors.fg};
+const Info = styled.View`
+  flex-direction: row;
+  align-items: center;
 `
-const Username = styled.Text.attrs<TextProps>(p => ({
-  children: `@${p.children}`,
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
+const Text = styled(atoms.Text)
+.attrs<TextProps & {isOn: boolean}>(p => ({
+  numberOfLines: 1, ellipsizeMode: 'tail', ...p
 }))`
-  color: ${p => p.theme.colors.mutedFg};
+  margin-right: 24px;
+`
+const Title = styled(Text)`
+  font-size: 14px;
+  font-family: SFProDisplay-Medium;
+  color: ${p => p.isOn? p.theme.colors.cardBg : p.theme.colors.fg };
+`
+const Description = styled(Text)`
+  font-size: 13px;
+  color: ${p => p.isOn? p.theme.colors.cardBg : p.theme.colors.fg };
+`
+const Username = styled(Text).attrs(p => ({
+  children: `@${p.children}`,
+}))`
+  color: ${p => p.isOn? p.theme.colors.inputDisabledBg : p.theme.colors.mutedFg };
   font-size: 12px;
   font-weight: normal;
+  margin-right: 0px;
+`
+const Image = styled(supabase.Image).attrs(p => ({
+  aspectRatio: 1, resizeMode: 'cover', ...p
+}))`
+  height: 40px; width: 40px;
+  background-color: ${p => p.theme.colors.cardBg};
+  border-color: ${p => p.isOn ? p.theme.colors.cardBg: p.theme.colors.mutedFg};
+  border-width: 1px;
+  borderRadius: 5px;
 `

@@ -1,11 +1,10 @@
-import React, { useReducer, Reducer, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, ViewProps } from "react-native"
 import styled from "styled-components/native"
 
 import * as ar from "./audio-recorder";
 import AudioPlayer from "./AudioPlayer";
 import { usePlaylist } from "@/hooks";
-
 
 type Props = { 
   paths: string[],     
@@ -14,6 +13,11 @@ type Props = {
   & Pick<ar.PlayerProps, 'shouldPlay'|'shouldReset'|'shouldStop'> 
   & ViewProps
   
+/* TODO
+==========================
+* trade .map() for FlatList.
+*/
+
 
 /***
  * @param {string[]} paths: list of audios paths relative to the audios bucket
@@ -38,8 +42,7 @@ export default styled(({paths, shouldReset, ...p}: Props) => {
           <AudioPlayer {...{
             key: i, path, shouldPlay: shouldPlay[i], shouldReset,
             onChange: status => setStatus([i, status])}} 
-          />
-        ))
+        /> ))
       }
     </View>
   )

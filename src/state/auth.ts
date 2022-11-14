@@ -1,5 +1,7 @@
 import { User, UserCredentials, Session } from "@supabase/supabase-js"
 import { showMessage, hideMessage } from "react-native-flash-message";
+import * as _ from "lodash"
+import {mergeDeep} from "@/lib/mergeDeep";
 
 import * as supabase from "@/lib/supabase"
 import * as lightTheme from "@/components/uiStyle/styles/light"
@@ -23,8 +25,8 @@ export enum Auth {
 }
 
 type S = { 
-  profile: supabase.UserProfile,            // auth profile
-  user: User, session: Session,             // auth core
+  profile: supabase.UserProfile,            // from @/lib/supabase.auth 
+  user: User, session: Session,             // from @supabase
   fetching: boolean, error: any             // request status
 }
 type A = { type: Auth } & Partial<S>
@@ -38,13 +40,19 @@ const initialState = {
 }
 
 export default (state = initialState, action: A) => {
+
   const {type, ...payload} = action
+
   switch (type) {
 
-    // expected ops: leave clear errors cleared
+    // expected ops: leave with errors cleared
     case Auth.AUTH_LOGIN:  
     case Auth.SYNC_SESSION: case Auth.SYNC_PROFILE:
-      return { ...state, error: null, ...payload }
+      // merge deep only one level! eg. `state.profile.friends_ids`: deep merge
+      // all keys under state including `profile`, but overwrite `friends_ids`
+      // console.log(`???? state.auth [${type}] -> `, payload, 'state=', state)
+      return mergeDeep(state, {...payload, error: null}) 
+
 
     case Auth.SYNC_START:
       return { ...state, fetching: true }
@@ -123,6 +131,7 @@ const authStart = () => ({ type: Auth.AUTH_START })
 
 export const authLogin = (user: User) => {
   showMessage({ message: "Authentication", type: "success", 
+  backgroundColor: lightTheme.theme.colors.primaryButtonBgDown,
     statusBarHeight: 50, description: "Successfully signed in" })
   return { type: Auth.AUTH_LOGIN, user }
 }
@@ -147,9 +156,10 @@ export const signOut: AppThunk<Promise<void>> =
     supabase.signOut().then(({error}) => {
       if(error) { throw Error(error) }
       dispatch(syncReset)
-    }).catch((e: any) => {
-      dispatch(syncFailed(e)) 
     })
+    .catch((e: any) => { dispatch(syncFailed(e)) })      
+    .finally(() => dispatch(syncComplete))
+
 }
 
 
@@ -175,13 +185,12 @@ export const fetchProfile: AppThunk<Promise<void>> =
     dispatch(syncStart)
     supabase.fetchUserProfile({userId: authId})
       .then(({ data, error, status }) => { 
-        console.log(`fetchUserProfile()  -> `, data)
-
         if (error && status !== 406) { throw error }
         if(!error) { dispatch(syncProfile(data)) } else { throw(error) } 
-      }).catch(e => {
-        dispatch(syncFailed(e))
       })
+      .catch(e => { dispatch(syncFailed(e)) })
+      .finally(() => dispatch(syncComplete))
+
 }
 
 export const updateProfile = (updates: Partial<supabase.UserProfile>)
@@ -192,10 +201,10 @@ export const updateProfile = (updates: Partial<supabase.UserProfile>)
       .then(({ error }) => { 
         if (error) { throw error } else { 
           dispatch(syncProfile(updates));
-          dispatch(syncComplete)
         }
       }).catch(e => {
         console.error(e)
         dispatch(syncFailed(e))
       })
+      .finally(() => dispatch(syncComplete))
   }

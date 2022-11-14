@@ -47,7 +47,7 @@ export default (paths: P[], cacheDir: string, paused=false): R => {
       path = validatePath(path)
       !path ? resolve({path, ...wontDownload}) : 
         storage.download(path, cacheDir)
-          .then(([publicUrl, fileUri]) => push({path, publicUrl, fileUri, didDownload: true}))
+          .then(([fileUri, publicUrl]) => push({path, fileUri, publicUrl, didDownload: true}))
           .catch(e => {
             resolve({path, ...wontDownload})
             pushError(new Error(
@@ -67,7 +67,7 @@ export default (paths: P[], cacheDir: string, paused=false): R => {
     }
   },[paths, paused]);
 
-  // console.debug(`**** useDownload(paths=${paths}, paused=${paused}) -> `, downloads)
+  // console.debug(`**** useDownload(paths=${JSON.stringify(paths)}, paused=${paused}) -> `, downloads)
   return { downloads, errors }
 }
 

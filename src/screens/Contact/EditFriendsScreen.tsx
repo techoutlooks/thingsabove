@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback  } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Alert } from "react-native"
+import styled from "styled-components/native"
 import { useSelector } from "react-redux"
 import _orderBy from 'lodash/orderBy'
 
 import { useAuthProfile } from '@/hooks'
 import { bolderize } from "@/lib/utils"
 import { Contact, selectContacts } from '@/state/contacts'
-import { ContactPickerCard } from '@/components'
+import { ContactPickerCard as ContactPicker } from '@/components'
 
 
 const AddContactScreen = () => {
@@ -29,7 +30,7 @@ const AddContactScreen = () => {
 
     const usernames = contacts.map(c => `@${c.username}`).join(', ')
     const friends_ids =  contacts.map(c => c.userId)
-    !!me?.friends_ids.length && Alert.alert( 
+    !!friends_ids.length && Alert.alert( 
       "Manage Friendlist", 
       `Make friends with ${bolderize(usernames)} ?`, [
         { text: "Yes", onPress: () => { 
@@ -56,13 +57,28 @@ const AddContactScreen = () => {
   )) }, [])
 
   return (
-    <ContactPickerCard {...{
-      initialContacts: contactsDirectory, onSelect,
-      selectedIds: me?.friends_ids || [],
-      title: "Edit Friends"
-    }} />
+    <Container>
+      <ContactPickerCard {...{
+        initialContacts: contactsDirectory, onSelect,
+        selectedIds: me?.friends_ids || [],
+        title: "Edit Friends",
+      }} />
+    </Container>
+
   )
 }
+
+
+const ContactPickerCard = styled(ContactPicker)`
+  padding: 18px;
+`
+
+const Container = styled.View`
+  flex: 1;
+  margin: 20px;
+  justify-content: center;
+  align-items: center;
+`
 
 export default AddContactScreen
 AddContactScreen.whyDidYouRender = true
